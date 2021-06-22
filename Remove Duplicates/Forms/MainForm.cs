@@ -19,6 +19,7 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Baxendale.RemoveDuplicates.Search;
 
@@ -33,8 +34,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         protected override void OnLoad(EventArgs e)
         {
-            Type patternType = typeof(FilePattern);
-            foreach (FieldInfo field in patternType.GetFields(BindingFlags.Static | BindingFlags.Public))
+            foreach (FieldInfo field in typeof(FilePattern).GetFields(BindingFlags.Static | BindingFlags.Public))
             {
                 if (field.Name.EndsWith("Files") && field.FieldType == typeof(FilePattern))
                 {
@@ -76,7 +76,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
             else
             {
-                pattern = ((FilePattern)comboBoxPatterns.SelectedItem).Pattern;
+                pattern = ((FilePattern)comboBoxPatterns.SelectedItem).FullPattern;
             }
 
             string[] paths = lstPaths.Items.Cast<string>().ToArray();

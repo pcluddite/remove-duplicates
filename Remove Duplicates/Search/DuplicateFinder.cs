@@ -60,7 +60,7 @@ namespace Baxendale.RemoveDuplicates.Search
             string fullPatern = Pattern;
 
             if (string.IsNullOrEmpty(fullPatern))
-                fullPatern = FilePattern.AllFiles.Pattern;
+                fullPatern = FilePattern.AllFiles.FullPattern;
 
             List<Task> searchTasks = new List<Task>();
             foreach (string pattern in fullPatern.Split(';'))

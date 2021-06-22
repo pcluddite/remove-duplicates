@@ -16,75 +16,175 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
-    internal class FilePattern : IEquatable<FilePattern>
+    internal class FilePattern : ICollection<string>, IReadOnlyCollection<string>, IEquatable<FilePattern>
     {
-        public static readonly FilePattern AllFiles      = new FilePattern("All Files", "*.*");
+        private const string GENERIC_CUSTOM_DESCRIPTION = "Custom";
 
-        public static readonly FilePattern BitmapFiles   = new FilePattern("Bitmap Files", "*.bmp;*.dib");
-        public static readonly FilePattern JpegFiles     = new FilePattern("JPEG Files", "*.jpg;*.jpeg;*.jpe;*.jfif");
+        private static readonly IEqualityComparer<string> MaskComparer = StringComparer.CurrentCultureIgnoreCase;
+
+        private static readonly string[] ALL_FILES_MASK = new string[] { "*.*" };
+        private static readonly char[] ValidMaskChars = { '*', '?' };
+
+        public static readonly FilePattern AllFiles = new FilePattern() { _description = "All Files", _subpatterns = ALL_FILES_MASK };
+
+        public static readonly FilePattern BitmapFiles   = new FilePattern("Bitmap Files", "*.bmp", "*.dib");
+        public static readonly FilePattern JpegFiles     = new FilePattern("JPEG Files", "*.jpg", "*.jpeg", "*.jpe", "*.jfif");
         public static readonly FilePattern GifFiles      = new FilePattern("GIF Files", "*.gif");
-        public static readonly FilePattern TiffFiles     = new FilePattern("Tag Image Files", "*.tif;tiff");
-        public static readonly FilePattern HeicFiles     = new FilePattern("High Efficiency Image Files", "*.heic");
-        public static readonly FilePattern WebpFiles     = new FilePattern("WebP Files", "*.webp");
+        public static readonly FilePattern SvgFiles      = new FilePattern("Scalable Vector Graphics Files", "*.svg");
         public static readonly FilePattern IconFiles     = new FilePattern("Icon Files", "*.ico");
-        public static readonly FilePattern AllImageFiles = new FilePattern("All Image Files", BitmapFiles, JpegFiles, GifFiles, TiffFiles, HeicFiles, WebpFiles, IconFiles);
+        public static readonly FilePattern AllImageFiles = new FilePattern("All Image Files", BitmapFiles, JpegFiles, GifFiles, IconFiles);
 
         public static readonly FilePattern TextFiles     = new FilePattern("Plain Text Files", "*.txt");
 
-        public string Description { get; set; }
-        public string Pattern { get; set; }
+        private static char[] _invalidMaskChars;
 
-        public FilePattern(string description, string pattern)
+        private static char[] InvalidMaskCharacters
         {
-            Description = description;
-            Pattern = pattern;
+            get
+            {
+                if (_invalidMaskChars == null)
+                {
+                    char[] invalidFilenameChars = Path.GetInvalidFileNameChars();
+                    _invalidMaskChars = new char[Math.Max(invalidFilenameChars.Length - ValidMaskChars.Length, 0)];
+                    int idx = 0;
+                    foreach (char invalidFilenameChar in invalidFilenameChars)
+                    {
+                        if (Array.IndexOf(ValidMaskChars, invalidFilenameChar) < 0)
+                            _invalidMaskChars[idx++] = invalidFilenameChar;
+                    }
+                }
+                return _invalidMaskChars;
+            }
         }
 
-        public FilePattern(string pattern)
-            : this("Custom Pattern", pattern)
+        private string[] _subpatterns;
+        private string _description;
+
+        public string Description
+        {
+            get
+            {
+                return _description ?? string.Empty;
+            }
+        }
+
+        public string FullPattern
+        {
+            get
+            {
+                if (_subpatterns == null || _subpatterns.Length == 0)
+                    return ALL_FILES_MASK[0];
+                if (_subpatterns.Length == 1)
+                    return _subpatterns[0];
+                return string.Join(";", _subpatterns);
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                return _subpatterns.Length;
+            }
+        }
+
+        public ICollection<string> Subpatterns
+        {
+            get
+            {
+                if (_subpatterns == null)
+                {
+                    return new ReadOnlyCollection<string>(ALL_FILES_MASK);
+                }
+                else
+                {
+                    return new ReadOnlyCollection<string>(_subpatterns);
+                }
+            }
+        }
+
+        private FilePattern()
+        {
+        }
+
+        public FilePattern(string description, string fullPattern)
+        {
+            _description = description;
+            _subpatterns = fullPattern?.Split(';');
+        }
+
+        public FilePattern(string fullPattern)
+            : this(GENERIC_CUSTOM_DESCRIPTION, fullPattern)
         {
         }
 
         public FilePattern(string description, FilePattern pattern1, FilePattern pattern2, params FilePattern[] patterns)
+            : this(description, pattern1.Singleton().Concat(pattern2.Singleton()).Concat(patterns))
         {
-            if (pattern1 == null) throw new ArgumentNullException(nameof(pattern1));
-            if (pattern2 == null) throw new ArgumentNullException(nameof(pattern2));
-            if (patterns == null) throw new ArgumentNullException(nameof(patterns));
-
-            Description = description;
-            Pattern = BuildPattern((new[] { pattern1, pattern2 }).Concat(patterns));
         }
 
-        private static string BuildPattern(IEnumerable<FilePattern> patterns)
+        public FilePattern(string description, IEnumerable<FilePattern> patterns)
         {
-            StringBuilder sbPattern = new StringBuilder();
-            using (IEnumerator<FilePattern> e = patterns.GetEnumerator())
+            if (patterns == null) throw new ArgumentNullException(nameof(patterns));
+
+            IEnumerable<string> subpatterns = patterns.Select(p => p._subpatterns.AsEnumerable())
+                                                      .Aggregate((a, next) => a.Concat(next));
+            _description = description;
+            _subpatterns = GetUniqueMasks(subpatterns);
+        }
+
+        public FilePattern(string description, string subpattern1, string subpattern2, params string[] subpatterns)
+            : this(description, subpattern1.Singleton().Concat(subpattern2.Singleton()).Concat(subpatterns))
+        {
+        }
+
+        public FilePattern(string description, IEnumerable<string> subpatterns)
+        {
+            if (subpatterns == null) throw new ArgumentNullException(nameof(subpatterns));
+            _description = description;
+            _subpatterns = GetUniqueMasks(subpatterns);
+        }
+
+        private static string[] GetUniqueMasks(IEnumerable<string> enumerable, params string[] masks)
+        {            
+            ISet<string> subpatternSet = new HashSet<string>(enumerable, MaskComparer);
+            subpatternSet.UnionWith(masks);
+            subpatternSet.Remove(null);
+
+            if (subpatternSet.Count == 0)
+                return ALL_FILES_MASK;
+
+            int index = 0;
+            string[] uniqueMasks = new string[subpatternSet.Count];
+            foreach(string mask in masks.Concat(enumerable))
             {
-                if (e.MoveNext() && e.Current?.Pattern != null)
-                    sbPattern.Append(e.Current.Pattern);
-                while (e.MoveNext())
+                if (subpatternSet.Remove(mask))
                 {
-                    if (e.Current?.Pattern != null)
-                    {
-                        sbPattern.Append(';');
-                        sbPattern.Append(e.Current.Pattern);
-                    }
+                    ValidateMask(mask);
+                    uniqueMasks[index++] = mask;
                 }
             }
-            return sbPattern.ToString();
+            return uniqueMasks;
+        }
+
+        private static void ValidateMask(string mask)
+        {
+            if (mask == null) throw new ArgumentNullException(nameof(mask));
+            if (mask.IndexOfAny(InvalidMaskCharacters) > -1) throw new ArgumentException($"Pattern contains an invalid character: {mask}");
         }
 
         public override string ToString()
         {
-            if (string.IsNullOrWhiteSpace(Description))
-                return Pattern;
-            return $"{Description} ({Pattern})";
+            if (string.IsNullOrEmpty(Description))
+                return FullPattern;
+            return $"{Description} ({FullPattern})";
         }
 
         public override bool Equals(object obj)
@@ -94,16 +194,79 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public override int GetHashCode()
         {
-            return (Pattern?.GetHashCode() ?? 0) ^ (Description?.GetHashCode() ?? 0);
+            return FullPattern.GetHashCode() ^ Description.GetHashCode();
         }
 
         public bool Equals(FilePattern other)
         {
-            if (other == null)
-                return false;
-            if (other == (object)this)
-                return true;
-            return other.Description == Description && other.Pattern == Pattern;
+            return this == other;
         }
+
+        public static FilePattern operator +(FilePattern left, FilePattern right)
+        {
+            return new FilePattern(left.Description, left, right);
+        }
+
+        public static bool operator ==(FilePattern left, FilePattern right)
+        {
+            if (left == (object)right) return true;
+            if (left == (object)null || right == (object)null) return false;
+            return left.Description == right.Description && left._subpatterns.EqualsArray(right._subpatterns, MaskComparer);
+        }
+
+        public static bool operator !=(FilePattern left, FilePattern right)
+        {
+            return !(left == right);
+        }
+
+        #region ICollection<string>
+
+        bool ICollection<string>.IsReadOnly
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        void ICollection<string>.Add(string item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<string>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        public bool Contains(string pattern)
+        {
+            return Array.IndexOf(_subpatterns, pattern) > -1;
+        }
+
+        public void CopyTo(string[] array, int arrayIndex)
+        {
+            Array.Copy(_subpatterns, array, arrayIndex);
+        }
+
+        bool ICollection<string>.Remove(string item)
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+
+        #region IEnumerable<string>
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return Subpatterns.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
     }
 }
