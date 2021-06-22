@@ -28,7 +28,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public static readonly FilePattern BitmapFiles   = new FilePattern("Bitmap Files", "*.bmp;*.dib");
         public static readonly FilePattern JpegFiles     = new FilePattern("JPEG Files", "*.jpg;*.jpeg;*.jpe;*.jfif");
-        public static readonly FilePattern GifFiles      = new FilePattern("JPEG Files", "*.gif");
+        public static readonly FilePattern GifFiles      = new FilePattern("GIF Files", "*.gif");
         public static readonly FilePattern TiffFiles     = new FilePattern("Tag Image Files", "*.tif;tiff");
         public static readonly FilePattern HeicFiles     = new FilePattern("High Efficiency Image Files", "*.heic");
         public static readonly FilePattern WebpFiles     = new FilePattern("WebP Files", "*.webp");

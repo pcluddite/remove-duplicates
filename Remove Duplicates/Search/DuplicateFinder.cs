@@ -57,14 +57,17 @@ namespace Baxendale.RemoveDuplicates.Search
         public IEnumerable<UniqueFile> Search(IEnumerable<DirectoryInfo> directories)
         {
             ConcurrentDictionary<Md5Hash, UniqueFile> uniqueFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
-            string pattern = Pattern;
+            string fullPatern = Pattern;
 
-            if (string.IsNullOrEmpty(pattern))
-                pattern = FilePattern.AllFiles.Pattern;
+            if (string.IsNullOrEmpty(fullPatern))
+                fullPatern = FilePattern.AllFiles.Pattern;
 
             List<Task> searchTasks = new List<Task>();
-            foreach(DirectoryInfo directory in directories)
-                searchTasks.Add(RecursiveSearchAsync(directory, pattern, uniqueFiles));
+            foreach (string pattern in fullPatern.Split(';'))
+            {
+                foreach (DirectoryInfo directory in directories)
+                    searchTasks.Add(RecursiveSearchAsync(directory, pattern, uniqueFiles));
+            }
             Task.WaitAll(searchTasks.ToArray());
             IEnumerable<UniqueFile> duplicates = uniqueFiles.Values.Where(o => o.Paths.Count > 1);
             OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicates));
@@ -81,13 +84,15 @@ namespace Baxendale.RemoveDuplicates.Search
 
                 List<UniqueFile> foundDupes = SearchFiles(dirMetaData, pattern, fileDictionary);
 
+                OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, foundDupes.ToArray()));
+
                 DirectoryInfo[] subDirs = dirMetaData.GetDirectories();
                 Task[] searchTasks = new Task[subDirs.Length];
                 int n = 0;
                 foreach (DirectoryInfo dirInfo in subDirs)
+                {
                     searchTasks[n++] = RecursiveSearchAsync(dirInfo, pattern, fileDictionary);
-                Task.WaitAll(searchTasks);
-                OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, foundDupes.ToArray()));
+                }
             });
         }
 

@@ -24,6 +24,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Baxendale.RemoveDuplicates.Search;
+using System.Reflection;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
@@ -32,6 +34,43 @@ namespace Baxendale.RemoveDuplicates.Forms
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            Type patternType = typeof(FilePattern);
+            foreach (FieldInfo field in patternType.GetFields(BindingFlags.Static | BindingFlags.Public))
+            {
+                if (field.Name.EndsWith("Files") && field.FieldType == typeof(FilePattern))
+                {
+                    comboBoxPatterns.Items.Add(field.GetValue(null));
+                }
+            }
+            comboBoxPatterns.SelectedItem = FilePattern.AllFiles;
+            base.OnLoad(e);
+        }
+
+        private void btnAddPath_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                lstPaths.Items.Add(folderBrowserDialog.SelectedPath);
+            }
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (lstPaths.Items.Count == 0)
+            {
+                Program.ShowError(this, "You must specify at least one directory");
+            }
+            else
+            {
+                string[] paths = lstPaths.Items.Cast<string>().ToArray();
+                string pattern = ((FilePattern)comboBoxPatterns.SelectedItem).Pattern;
+                SearchForm searchForm = new SearchForm(paths, pattern);
+                searchForm.ShowDialog(this);
+            }
         }
     }
 }

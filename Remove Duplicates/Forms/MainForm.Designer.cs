@@ -54,6 +54,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             this.btnSearch = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnLoad = new System.Windows.Forms.Button();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.grpPaths.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -64,10 +65,10 @@ namespace Baxendale.RemoveDuplicates.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstPaths.FormattingEnabled = true;
-            this.lstPaths.ItemHeight = 16;
-            this.lstPaths.Location = new System.Drawing.Point(6, 21);
+            this.lstPaths.Location = new System.Drawing.Point(4, 17);
+            this.lstPaths.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.lstPaths.Name = "lstPaths";
-            this.lstPaths.Size = new System.Drawing.Size(473, 100);
+            this.lstPaths.Size = new System.Drawing.Size(356, 82);
             this.lstPaths.TabIndex = 0;
             // 
             // grpPaths
@@ -77,9 +78,11 @@ namespace Baxendale.RemoveDuplicates.Forms
             this.grpPaths.Controls.Add(this.btnRemovePath);
             this.grpPaths.Controls.Add(this.btnAddPath);
             this.grpPaths.Controls.Add(this.lstPaths);
-            this.grpPaths.Location = new System.Drawing.Point(12, 12);
+            this.grpPaths.Location = new System.Drawing.Point(9, 10);
+            this.grpPaths.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpPaths.Name = "grpPaths";
-            this.grpPaths.Size = new System.Drawing.Size(485, 158);
+            this.grpPaths.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.grpPaths.Size = new System.Drawing.Size(364, 128);
             this.grpPaths.TabIndex = 1;
             this.grpPaths.TabStop = false;
             this.grpPaths.Text = "Search Paths";
@@ -87,9 +90,10 @@ namespace Baxendale.RemoveDuplicates.Forms
             // btnRemovePath
             // 
             this.btnRemovePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRemovePath.Location = new System.Drawing.Point(323, 129);
+            this.btnRemovePath.Location = new System.Drawing.Point(242, 105);
+            this.btnRemovePath.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnRemovePath.Name = "btnRemovePath";
-            this.btnRemovePath.Size = new System.Drawing.Size(75, 23);
+            this.btnRemovePath.Size = new System.Drawing.Size(56, 19);
             this.btnRemovePath.TabIndex = 2;
             this.btnRemovePath.Text = "Re&move";
             this.btnRemovePath.UseVisualStyleBackColor = true;
@@ -97,21 +101,25 @@ namespace Baxendale.RemoveDuplicates.Forms
             // btnAddPath
             // 
             this.btnAddPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddPath.Location = new System.Drawing.Point(404, 129);
+            this.btnAddPath.Location = new System.Drawing.Point(303, 105);
+            this.btnAddPath.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAddPath.Name = "btnAddPath";
-            this.btnAddPath.Size = new System.Drawing.Size(75, 23);
+            this.btnAddPath.Size = new System.Drawing.Size(56, 19);
             this.btnAddPath.TabIndex = 1;
             this.btnAddPath.Text = "&Add";
             this.btnAddPath.UseVisualStyleBackColor = true;
+            this.btnAddPath.Click += new System.EventHandler(this.btnAddPath_Click);
             // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.comboBoxPatterns);
-            this.groupBox1.Location = new System.Drawing.Point(12, 195);
+            this.groupBox1.Location = new System.Drawing.Point(9, 158);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(485, 64);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Size = new System.Drawing.Size(364, 52);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Pattern";
@@ -119,49 +127,55 @@ namespace Baxendale.RemoveDuplicates.Forms
             // comboBoxPatterns
             // 
             this.comboBoxPatterns.FormattingEnabled = true;
-            this.comboBoxPatterns.Location = new System.Drawing.Point(12, 24);
+            this.comboBoxPatterns.Location = new System.Drawing.Point(9, 20);
+            this.comboBoxPatterns.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBoxPatterns.Name = "comboBoxPatterns";
-            this.comboBoxPatterns.Size = new System.Drawing.Size(467, 24);
+            this.comboBoxPatterns.Size = new System.Drawing.Size(351, 21);
             this.comboBoxPatterns.TabIndex = 3;
             // 
             // btnSearch
             // 
             this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSearch.Location = new System.Drawing.Point(311, 265);
+            this.btnSearch.Location = new System.Drawing.Point(233, 215);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(186, 23);
+            this.btnSearch.Size = new System.Drawing.Size(140, 19);
             this.btnSearch.TabIndex = 3;
             this.btnSearch.Text = "&Find Duplicates";
             this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(12, 265);
+            this.btnSave.Location = new System.Drawing.Point(9, 215);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.Size = new System.Drawing.Size(56, 19);
             this.btnSave.TabIndex = 4;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = true;
             // 
             // btnLoad
             // 
-            this.btnLoad.Location = new System.Drawing.Point(93, 265);
+            this.btnLoad.Location = new System.Drawing.Point(70, 215);
+            this.btnLoad.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnLoad.Name = "btnLoad";
-            this.btnLoad.Size = new System.Drawing.Size(75, 23);
+            this.btnLoad.Size = new System.Drawing.Size(56, 19);
             this.btnLoad.TabIndex = 5;
             this.btnLoad.Text = "L&oad";
             this.btnLoad.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(509, 300);
+            this.ClientSize = new System.Drawing.Size(382, 244);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.grpPaths);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Duplicate File Remover Tool";
@@ -182,6 +196,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnLoad;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
     }
 }
 

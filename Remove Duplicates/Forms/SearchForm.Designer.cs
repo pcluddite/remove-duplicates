@@ -112,7 +112,9 @@ namespace Baxendale.RemoveDuplicates.Forms
             // toolStripStatusLabelDirectory
             // 
             this.toolStripStatusLabelDirectory.Name = "toolStripStatusLabelDirectory";
-            this.toolStripStatusLabelDirectory.Size = new System.Drawing.Size(82, 17);
+            this.toolStripStatusLabelDirectory.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.toolStripStatusLabelDirectory.Size = new System.Drawing.Size(322, 17);
+            this.toolStripStatusLabelDirectory.Spring = true;
             this.toolStripStatusLabelDirectory.Text = "C:\\Test\\Subdir";
             // 
             // lstViewResults
