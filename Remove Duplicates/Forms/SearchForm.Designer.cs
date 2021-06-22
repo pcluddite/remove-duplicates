@@ -56,10 +56,16 @@ namespace Baxendale.RemoveDuplicates.Forms
             this.toolStripStatusLabelDirectory = new System.Windows.Forms.ToolStripStatusLabel();
             this.lstViewResults = new System.Windows.Forms.ListView();
             this.dotTimer = new System.Windows.Forms.Timer(this.components);
+            this.rightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.resolveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.statusStrip.SuspendLayout();
+            this.rightClickMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // columnHeader2
@@ -89,7 +95,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(668, 22);
             this.statusStrip.TabIndex = 0;
-            this.statusStrip.Text = "statusStrip1";
+            this.statusStrip.Text = "statusStrip";
             // 
             // toolStripProgressBar
             // 
@@ -113,7 +119,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             // 
             this.toolStripStatusLabelDirectory.Name = "toolStripStatusLabelDirectory";
             this.toolStripStatusLabelDirectory.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolStripStatusLabelDirectory.Size = new System.Drawing.Size(322, 17);
+            this.toolStripStatusLabelDirectory.Size = new System.Drawing.Size(353, 17);
             this.toolStripStatusLabelDirectory.Spring = true;
             this.toolStripStatusLabelDirectory.Text = "C:\\Test\\Subdir";
             // 
@@ -133,11 +139,45 @@ namespace Baxendale.RemoveDuplicates.Forms
             this.lstViewResults.TabIndex = 1;
             this.lstViewResults.UseCompatibleStateImageBehavior = false;
             this.lstViewResults.View = System.Windows.Forms.View.Details;
+            this.lstViewResults.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lstViewResults_MouseClick);
             // 
             // dotTimer
             // 
             this.dotTimer.Interval = 1000;
             this.dotTimer.Tick += new System.EventHandler(this.dotTimer_Tick);
+            // 
+            // rightClickMenu
+            // 
+            this.rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.showInExplorerToolStripMenuItem,
+            this.toolStripSeparator,
+            this.resolveToolStripMenuItem});
+            this.rightClickMenu.Name = "rightClickMenu";
+            this.rightClickMenu.Size = new System.Drawing.Size(163, 76);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            // 
+            // showInExplorerToolStripMenuItem
+            // 
+            this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
+            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.showInExplorerToolStripMenuItem.Text = "Show in Explorer";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator.Name = "toolStripSeparator1";
+            this.toolStripSeparator.Size = new System.Drawing.Size(159, 6);
+            // 
+            // resolveToolStripMenuItem
+            // 
+            this.resolveToolStripMenuItem.Name = "resolveToolStripMenuItem";
+            this.resolveToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.resolveToolStripMenuItem.Text = "Resolve";
             // 
             // SearchForm
             // 
@@ -151,6 +191,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             this.Text = "Searching";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            this.rightClickMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,5 +205,10 @@ namespace Baxendale.RemoveDuplicates.Forms
         private System.Windows.Forms.Timer dotTimer;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusDuplicatesCount;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusFilesCount;
+        private System.Windows.Forms.ContextMenuStrip rightClickMenu;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showInExplorerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem resolveToolStripMenuItem;
     }
 }

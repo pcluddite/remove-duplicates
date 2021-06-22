@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -153,6 +154,80 @@ namespace Baxendale.RemoveDuplicates.Forms
             else
             {
                 toolStripStatusFilesCount.Text = $"{++filesSearched:N0} Files Searched";
+            }
+        }
+
+        private void lstViewResults_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            foreach (ToolStripItem item in openToolStripMenuItem.DropDownItems)
+                item.Click -= OpenToolStripItem_Click;
+            openToolStripMenuItem.DropDownItems.Clear();
+
+            foreach (ToolStripItem item in showInExplorerToolStripMenuItem.DropDownItems)
+                item.Click -= ExplorerToolStripItem_Click;
+            showInExplorerToolStripMenuItem.DropDownItems.Clear();
+
+            if (lstViewResults.SelectedItems.Count > 1)
+            {
+                openToolStripMenuItem.Visible = false;
+                showInExplorerToolStripMenuItem.Visible = true;
+                toolStripSeparator.Visible = true;
+                resolveToolStripMenuItem.Enabled = true;
+            }
+            else if (lstViewResults.SelectedItems.Count == 1)
+            {
+                DuplicateListViewItem item = (DuplicateListViewItem)lstViewResults.SelectedItems[0];
+                foreach(string path in item.Paths)
+                {
+                    ToolStripMenuItem openItem = new ToolStripMenuItem(path);
+                    openItem.Click += OpenToolStripItem_Click;
+                    openToolStripMenuItem.DropDownItems.Add(openItem);
+
+                    ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
+                    explorerItem.Click += ExplorerToolStripItem_Click;
+                    showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
+                }
+                openToolStripMenuItem.Visible = true;
+                showInExplorerToolStripMenuItem.Visible = true;
+                toolStripSeparator.Visible = true;
+                resolveToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                openToolStripMenuItem.Visible = false;
+                showInExplorerToolStripMenuItem.Visible = false;
+                toolStripSeparator.Visible = false;
+                resolveToolStripMenuItem.Enabled = false;
+            }
+            rightClickMenu.Show(lstViewResults, e.Location);
+        }
+
+        private void ExplorerToolStripItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            try
+            {
+                Process.Start("explorer.exe", $"/select,\"{item.Text}\"");
+            }
+            catch (Exception ex) when (ex is Win32Exception || ex is IOException)
+            {
+                Program.ShowError(this, ex);
+            }
+        }
+
+        private void OpenToolStripItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            try
+            {
+                Process.Start(item.Text);
+            }
+            catch (Exception ex) when (ex is Win32Exception || ex is IOException)
+            {
+                Program.ShowError(this, ex);
             }
         }
     }
