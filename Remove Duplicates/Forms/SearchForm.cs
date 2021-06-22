@@ -162,38 +162,16 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (e.Button != MouseButtons.Right)
                 return;
 
-            foreach (ToolStripItem item in openToolStripMenuItem.DropDownItems)
-                item.Click -= OpenToolStripItem_Click;
-            openToolStripMenuItem.DropDownItems.Clear();
-
-            foreach (ToolStripItem item in showInExplorerToolStripMenuItem.DropDownItems)
-                item.Click -= ExplorerToolStripItem_Click;
-            showInExplorerToolStripMenuItem.DropDownItems.Clear();
+            ClearOpenToolStripMenu();
+            ClearShowInExplorer();
 
             if (lstViewResults.SelectedItems.Count > 1)
             {
-                openToolStripMenuItem.Visible = false;
-                showInExplorerToolStripMenuItem.Visible = true;
-                toolStripSeparator.Visible = true;
-                resolveToolStripMenuItem.Enabled = true;
+                BuildMultiItemRightClickMenu();
             }
             else if (lstViewResults.SelectedItems.Count == 1)
             {
-                DuplicateListViewItem item = (DuplicateListViewItem)lstViewResults.SelectedItems[0];
-                foreach(string path in item.Paths)
-                {
-                    ToolStripMenuItem openItem = new ToolStripMenuItem(path);
-                    openItem.Click += OpenToolStripItem_Click;
-                    openToolStripMenuItem.DropDownItems.Add(openItem);
-
-                    ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
-                    explorerItem.Click += ExplorerToolStripItem_Click;
-                    showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
-                }
-                openToolStripMenuItem.Visible = true;
-                showInExplorerToolStripMenuItem.Visible = true;
-                toolStripSeparator.Visible = true;
-                resolveToolStripMenuItem.Enabled = true;
+                BuildSingleItemRightClickMenu();
             }
             else
             {
@@ -203,6 +181,60 @@ namespace Baxendale.RemoveDuplicates.Forms
                 resolveToolStripMenuItem.Enabled = false;
             }
             rightClickMenu.Show(lstViewResults, e.Location);
+        }
+
+        private void BuildSingleItemRightClickMenu()
+        {
+            DuplicateListViewItem item = (DuplicateListViewItem)lstViewResults.SelectedItems[0];
+            foreach (string path in item.Paths)
+            {
+                ToolStripMenuItem openItem = new ToolStripMenuItem(path);
+                openItem.Click += OpenToolStripItem_Click;
+                openToolStripMenuItem.DropDownItems.Add(openItem);
+
+                ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
+                explorerItem.Click += ExplorerToolStripItem_Click;
+                showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
+            }
+            openToolStripMenuItem.Visible = true;
+            showInExplorerToolStripMenuItem.Visible = true;
+            toolStripSeparator.Visible = true;
+            resolveToolStripMenuItem.Enabled = true;
+        }
+
+        private void BuildMultiItemRightClickMenu()
+        {
+            HashSet<string> paths = new HashSet<string>();
+            foreach (DuplicateListViewItem item in lstViewResults.SelectedItems.Cast<DuplicateListViewItem>())
+            {
+                paths.UnionWith(item.Paths.Select(p => Path.GetDirectoryName(p))); 
+            }
+
+            foreach (string path in paths.OrderBy(path => path, StringComparer.CurrentCultureIgnoreCase))
+            {
+                ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
+                explorerItem.Click += ExplorerToolStripItem_Click;
+                showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
+            }
+
+            openToolStripMenuItem.Visible = false;
+            showInExplorerToolStripMenuItem.Visible = true;
+            toolStripSeparator.Visible = true;
+            resolveToolStripMenuItem.Enabled = true;
+        }
+
+        private void ClearOpenToolStripMenu()
+        {
+            foreach (ToolStripItem item in openToolStripMenuItem.DropDownItems)
+                item.Click -= OpenToolStripItem_Click;
+            openToolStripMenuItem.DropDownItems.Clear();
+        }
+
+        private void ClearShowInExplorer()
+        {
+            foreach (ToolStripItem item in showInExplorerToolStripMenuItem.DropDownItems)
+                item.Click -= ExplorerToolStripItem_Click;
+            showInExplorerToolStripMenuItem.DropDownItems.Clear();
         }
 
         private void ExplorerToolStripItem_Click(object sender, EventArgs e)
