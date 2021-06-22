@@ -117,7 +117,8 @@ namespace Baxendale.RemoveDuplicates.Search
         public FilePattern(string description, string fullPattern)
         {
             _description = description;
-            _subpatterns = fullPattern?.Split(';');
+            if (fullPattern != null)
+                _subpatterns = GetUniqueMasks(fullPattern.Split(';'));
         }
 
         public FilePattern(string fullPattern)
@@ -177,7 +178,10 @@ namespace Baxendale.RemoveDuplicates.Search
         private static void ValidateMask(string mask)
         {
             if (mask == null) throw new ArgumentNullException(nameof(mask));
-            if (mask.IndexOfAny(InvalidMaskCharacters) > -1) throw new ArgumentException($"Pattern contains an invalid character: {mask}");
+
+            int invalidChar = mask.IndexOfAny(InvalidMaskCharacters);
+            if (invalidChar > -1)
+                throw new ArgumentException($"Pattern contains an invalid character: '{mask[invalidChar]}'", mask[invalidChar].ToString());
         }
 
         public override string ToString()

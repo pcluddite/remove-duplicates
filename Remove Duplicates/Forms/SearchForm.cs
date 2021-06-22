@@ -27,7 +27,7 @@ using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
-    public partial class SearchForm : Form
+    internal partial class SearchForm : Form
     {
         private int filesSearched = 0;
         private int duplicatesFound = 0;
@@ -35,7 +35,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         private Dictionary<Md5Hash, DuplicateListViewItem> uniqueFileList = new Dictionary<Md5Hash, DuplicateListViewItem>();
 
         public IEnumerable<string> SearchPaths { get; set; }
-        public string Pattern { get; set; }
+        public FilePattern Pattern { get; set; }
         internal Task<IEnumerable<UniqueFile>> SearchTask { get; private set; }
 
         private Action<UniqueFile, FileInfo> UpdateFoundDuplicateDelegate;
@@ -43,7 +43,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private DateTime StartTime { get; set; }
 
-        public SearchForm(IEnumerable<string> paths, string pattern)
+        public SearchForm(IEnumerable<string> paths, FilePattern pattern)
         {
             SearchPaths = paths;
             Pattern = pattern;
@@ -63,7 +63,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             Text = "Remove Duplicates | Searching" + "".PadRight(++numberOfDots % 4, '.');
         }
 
-        private Task<IEnumerable<UniqueFile>> StartSearch(IEnumerable<string> paths, string pattern)
+        private Task<IEnumerable<UniqueFile>> StartSearch(IEnumerable<string> paths, FilePattern pattern)
         {
             uniqueFileList.Clear();
             duplicatesFound = 0;

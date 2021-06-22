@@ -26,7 +26,7 @@ namespace Baxendale.RemoveDuplicates.Search
 {
     internal class DuplicateFinder
     {
-        public string Pattern { get; set; }
+        public FilePattern Pattern { get; set; }
 
         public event EventHandler<DirectorySearchEventArgs> OnBeginDirectorySearch;
         public event EventHandler<NewFileFoundEventArgs> OnNewFileFound;
@@ -34,7 +34,7 @@ namespace Baxendale.RemoveDuplicates.Search
         public event EventHandler<DirectorySearchEventArgs> OnEndDirectorySearch;
         public event EventHandler<SearchCompletedEventArgs> OnSearchCompleted;
 
-        public DuplicateFinder(string pattern)
+        public DuplicateFinder(FilePattern pattern)
         {
             Pattern = pattern;
         }
@@ -56,17 +56,13 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public IEnumerable<UniqueFile> Search(IEnumerable<DirectoryInfo> directories)
         {
+            FilePattern pattern = Pattern ?? FilePattern.AllFiles;
             ConcurrentDictionary<Md5Hash, UniqueFile> uniqueFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
-            string fullPatern = Pattern;
-
-            if (string.IsNullOrEmpty(fullPatern))
-                fullPatern = FilePattern.AllFiles.FullPattern;
-
             List<Task> searchTasks = new List<Task>();
-            foreach (string pattern in fullPatern.Split(';'))
+            foreach (string subpattern in pattern)
             {
                 foreach (DirectoryInfo directory in directories)
-                    searchTasks.Add(RecursiveSearchAsync(directory, pattern, uniqueFiles));
+                    searchTasks.Add(RecursiveSearchAsync(directory, subpattern, uniqueFiles));
             }
             Task.WaitAll(searchTasks.ToArray());
             IEnumerable<UniqueFile> duplicates = uniqueFiles.Values.Where(o => o.Paths.Count > 1);
@@ -135,13 +131,13 @@ namespace Baxendale.RemoveDuplicates.Search
             return foundDupes;
         }
 
-        public static IEnumerable<UniqueFile> FindDuplicates(IEnumerable<string> searchPaths, string pattern)
+        public static IEnumerable<UniqueFile> FindDuplicates(IEnumerable<string> searchPaths, FilePattern pattern)
         {
             DuplicateFinder finder = new DuplicateFinder(pattern);
             return finder.Search(searchPaths);
         }
 
-        public static IEnumerable<UniqueFile> FindDuplicates(IEnumerable<DirectoryInfo> searchDirectories, string pattern)
+        public static IEnumerable<UniqueFile> FindDuplicates(IEnumerable<DirectoryInfo> searchDirectories, FilePattern pattern)
         {
             DuplicateFinder finder = new DuplicateFinder(pattern);
             return finder.Search(searchDirectories);

@@ -19,13 +19,12 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
-    public partial class MainForm : Form
+    internal partial class MainForm : Form
     {
         public MainForm()
         {
@@ -60,28 +59,34 @@ namespace Baxendale.RemoveDuplicates.Forms
                 Program.ShowError(this, "You must specify at least one directory");
                 return;
             }
-            string pattern;
 
-            if (comboBoxPatterns.SelectedItem == null)
+            FilePattern pattern;
+            try
             {
-                if (string.IsNullOrEmpty(comboBoxPatterns.Text))
+                if (comboBoxPatterns.SelectedItem == null)
                 {
-                    Program.ShowError(this, "You mast specify a pattern");
-                    return;
+                    if (string.IsNullOrEmpty(comboBoxPatterns.Text))
+                    {
+                        throw new ArgumentException("You mast specify a pattern");
+                    }
+                    else
+                    {
+                        pattern = new FilePattern(comboBoxPatterns.Text);
+                    }
                 }
                 else
                 {
-                    pattern = comboBoxPatterns.Text;
+                    pattern = ((FilePattern)comboBoxPatterns.SelectedItem);
                 }
-            }
-            else
-            {
-                pattern = ((FilePattern)comboBoxPatterns.SelectedItem).FullPattern;
-            }
 
-            string[] paths = lstPaths.Items.Cast<string>().ToArray();
-            SearchForm searchForm = new SearchForm(paths, pattern);
-            searchForm.ShowDialog(this);
+                string[] paths = lstPaths.Items.Cast<string>().ToArray();
+                SearchForm searchForm = new SearchForm(paths, pattern);
+                searchForm.ShowDialog(this);
+            }
+            catch(Exception ex) when (ex is ArgumentException)
+            {
+                Program.ShowError(this, ex.Message);
+            }
         }
 
         private void lstPaths_SelectedIndexChanged(object sender, EventArgs e)
