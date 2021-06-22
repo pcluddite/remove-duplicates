@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="Forms\DuplicateListViewItem.cs" />
+    <Compile Include="QueryFile.cs" />
     <Compile Include="Search\Md5Hash.cs" />
     <Compile Include="Search\ReadOnlyCollection.cs" />
     <Compile Include="Forms\SearchForm.cs">
