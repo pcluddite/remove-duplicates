@@ -16,16 +16,11 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
 using Baxendale.RemoveDuplicates.Search;
-using System.Reflection;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
@@ -63,13 +58,42 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (lstPaths.Items.Count == 0)
             {
                 Program.ShowError(this, "You must specify at least one directory");
+                return;
+            }
+            string pattern;
+
+            if (comboBoxPatterns.SelectedItem == null)
+            {
+                if (string.IsNullOrEmpty(comboBoxPatterns.Text))
+                {
+                    Program.ShowError(this, "You mast specify a pattern");
+                    return;
+                }
+                else
+                {
+                    pattern = comboBoxPatterns.Text;
+                }
             }
             else
             {
-                string[] paths = lstPaths.Items.Cast<string>().ToArray();
-                string pattern = ((FilePattern)comboBoxPatterns.SelectedItem).Pattern;
-                SearchForm searchForm = new SearchForm(paths, pattern);
-                searchForm.ShowDialog(this);
+                pattern = ((FilePattern)comboBoxPatterns.SelectedItem).Pattern;
+            }
+
+            string[] paths = lstPaths.Items.Cast<string>().ToArray();
+            SearchForm searchForm = new SearchForm(paths, pattern);
+            searchForm.ShowDialog(this);
+        }
+
+        private void lstPaths_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnRemovePath.Enabled = lstPaths.SelectedIndex > -1;
+        }
+
+        private void btnRemovePath_Click(object sender, EventArgs e)
+        {
+            for(int index = lstPaths.SelectedIndices.Count - 1; index >= 0; --index)
+            {
+                lstPaths.Items.RemoveAt(lstPaths.SelectedIndices[index]);
             }
         }
     }
