@@ -116,6 +116,15 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
+        public bool ContainsPath(string fullName)
+        {
+            lock (_object)
+            {
+                return _filePaths.Contains(fullName);
+            }
+        }
+
+
         public bool Remove(string path)
         {
             lock (_object)

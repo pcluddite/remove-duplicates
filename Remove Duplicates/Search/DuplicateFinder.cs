@@ -76,24 +76,28 @@ namespace Baxendale.RemoveDuplicates.Search
 
         private async Task RecursiveSearchAsync(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> fileDictionary)
         {
-            await Task.Run(() =>
+            await Task.Run(() => RecursiveSearch(dirMetaData, pattern, fileDictionary));
+        }
+
+        private void RecursiveSearch(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> fileDictionary)
+        {
+            DirectorySearchEventArgs args = new DirectorySearchEventArgs(dirMetaData);
+            OnBeginDirectorySearch?.Invoke(this, args);
+            dirMetaData = args.Directory;
+
+            List<UniqueFile> foundDupes = SearchFiles(dirMetaData, pattern, fileDictionary);
+
+            OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, foundDupes.ToArray()));
+
+            DirectoryInfo[] subDirs = dirMetaData.GetDirectories();
+            if (subDirs.Length > 0)
             {
-                DirectorySearchEventArgs args = new DirectorySearchEventArgs(dirMetaData);
-                OnBeginDirectorySearch?.Invoke(this, args);
-                dirMetaData = args.Directory;
-
-                List<UniqueFile> foundDupes = SearchFiles(dirMetaData, pattern, fileDictionary);
-
-                OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, foundDupes.ToArray()));
-
-                DirectoryInfo[] subDirs = dirMetaData.GetDirectories();
                 Task[] searchTasks = new Task[subDirs.Length];
                 int n = 0;
                 foreach (DirectoryInfo dirInfo in subDirs)
-                {
                     searchTasks[n++] = RecursiveSearchAsync(dirInfo, pattern, fileDictionary);
-                }
-            });
+                Task.WaitAll(searchTasks);
+            }
         }
 
         private List<UniqueFile> SearchFiles(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> fileDictionary)
@@ -106,7 +110,7 @@ namespace Baxendale.RemoveDuplicates.Search
                 UniqueFile uniqueFile;
                 Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
 
-                if (fileDictionary.TryGetValue(checksum, out uniqueFile))
+                if (fileDictionary.TryGetValue(checksum, out uniqueFile) && !uniqueFile.ContainsPath(fileMetaData.FullName))
                 {
                     bool cancelled = false;
                     if (OnFoundDuplicate != null)
