@@ -34,14 +34,21 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public static readonly FilePattern AllFiles = new FilePattern() { _description = "All Files", _subpatterns = ALL_FILES_MASK };
 
-        public static readonly FilePattern BitmapFiles   = new FilePattern("Bitmap Files", "*.bmp", "*.dib");
-        public static readonly FilePattern JpegFiles     = new FilePattern("JPEG Files", "*.jpg", "*.jpeg", "*.jpe", "*.jfif");
-        public static readonly FilePattern GifFiles      = new FilePattern("GIF Files", "*.gif");
-        public static readonly FilePattern SvgFiles      = new FilePattern("Scalable Vector Graphics Files", "*.svg");
-        public static readonly FilePattern IconFiles     = new FilePattern("Icon Files", "*.ico");
-        public static readonly FilePattern AllImageFiles = new FilePattern("All Image Files", BitmapFiles, JpegFiles, GifFiles, IconFiles);
+        public static readonly FilePattern BitmapFiles     = new FilePattern("Bitmap Files", "*.bmp", "*.dib");
+        public static readonly FilePattern JpegFiles       = new FilePattern("JPEG Files", "*.jpg", "*.jpeg", "*.jpe", "*.jfif");
+        public static readonly FilePattern GifFiles        = new FilePattern("GIF Files", "*.gif");
+        public static readonly FilePattern SvgFiles        = new FilePattern("Scalable Vector Graphics Files", "*.svg");
+        public static readonly FilePattern IconFiles       = new FilePattern("Icon Files", "*.ico");
+        public static readonly FilePattern AllImageFiles   = new FilePattern("All Image Files", BitmapFiles, JpegFiles, GifFiles, IconFiles);
 
-        public static readonly FilePattern TextFiles     = new FilePattern("Plain Text Files", "*.txt");
+        public static readonly FilePattern PlainTextFiles  = new FilePattern("Plain Text Files", "*.txt", "*.csv");
+        public static readonly FilePattern RichTextFiles   = new FilePattern("Rich Text Files", "*.rtf");
+        public static readonly FilePattern AllTextFiles    = new FilePattern("All Text Files", PlainTextFiles, RichTextFiles);
+
+        public static readonly FilePattern WordFiles       = new FilePattern("Word Documents", "*.docx", "*.docm", "*.dotx", "*.dotm", "*.doc");
+        public static readonly FilePattern ExcelFiles      = new FilePattern("Excel Files", "*.xlsx", "*.xlsm", "*.xlsb", "*.xlam", "*.xltx", "*.xltm", "*.xls", "*.xla", "*.xlt", "*.xlm", "*xlw");
+        public static readonly FilePattern PowerPointFiles = new FilePattern("PowerPoint Presentations", "*.pptx", "*.ppt", "*.pptm", "*.ppsx", "*.pps", "*.ppsm", "*.potx", "*.pot", "*.potm");
+        public static readonly FilePattern MsOfficeFiles   = new FilePattern("Microsoft Office Files", WordFiles, ExcelFiles, PowerPointFiles);
 
         private static char[] _invalidMaskChars;
 
