@@ -32,7 +32,6 @@ namespace Baxendale.RemoveDuplicates.Forms
         private int filesSearched = 0;
         private int duplicatesFound = 0;
         private int numberOfDots = 0;
-        private Dictionary<Md5Hash, DuplicateListViewItem> uniqueFileList = new Dictionary<Md5Hash, DuplicateListViewItem>();
 
         public IEnumerable<string> SearchPaths { get; set; }
         public FilePattern Pattern { get; set; }
@@ -65,7 +64,6 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private Task<IEnumerable<UniqueFile>> StartSearch(IEnumerable<string> paths, FilePattern pattern)
         {
-            uniqueFileList.Clear();
             duplicatesFound = 0;
             numberOfDots = 0;
 
@@ -97,18 +95,24 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void UpdateFoundDuplicate(UniqueFile file, FileInfo fileMetaData)
         {
-            DuplicateListViewItem item;
-            if (uniqueFileList.TryGetValue(file.Hash, out item))
+            string hash = file.Hash.Base16;
+            ListViewGroup duplicateGroup = lstViewResults.Groups[hash];
+            ListViewItem item;
+            if (duplicateGroup == null)
             {
-                item.AddPath(fileMetaData.FullName);
+                duplicateGroup = new ListViewGroup(hash, hash);
+                lstViewResults.Groups.Add(duplicateGroup);
+                foreach(string path in file.Paths)
+                {
+                    item = new ListViewItem(path, duplicateGroup);
+                    lstViewResults.Items.Add(item);
+                    item.EnsureVisible();
+                }
             }
-            else
-            {
-                item = new DuplicateListViewItem(file, fileMetaData.FullName);
-                lstViewResults.Items.Add(item);
-                uniqueFileList[file.Hash] = item;
-                item.EnsureVisible();
-            }
+            item = new ListViewItem(fileMetaData.FullName, duplicateGroup);
+            lstViewResults.Items.Add(item);
+            duplicateGroup.Header = $"{hash} ({duplicateGroup.Items.Count})";
+            item.EnsureVisible();
             IncrementDuplicatesFound();
             IncrementFilesSearched();
             toolStripStatusLabelDirectory.Text = fileMetaData.FullName;
@@ -261,6 +265,11 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 Program.ShowError(this, ex);
             }
+        }
+
+        private void lstViewResults_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            lstViewResults.Sorting = (lstViewResults.Sorting == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
         }
     }
 }
