@@ -103,6 +103,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 duplicateGroup = new ListViewGroup(hash, hash);
                 lstViewResults.Groups.Add(duplicateGroup);
+                duplicateGroup.Tag = fileMetaData.Length;
                 foreach(string path in file.Paths)
                 {
                     item = new ListViewItem(path, duplicateGroup);
@@ -112,7 +113,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
             item = new ListViewItem(fileMetaData.FullName, duplicateGroup);
             lstViewResults.Items.Add(item);
-            duplicateGroup.Header = $"{duplicateGroup.Items.Count} Files, {fileMetaData.Length.FormatAsSize(1)} per file";
+            duplicateGroup.Header = $"{duplicateGroup.Items.Count} files, {((long)duplicateGroup.Tag).FormatAsSize(decimals: 1)} per file";
             item.EnsureVisible();
             IncrementDuplicatesFound();
             IncrementFilesSearched();
@@ -129,7 +130,19 @@ namespace Baxendale.RemoveDuplicates.Forms
             dotTimer.Stop();
             Text = "Remove Duplicates | Results";
             toolStripProgressBar.Visible = false;
-            toolStripStatusLabelDirectory.Text = "Completed in " + (DateTime.Now - StartTime).ToString(@"h\:mm\:ss");
+
+            long totalDupSize = 0;
+
+            foreach(ListViewGroup group in lstViewResults.Groups)
+            {
+                long size = (long)group.Tag;
+                int dupCount = group.Items.Count - 1;
+                totalDupSize += (size * dupCount);
+            }
+            string verb = duplicatesFound == 1 ? "duplicate is" : "duplicates are";
+            toolStripStatusDuplicatesCount.Text = $"{duplicatesFound} {verb} taking up {totalDupSize.FormatAsSize()}";
+            toolStripStatusLabelDirectory.Text = $"Completed in {(DateTime.Now - StartTime).ToString(@"h\:mm\:ss")}";
+            StatusBar_TextUpdated(this, EventArgs.Empty);
         }
 
         private void Disable()
@@ -206,34 +219,9 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void BuildMultiItemRightClickMenu()
         {
-            var selItems = lstViewResults.SelectedItems.Cast<ListViewItem>();
-            var dirs = selItems.Select(o => Path.GetDirectoryName(o.Text)).ToSet();
-
-            if (dirs.Count == 1)
-            {
-                openToolStripMenuItem.Text = "&Open Directory";
-                showInExplorerToolStripMenuItem.Text = "Show Directory in E&xplorer";
-                openToolStripMenuItem.Tag = dirs.First();
-                showInExplorerToolStripMenuItem.Tag = dirs.First();
-            }
-            else
-            {
-                foreach (string path in dirs.OrderBy(path => path, StringComparer.CurrentCultureIgnoreCase))
-                {
-                    ToolStripMenuItem openItem = new ToolStripMenuItem(path);
-                    openItem.Tag = path;
-                    openItem.Click += OpenToolStripItem_Click;
-                    openToolStripMenuItem.DropDownItems.Add(openItem);
-
-                    ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
-                    explorerItem.Tag = path;
-                    explorerItem.Click += ExplorerToolStripItem_Click;
-                    showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
-                }
-            }
-            openToolStripMenuItem.Visible = true;
-            showInExplorerToolStripMenuItem.Visible = true;
-            toolStripSeparator.Visible = true;
+            openToolStripMenuItem.Visible = false;
+            showInExplorerToolStripMenuItem.Visible = false;
+            toolStripSeparator.Visible = false;
             resolveToolStripMenuItem.Enabled = true;
         }
 
@@ -292,7 +280,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void StatusBar_TextUpdated(object sender, EventArgs e)
         {
             MinimumSize = new Size((toolStripProgressBar.Visible ? toolStripProgressBar.Width : 0) +
-                toolStripStatusFilesCount.Width + toolStripStatusDuplicatesCount.Width + toolStripStatusLabelDirectory.Width,
+                toolStripStatusFilesCount.Width + toolStripStatusDuplicatesCount.Width + 50,
                 MinimumSize.Height);
         }
     }

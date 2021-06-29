@@ -93,6 +93,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             // toolStripStatusFilesCount
             // 
             this.toolStripStatusFilesCount.Name = "toolStripStatusFilesCount";
+            this.toolStripStatusFilesCount.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.toolStripStatusFilesCount.Size = new System.Drawing.Size(115, 21);
             this.toolStripStatusFilesCount.Text = "0 Files Searched";
             this.toolStripStatusFilesCount.TextChanged += new System.EventHandler(this.StatusBar_TextUpdated);
@@ -100,6 +101,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             // toolStripStatusDuplicatesCount
             // 
             this.toolStripStatusDuplicatesCount.Name = "toolStripStatusDuplicatesCount";
+            this.toolStripStatusDuplicatesCount.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.toolStripStatusDuplicatesCount.Size = new System.Drawing.Size(136, 21);
             this.toolStripStatusDuplicatesCount.Text = "0 Duplicates Found";
             this.toolStripStatusDuplicatesCount.TextChanged += new System.EventHandler(this.StatusBar_TextUpdated);
@@ -108,7 +110,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             // 
             this.toolStripStatusLabelDirectory.Name = "toolStripStatusLabelDirectory";
             this.toolStripStatusLabelDirectory.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.toolStripStatusLabelDirectory.Size = new System.Drawing.Size(476, 21);
+            this.toolStripStatusLabelDirectory.Size = new System.Drawing.Size(437, 21);
             this.toolStripStatusLabelDirectory.Spring = true;
             this.toolStripStatusLabelDirectory.Text = "C:\\Test\\Subdir";
             // 
