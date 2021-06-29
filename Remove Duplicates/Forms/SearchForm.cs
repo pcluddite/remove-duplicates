@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -169,6 +170,9 @@ namespace Baxendale.RemoveDuplicates.Forms
             ClearOpenToolStripMenu();
             ClearShowInExplorer();
 
+            openToolStripMenuItem.Text = "&Open";
+            showInExplorerToolStripMenuItem.Text = "Show in E&xplorer";
+
             if (lstViewResults.SelectedItems.Count > 1)
             {
                 BuildMultiItemRightClickMenu();
@@ -189,17 +193,9 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void BuildSingleItemRightClickMenu()
         {
-            DuplicateListViewItem item = (DuplicateListViewItem)lstViewResults.SelectedItems[0];
-            foreach (string path in item.Paths)
-            {
-                ToolStripMenuItem openItem = new ToolStripMenuItem(path);
-                openItem.Click += OpenToolStripItem_Click;
-                openToolStripMenuItem.DropDownItems.Add(openItem);
-
-                ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
-                explorerItem.Click += ExplorerToolStripItem_Click;
-                showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
-            }
+            ListViewItem selItem = lstViewResults.SelectedItems[0];
+            showInExplorerToolStripMenuItem.Tag = selItem.Text;
+            openToolStripMenuItem.Tag = selItem.Text;
             openToolStripMenuItem.Visible = true;
             showInExplorerToolStripMenuItem.Visible = true;
             toolStripSeparator.Visible = true;
@@ -208,20 +204,32 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void BuildMultiItemRightClickMenu()
         {
-            HashSet<string> paths = new HashSet<string>();
-            foreach (DuplicateListViewItem item in lstViewResults.SelectedItems.Cast<DuplicateListViewItem>())
-            {
-                paths.UnionWith(item.Paths.Select(p => Path.GetDirectoryName(p))); 
-            }
+            var selItems = lstViewResults.SelectedItems.Cast<ListViewItem>();
+            var dirs = selItems.Select(o => Path.GetDirectoryName(o.Text)).ToSet();
 
-            foreach (string path in paths.OrderBy(path => path, StringComparer.CurrentCultureIgnoreCase))
+            if (dirs.Count == 1)
             {
-                ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
-                explorerItem.Click += ExplorerToolStripItem_Click;
-                showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
+                openToolStripMenuItem.Text = "&Open Directory";
+                showInExplorerToolStripMenuItem.Text = "Show Directory in E&xplorer";
+                openToolStripMenuItem.Tag = dirs.First();
+                showInExplorerToolStripMenuItem.Tag = dirs.First();
             }
+            else
+            {
+                foreach (string path in dirs.OrderBy(path => path, StringComparer.CurrentCultureIgnoreCase))
+                {
+                    ToolStripMenuItem openItem = new ToolStripMenuItem(path);
+                    openItem.Tag = path;
+                    openItem.Click += OpenToolStripItem_Click;
+                    openToolStripMenuItem.DropDownItems.Add(openItem);
 
-            openToolStripMenuItem.Visible = false;
+                    ToolStripMenuItem explorerItem = new ToolStripMenuItem(path);
+                    explorerItem.Tag = path;
+                    explorerItem.Click += ExplorerToolStripItem_Click;
+                    showInExplorerToolStripMenuItem.DropDownItems.Add(explorerItem);
+                }
+            }
+            openToolStripMenuItem.Visible = true;
             showInExplorerToolStripMenuItem.Visible = true;
             toolStripSeparator.Visible = true;
             resolveToolStripMenuItem.Enabled = true;
@@ -244,9 +252,10 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void ExplorerToolStripItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            if (item.HasDropDownItems) return;
             try
             {
-                Process.Start("explorer.exe", $"/select,\"{item.Text}\"");
+                Process.Start("explorer.exe", $"/select,\"{(string)item.Tag}\"");
             }
             catch (Exception ex) when (ex is Win32Exception || ex is IOException)
             {
@@ -257,9 +266,10 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void OpenToolStripItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            if (item.HasDropDownItems) return;
             try
             {
-                Process.Start(item.Text);
+                Process.Start((string)item.Tag);
             }
             catch (Exception ex) when (ex is Win32Exception || ex is IOException)
             {
@@ -270,6 +280,18 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void lstViewResults_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             lstViewResults.Sorting = (lstViewResults.Sorting == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
+        }
+
+        private void lstViewResults_Resize(object sender, EventArgs e)
+        {
+            pathColumnHeader.Width = lstViewResults.Width - 30;
+        }
+
+        private void StatusBar_TextUpdated(object sender, EventArgs e)
+        {
+            MinimumSize = new Size((toolStripProgressBar.Visible ? toolStripProgressBar.Width : 0) +
+                toolStripStatusFilesCount.Width + toolStripStatusDuplicatesCount.Width + toolStripStatusLabelDirectory.Width,
+                MinimumSize.Height);
         }
     }
 }

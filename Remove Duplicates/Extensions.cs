@@ -87,5 +87,10 @@ namespace Baxendale.RemoveDuplicates
         {
             yield return o;
         }
+
+        public static ISet<T> ToSet<T>(this IEnumerable<T> o)
+        {
+            return new HashSet<T>(o);
+        }
     }
 }
