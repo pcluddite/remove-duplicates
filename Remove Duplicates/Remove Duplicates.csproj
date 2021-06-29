@@ -55,7 +55,6 @@
       <DependentUpon>Extensions.tt</DependentUpon>
     </Compile>
     <Compile Include="SizeFormatter.cs" />
-    <Compile Include="Forms\DuplicateListViewItem.cs" />
     <Compile Include="QueryFile.cs" />
     <Compile Include="Search\Md5Hash.cs" />
     <Compile Include="Search\ReadOnlyCollection.cs" />
