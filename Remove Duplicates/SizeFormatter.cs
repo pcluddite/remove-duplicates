@@ -31,12 +31,14 @@ namespace Baxendale.RemoveDuplicates
 
         private static readonly long[] Limits = { BYTE_SIZE, KB_SIZE, MB_SIZE, GB_SIZE, TB_SIZE };
         private static readonly string[] Units = { "B", "KB", "MB", "GB", "TB" };
+
+        private const string DEFAULT_FORMAT = "#,#0";
         
         public static string Format<TNumeric>(TNumeric n, int decimals)
             where TNumeric : struct, IConvertible, IComparable<TNumeric>, IEquatable<TNumeric>
         {
             double d = Convert.ToDouble(n);
-            string format = decimals > 0 ? "#,#0.".PadRight(decimals + 5, '#') : "#,#0";
+            string format = decimals > 0 ? $"{DEFAULT_FORMAT}.".PadRight(decimals + DEFAULT_FORMAT.Length + 1, '#') : DEFAULT_FORMAT;
             int i = 0;
             while(i < Limits.Length && (long)d / Limits[i] >= UNIT_FACTOR)
                 ++i;
