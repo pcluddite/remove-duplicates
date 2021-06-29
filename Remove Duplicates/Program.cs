@@ -17,7 +17,9 @@
 //
 using System;
 using System.Windows.Forms;
+using Baxendale.DataManagement.Xml;
 using Baxendale.RemoveDuplicates.Forms;
+using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
 {
@@ -29,6 +31,9 @@ namespace Baxendale.RemoveDuplicates
         [STAThread]
         public static void Main()
         {
+            XmlSerializer.RegisterType<QueryFile>("query");
+            XmlSerializer.RegisterType<FilePattern>("patterns");
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

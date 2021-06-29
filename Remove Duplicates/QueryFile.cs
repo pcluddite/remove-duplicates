@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using Baxendale.DataManagement.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
 {
-    internal class QueryFile
+    internal class QueryFile : IXmlSerializableObject
     {
         public IEnumerable<string> SearchPaths { get; set; }
         public FilePattern Pattern { get; set; }
@@ -36,100 +35,45 @@ namespace Baxendale.RemoveDuplicates
             Pattern = pattern;
         }
 
-        public static QueryFile Load(string path)
+        public XObject ToXml(XName name)
         {
-            return Load(File.OpenRead(path));
+            XElement node = new XElement(name);
+            XElement paths = new XElement("paths");
+            foreach (string path in SearchPaths)
+            {
+                XElement pathNode = new XElement("path");
+                pathNode.SetAttributeValue("uri", path);
+                paths.Add(pathNode);
+            }
+            node.Add(paths);
+            node.Add(XmlSerializer.Serialize(Pattern, "patterns"));
+            return node;
         }
 
-        public static QueryFile Load(Stream stream)
+        public static QueryFile FromXml(XElement node, XName name)
         {
-            try
+            List<string> paths = new List<string>();
+
+            XElement pathsNode = node.Element("paths");
+            IEnumerable<XElement> pathNodeList;
+            if (paths == null || !(pathNodeList = pathsNode.Elements("path")).Any())
+                throw new XmlException("There are no paths listed in this query file");
+
+            foreach (XElement pathNode in pathNodeList)
             {
-                XDocument doc = XDocument.Load(stream);
-                XElement root = doc.Element("query");
-                if (root == null) throw new XmlException("This file is not a valid saved search");
-
-                List<string> paths = new List<string>();
-
-                XElement pathsNode = root.Element("paths");
-                IEnumerable<XElement> pathNodeList;
-                if (paths == null || !(pathNodeList = pathsNode.Elements("path")).Any())
-                    throw new XmlException("There are no paths listed in this query file");
-
-                foreach (XElement pathNode in pathNodeList)
+                string uri = pathNode.Attribute("uri")?.Value;
+                if (uri != null)
                 {
-                    string uri = pathNode.Attribute("uri")?.Value;
-                    if (uri != null)
-                    {
-                        paths.Add(uri);
-                    }
+                    paths.Add(uri);
                 }
-
-                XElement patternsNode = root.Element("patterns");
-                IEnumerable<XElement> patternNodeList;
-                if (patternsNode == null || !(patternNodeList = patternsNode.Elements("pattern")).Any())
-                    throw new XmlException("There are no patterns to match in this query file");
-
-                List<string> masks = new List<string>();
-
-                foreach (XElement patternNode in patternNodeList)
-                {
-                    string mask = patternNode.Attribute("mask")?.Value;
-                    if (mask != null)
-                    {
-                        masks.Add(mask);
-                    }
-                }
-
-                FilePattern pattern = new FilePattern(patternsNode.Attribute("description")?.Value, masks);
-                return new QueryFile(paths, pattern);
             }
-            finally
-            {
-                stream?.Dispose();
-            }
-        }
 
-        public void Save(string path)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-            Save(File.Open(path, FileMode.Create));
-        }
-
-        public void Save(Stream stream)
-        {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
-            try
-            {
-                XElement root = new XElement("query");
-
-                XElement paths = new XElement("paths");
-                foreach (string path in SearchPaths)
-                {
-                    XElement pathNode = new XElement("path");
-                    pathNode.SetAttributeValue("uri", path);
-                    paths.Add(pathNode);
-                }
-                root.Add(paths);
-
-                XElement patterns = new XElement("patterns");
-                patterns.SetAttributeValue("description", Pattern.Description);
-                foreach (string pattern in Pattern.Subpatterns)
-                {
-                    XElement patternNode = new XElement("pattern");
-                    patternNode.SetAttributeValue("mask", pattern);
-                    patterns.Add(patternNode);
-                }
-                root.Add(patterns);
-
-                XDocument doc = new XDocument();
-                doc.Add(root);
-                doc.Save(stream);
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
+            XElement patternsNode = node.Element("patterns");
+            if (patternsNode == null || !patternsNode.Elements("pattern").Any())
+                throw new XmlException("There are no patterns to match in this query file");
+            
+            FilePattern pattern = XmlSerializer.Deserialize<FilePattern>(patternsNode);
+            return new QueryFile(paths, pattern);
         }
     }
 }

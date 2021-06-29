@@ -54,8 +54,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Extensions.tt</DependentUpon>
     </Compile>
-    <Compile Include="Resolution\IResolveCondition.cs" />
-    <Compile Include="Resolution\ResolveRule.cs" />
     <Compile Include="SizeFormatter.cs" />
     <Compile Include="QueryFile.cs" />
     <Compile Include="Search\Md5Hash.cs" />
@@ -111,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\dataman\DataMan\DataMan.csproj">
+      <Project>{26d9068f-cf73-4b51-8f17-3cf2aadf5cb4}</Project>
+      <Name>DataMan</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

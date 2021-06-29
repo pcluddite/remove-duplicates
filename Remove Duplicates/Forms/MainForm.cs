@@ -22,6 +22,8 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
+using Baxendale.DataManagement.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Forms
@@ -119,7 +121,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 try
                 {
-                    QueryFile file = QueryFile.Load(openQueryFileDialog.FileName);
+                    QueryFile file = XmlSerializer.Deserialize<QueryFile>(XDocument.Load(openQueryFileDialog.FileName).Root);
                     lstPaths.Items.Clear();
                     foreach (string path in file.SearchPaths)
                     {
@@ -142,7 +144,8 @@ namespace Baxendale.RemoveDuplicates.Forms
                 try
                 {
                     QueryFile file = new QueryFile(lstPaths.Items.Cast<string>(), GetSelectedPattern());
-                    file.Save(saveQueryFileDialog.FileName);
+                    XDocument doc = new XDocument(XmlSerializer.Serialize(file, "query"));
+                    doc.Save(saveQueryFileDialog.FileName);
                 }
                 catch (Exception ex) when (ex is IOException || ex is XmlException || ex is ArgumentException)
                 {

@@ -20,10 +20,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
+using Baxendale.DataManagement.Xml;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
-    internal class FilePattern : ICollection<string>, IReadOnlyCollection<string>, IEquatable<FilePattern>
+    internal class FilePattern : ICollection<string>, IReadOnlyCollection<string>, IEquatable<FilePattern>, IXmlSerializableObject
     {
         private const string GENERIC_CUSTOM_DESCRIPTION = "Custom";
 
@@ -228,6 +230,26 @@ namespace Baxendale.RemoveDuplicates.Search
         public static bool operator !=(FilePattern left, FilePattern right)
         {
             return !(left == right);
+        }
+
+        public XObject ToXml(XName name)
+        {
+            XElement node = new XElement(name);
+            node.SetAttributeValue("description", Description);
+            foreach(string mask in _subpatterns)
+            {
+                XElement pattern = new XElement("pattern");
+                pattern.SetAttributeValue("mask", mask);
+                node.Add(pattern);
+            }
+            return node;
+        }
+
+        public static FilePattern FromXml(XElement node, XName name)
+        {
+            string desc = node.Attribute("description")?.Value;
+            var subpatterns = node.Elements("pattern").Select(o => o.Attribute("mask")?.Value);
+            return new FilePattern(desc, subpatterns);
         }
 
         #region ICollection<string>
