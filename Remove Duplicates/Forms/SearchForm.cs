@@ -112,7 +112,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
             item = new ListViewItem(fileMetaData.FullName, duplicateGroup);
             lstViewResults.Items.Add(item);
-            duplicateGroup.Header = $"{hash} ({duplicateGroup.Items.Count})";
+            duplicateGroup.Header = $"{duplicateGroup.Items.Count} Files, {fileMetaData.Length.FormatAsSize(1)} per file";
             item.EnsureVisible();
             IncrementDuplicatesFound();
             IncrementFilesSearched();
@@ -175,10 +175,12 @@ namespace Baxendale.RemoveDuplicates.Forms
 
             if (lstViewResults.SelectedItems.Count > 1)
             {
+                resolveToolStripMenuItem.Text = "&Resolve Duplicates";
                 BuildMultiItemRightClickMenu();
             }
             else if (lstViewResults.SelectedItems.Count == 1)
             {
+                resolveToolStripMenuItem.Text = "&Resolve Duplicate";
                 BuildSingleItemRightClickMenu();
             }
             else

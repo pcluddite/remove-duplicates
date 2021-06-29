@@ -22,7 +22,7 @@ using System.Reflection;
 
 namespace Baxendale.RemoveDuplicates
 {
-    internal static class Extensions
+    internal static partial class Extensions
     {
         public static bool EqualsArray(this Array array, Array other)
         {
