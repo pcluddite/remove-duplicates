@@ -54,6 +54,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Extensions.tt</DependentUpon>
     </Compile>
+    <Compile Include="Resolution\IResolveCondition.cs" />
+    <Compile Include="Resolution\ResolveRule.cs" />
     <Compile Include="SizeFormatter.cs" />
     <Compile Include="QueryFile.cs" />
     <Compile Include="Search\Md5Hash.cs" />
