@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Baxendale.DataManagement.Collections;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
@@ -37,13 +38,13 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public ICollection<string> Paths
+        public IReadOnlyCollection<string> Paths
         {
             get
             {
                 lock (_object)
                 {
-                    return new ReadOnlyCollection<string>(_filePaths);
+                    return _filePaths.AsReadOnly();
                 }
             }
         }
@@ -129,7 +130,7 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             lock (_object)
             {
-                return Paths.Remove(Path.GetFullPath(path));
+                return _filePaths.Remove(Path.GetFullPath(path));
             }
         }
 

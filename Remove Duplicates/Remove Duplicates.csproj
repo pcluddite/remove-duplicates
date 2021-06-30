@@ -54,10 +54,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Extensions.tt</DependentUpon>
     </Compile>
+    <Compile Include="Resolution\FileNameComparer.cs" />
+    <Compile Include="Resolution\IFileComparer.cs" />
+    <Compile Include="Resolution\FileDateComparer.cs" />
+    <Compile Include="Resolution\FileDirectoryComparer.cs" />
+    <Compile Include="Resolution\ResolveRule.cs" />
+    <Compile Include="Search\PathEqualityComparer.cs" />
     <Compile Include="SizeFormatter.cs" />
     <Compile Include="QueryFile.cs" />
     <Compile Include="Search\Md5Hash.cs" />
-    <Compile Include="Search\ReadOnlyCollection.cs" />
     <Compile Include="Forms\SearchForm.cs">
       <SubType>Form</SubType>
     </Compile>

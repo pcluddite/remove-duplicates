@@ -21,7 +21,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Baxendale.DataManagement.Collections;
 using Baxendale.DataManagement.Xml;
+using Baxendale.RemoveDuplicates.Native;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
@@ -39,6 +41,7 @@ namespace Baxendale.RemoveDuplicates.Search
         public static readonly FilePattern BitmapFiles     = new FilePattern("Bitmap Files", "*.bmp", "*.dib");
         public static readonly FilePattern JpegFiles       = new FilePattern("JPEG Files", "*.jpg", "*.jpeg", "*.jpe", "*.jfif");
         public static readonly FilePattern GifFiles        = new FilePattern("GIF Files", "*.gif");
+
         public static readonly FilePattern SvgFiles        = new FilePattern("Scalable Vector Graphics Files", "*.svg");
         public static readonly FilePattern IconFiles       = new FilePattern("Icon Files", "*.ico");
         public static readonly FilePattern AllImageFiles   = new FilePattern("All Image Files", BitmapFiles, JpegFiles, GifFiles, IconFiles);
@@ -104,17 +107,17 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public ICollection<string> Subpatterns
+        public IReadOnlyCollection<string> Subpatterns
         {
             get
             {
                 if (_subpatterns == null)
                 {
-                    return new ReadOnlyCollection<string>(ALL_FILES_MASK);
+                    return ALL_FILES_MASK.AsReadOnly();
                 }
                 else
                 {
-                    return new ReadOnlyCollection<string>(_subpatterns);
+                    return _subpatterns.AsReadOnly();
                 }
             }
         }
@@ -191,6 +194,20 @@ namespace Baxendale.RemoveDuplicates.Search
             int invalidChar = mask.IndexOfAny(InvalidMaskCharacters);
             if (invalidChar > -1)
                 throw new ArgumentException($"Pattern contains an invalid character: '{mask[invalidChar]}'", mask[invalidChar].ToString());
+        }
+
+        public bool Matches(string fileName)
+        {
+            HRESULT hresult;
+            if (_subpatterns.Length == 1)
+            {
+                hresult = Win32.PathMatchSpecEx(fileName, FullPattern, PMSF.NORMAL);
+            }
+            else
+            {
+                hresult = Win32.PathMatchSpecEx(fileName, FullPattern, PMSF.MULTIPLE | PMSF.DONT_STRIP_SPACES);
+            }
+            return hresult == HRESULT.S_OK;
         }
 
         public override string ToString()

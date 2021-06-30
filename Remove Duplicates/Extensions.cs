@@ -18,7 +18,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
 {
@@ -91,6 +93,13 @@ namespace Baxendale.RemoveDuplicates
         public static ISet<T> ToSet<T>(this IEnumerable<T> o)
         {
             return new HashSet<T>(o);
+        }
+
+        public static bool EqualsIgnoreCase(this string str, string other)
+        {
+            if (str == other) return true;
+            if (str == null || other == null) return false;
+            return string.Equals(str, other, StringComparison.CurrentCultureIgnoreCase);
         }
     }
 }
