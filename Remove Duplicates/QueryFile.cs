@@ -26,7 +26,7 @@ namespace Baxendale.RemoveDuplicates
 {
     internal class QueryFile : IXmlSerializableObject
     {
-        public IEnumerable<string> SearchPaths { get; set; }
+        public IEnumerable<string> SearchPaths { get; private set; }
         public FilePattern Pattern { get; set; }
 
         public QueryFile(IEnumerable<string> paths, FilePattern pattern)

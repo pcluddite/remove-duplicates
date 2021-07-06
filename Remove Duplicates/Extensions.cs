@@ -85,11 +85,6 @@ namespace Baxendale.RemoveDuplicates
             return true;
         }
 
-        public static IEnumerable<T> Singleton<T>(this T o)
-        {
-            yield return o;
-        }
-
         public static ISet<T> ToSet<T>(this IEnumerable<T> o)
         {
             return new HashSet<T>(o);

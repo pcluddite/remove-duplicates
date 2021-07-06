@@ -19,6 +19,7 @@ using System;
 using System.Windows.Forms;
 using Baxendale.DataManagement.Xml;
 using Baxendale.RemoveDuplicates.Forms;
+using Baxendale.RemoveDuplicates.Resolution;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
@@ -33,6 +34,7 @@ namespace Baxendale.RemoveDuplicates
         {
             XmlSerializer.RegisterType<QueryFile>("query");
             XmlSerializer.RegisterType<FilePattern>("patterns");
+            XmlSerializer.RegisterType<ResolveRule>("rules");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

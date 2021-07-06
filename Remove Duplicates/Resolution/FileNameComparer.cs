@@ -17,8 +17,6 @@
 //
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
 using Baxendale.DataManagement.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
@@ -26,8 +24,10 @@ namespace Baxendale.RemoveDuplicates.Resolution
 {
     internal class FileNameComparer : IFileComparer
     {
+        [XmlSerialize(Name = "matches")]
         private List<FilePattern> _patterns;
 
+        [XmlDoNotSerialize]
         public IEnumerable<FilePattern> Patterns
         {
             get
@@ -36,7 +36,14 @@ namespace Baxendale.RemoveDuplicates.Resolution
             }
         }
 
+        [XmlSerializeNonDefault]
+        [XmlSerialize(Name = "reverse")]
         public bool Reverse { get; set; }
+
+        public FileNameComparer()
+        {
+            _patterns = new List<FilePattern>();
+        }
 
         public FileNameComparer(IEnumerable<FilePattern> patterns)
         {
@@ -55,25 +62,6 @@ namespace Baxendale.RemoveDuplicates.Resolution
                     p2 = i;
             }
             return p1.CompareTo(p2);
-        }
-
-        public XObject ToXml(XName name)
-        {
-            XElement node = new XElement(name);
-            node.SetAttributeValue("reverse", Reverse);
-            foreach (FilePattern pattern in _patterns)
-                node.Add(XmlSerializer.Serialize(pattern));
-            return node;
-        }
-
-        public static FileNameComparer FromXml(XElement node, XName name)
-        {
-            IEnumerable<FilePattern> patterns = node.Elements()
-                .Select(pNode => XmlSerializer.Deserialize<FilePattern>(pNode));
-            return new FileNameComparer(patterns)
-            {
-                Reverse = bool.TrueString.EqualsIgnoreCase(node.Attribute("reverse")?.Value)
-            };
         }
     }
 }

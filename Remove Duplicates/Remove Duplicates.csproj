@@ -54,6 +54,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Extensions.tt</DependentUpon>
     </Compile>
+    <Compile Include="Native\HRESULT.cs" />
+    <Compile Include="Native\PMSF.cs" />
+    <Compile Include="Native\Win32.cs" />
     <Compile Include="Resolution\FileNameComparer.cs" />
     <Compile Include="Resolution\IFileComparer.cs" />
     <Compile Include="Resolution\FileDateComparer.cs" />
