@@ -18,11 +18,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Baxendale.DataManagement.Collections;
 using Baxendale.DataManagement.Xml;
+using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
@@ -71,12 +73,44 @@ namespace Baxendale.RemoveDuplicates.Resolution
             _rules.RemoveAt(index);
         }
 
+        public IEnumerable<FileInfo> Resolve(UniqueFile duplicates)
+        {
+            IEnumerable<FileInfo> currentFiles = duplicates.Paths.Select(p => new FileInfo(p));
+            foreach(IFileComparer comparer in _rules)
+            {
+                using (IEnumerator<FileInfo> e = currentFiles.GetEnumerator())
+                {
+                    if (!(e.MoveNext() && e.MoveNext()))
+                        return currentFiles;
+                }
+                currentFiles = Resolve(currentFiles, comparer);
+            }
+            return currentFiles;
+        }
+
+        private static IEnumerable<FileInfo> Resolve(IEnumerable<FileInfo> files, IFileComparer comparer)
+        {
+            FileInfo last = null;
+            foreach (FileInfo file in files.OrderBy(x => x, comparer))
+            {
+                if (last == null)
+                {
+                    yield return file;
+                }
+                else if (comparer.Compare(last, file) == 0)
+                {
+                    yield return file;
+                }
+                last = file;
+            }
+        }
+
         public XObject ToXml(XName name)
         {
             return XmlSerializer.Serialize(_rules, name);
         }
 
-        public static ResolveRule FromXml(XElement node, XName name)
+        public static ResolveRule FromXml(XElement node)
         {
             IEnumerable<IFileComparer> rules = node.Elements().Select(n => (IFileComparer)XmlSerializer.Deserialize(n));
             return new ResolveRule(rules);
