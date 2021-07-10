@@ -56,7 +56,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
             return p1.CompareTo(p2);
         }
 
-        public XObject ToXml(XName name)
+        public XElement ToXml(XName name)
         {
             XElement node = new XElement(name);
             if (Reverse)
@@ -70,7 +70,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
             return node;
         }
 
-        public static FileDirectoryComparer FromXml(XElement node, XName name)
+        public static FileDirectoryComparer FromXml(XElement node)
         {
             return new FileDirectoryComparer(node.Elements("directory")
                 .Select(dirNode => dirNode.Attribute("uri")?.Value)

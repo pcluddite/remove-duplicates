@@ -35,7 +35,7 @@ namespace Baxendale.RemoveDuplicates
             Pattern = pattern;
         }
 
-        public XObject ToXml(XName name)
+        public XElement ToXml(XName name)
         {
             XElement node = new XElement(name);
             XElement paths = new XElement("paths");
@@ -50,7 +50,7 @@ namespace Baxendale.RemoveDuplicates
             return node;
         }
 
-        public static QueryFile FromXml(XElement node, XName name)
+        public static QueryFile FromXml(XElement node)
         {
             List<string> paths = new List<string>();
 

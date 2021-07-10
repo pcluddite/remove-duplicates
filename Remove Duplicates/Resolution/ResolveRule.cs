@@ -28,7 +28,7 @@ using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
-    internal class ResolveRule : IXmlSerializableObject, IEnumerable<IFileComparer>
+    internal class ResolveRule : ICollection<IFileComparer>
     {
         static ResolveRule()
         {
@@ -46,7 +46,9 @@ namespace Baxendale.RemoveDuplicates.Resolution
 
         private readonly List<IFileComparer> _rules;
 
-        public ICollection<IFileComparer> Rules => _rules.AsReadOnly();
+        public IEnumerable<IFileComparer> Rules => _rules.AsReadOnly();
+
+        public int Count => _rules.Count;
 
         public ResolveRule()
         {
@@ -73,52 +75,50 @@ namespace Baxendale.RemoveDuplicates.Resolution
             _rules.RemoveAt(index);
         }
 
+        public IEnumerable<FileResolution> Resolve(IEnumerable<UniqueFile> files)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<FileInfo> Resolve(UniqueFile duplicates)
         {
-            IEnumerable<FileInfo> currentFiles = duplicates.Paths.Select(p => new FileInfo(p));
-            foreach(IFileComparer comparer in _rules)
-            {
-                using (IEnumerator<FileInfo> e = currentFiles.GetEnumerator())
-                {
-                    if (!(e.MoveNext() && e.MoveNext()))
-                        return currentFiles;
-                }
-                currentFiles = Resolve(currentFiles, comparer);
-            }
-            return currentFiles;
+            return Resolve(duplicates.Paths.Select(p => new FileInfo(p)));
         }
 
-        private static IEnumerable<FileInfo> Resolve(IEnumerable<FileInfo> files, IFileComparer comparer)
+        public IEnumerable<FileInfo> Resolve(IEnumerable<FileInfo> duplicates)
         {
-            FileInfo last = null;
-            foreach (FileInfo file in files.OrderBy(x => x, comparer))
+            CompositeComparer<FileInfo> comparer = new CompositeComparer<FileInfo>(_rules);
+            using (IEnumerator<FileInfo> e = duplicates.OrderBy(x => x, comparer).GetEnumerator())
             {
-                if (last == null)
-                {
-                    yield return file;
-                }
-                else if (comparer.Compare(last, file) == 0)
-                {
-                    yield return file;
-                }
-                last = file;
+                FileInfo last = null;
+                if (e.MoveNext())
+                    last = e.Current;
+                while (e.MoveNext() && comparer.Compare(e.Current, last) == 0)
+                    yield return last = e.Current;
             }
         }
 
-        public XObject ToXml(XName name)
+        public void Clear()
         {
-            return XmlSerializer.Serialize(_rules, name);
+            _rules.Clear();
         }
 
-        public static ResolveRule FromXml(XElement node)
+        public bool Contains(IFileComparer item)
         {
-            IEnumerable<IFileComparer> rules = node.Elements().Select(n => (IFileComparer)XmlSerializer.Deserialize(n));
-            return new ResolveRule(rules);
+            return _rules.Contains(item);
         }
+
+        public void CopyTo(IFileComparer[] array, int arrayIndex)
+        {
+            _rules.CopyTo(array, arrayIndex);
+        }
+
+        bool ICollection<IFileComparer>.IsReadOnly => false;
 
         public IEnumerator<IFileComparer> GetEnumerator()
         {
-            return _rules.GetEnumerator();
+            foreach (IComparer<FieldInfo> comparer in _rules)
+                yield return (IFileComparer)comparer;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

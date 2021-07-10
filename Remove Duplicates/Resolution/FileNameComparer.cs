@@ -24,7 +24,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
 {
     internal class FileNameComparer : IFileComparer
     {
-        [XmlSerialize(Name = "matches")]
+        [XmlSerializableProperty(Name = "matches")]
         private List<FilePattern> _patterns;
 
         [XmlDoNotSerialize]
@@ -36,8 +36,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
             }
         }
 
-        [XmlSerializeNonDefault]
-        [XmlSerialize(Name = "reverse")]
+        [XmlSerializableProperty(Name = "reverse", SerializeDefault = false)]
         public bool Reverse { get; set; }
 
         public FileNameComparer()

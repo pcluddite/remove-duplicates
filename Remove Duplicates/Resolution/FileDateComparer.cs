@@ -25,11 +25,10 @@ namespace Baxendale.RemoveDuplicates.Resolution
 {
     internal abstract class FileDateComparer : IFileComparer
     {
-        [XmlSerializeNonDefault]
-        [XmlSerialize(Name = "reverse")]
+        [XmlSerializableProperty(Name = "reverse",  SerializeDefault = false)]
         public virtual bool Reverse { get; set; }
 
-        [XmlSerialize(Name = "type")]
+        [XmlSerializableProperty(Name = "type")]
         public virtual string ComparerTypeName
         {
             get

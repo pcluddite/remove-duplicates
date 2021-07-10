@@ -18,13 +18,20 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Xml.Linq;
+using Baxendale.DataManagement.Xml;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
-    internal struct Md5Hash : IEquatable<Md5Hash>
+    internal struct Md5Hash : IEquatable<Md5Hash>, IXmlSerializableObject
     {
+        private const int INT64_STR16_SIZE = sizeof(long) * 2;
+        private const int INT128_STR16_SIZE = INT64_STR16_SIZE * 2;
+
+        private const string INVALID_HASH_MSG = "Invalid Md5 Hash";
+
         private static readonly MD5 md5 = MD5.Create();
-        private static readonly object _object = new object();
+        private static readonly object _syncRoot = new object();
 
         private long _part1;
         private long _part2;
@@ -68,6 +75,12 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
+        private Md5Hash(long part1, long part2)
+        {
+            _part1 = part1;
+            _part2 = part2;
+        }
+
         public static Md5Hash ComputeHash(byte[] data)
         {
             return new Md5Hash(md5.ComputeHash(data));
@@ -78,10 +91,8 @@ namespace Baxendale.RemoveDuplicates.Search
             try
             {
                 byte[] hashBytes;
-                lock (_object)
-                {
+                lock (_syncRoot)
                     hashBytes = md5.ComputeHash(byteStream);
-                }
                 return new Md5Hash(hashBytes);
             }
             finally
@@ -116,6 +127,29 @@ namespace Baxendale.RemoveDuplicates.Search
         public static bool operator !=(Md5Hash left, Md5Hash right)
         {
             return !left.Equals(right);
+        }
+
+        public XAttribute ToXml(XName name)
+        {
+            return new XAttribute(name, Base16);
+        }
+
+        public static Md5Hash FromXml(XAttribute attribute)
+        {
+            string base16hash = attribute.Value;
+            if (base16hash == null || base16hash.Length != INT128_STR16_SIZE)
+                throw new XmlSerializationException(INVALID_HASH_MSG);
+            long part1, part2;
+            try
+            {
+                part1 = Convert.ToInt64(base16hash.Substring(0, INT64_STR16_SIZE), 16);
+                part2 = Convert.ToInt64(base16hash.Substring(INT64_STR16_SIZE, INT64_STR16_SIZE), 16);
+            }
+            catch(Exception ex) when (ex is FormatException || ex is OverflowException)
+            {
+                throw new XmlSerializationException($"{INVALID_HASH_MSG}. {ex.Message}");
+            }
+            return new Md5Hash(part1, part2);
         }
     }
 }

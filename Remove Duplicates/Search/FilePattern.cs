@@ -249,7 +249,7 @@ namespace Baxendale.RemoveDuplicates.Search
             return !(left == right);
         }
 
-        public XObject ToXml(XName name)
+        public XElement ToXml(XName name)
         {
             XElement node = new XElement(name);
             node.SetAttributeValue("description", Description);
@@ -262,7 +262,7 @@ namespace Baxendale.RemoveDuplicates.Search
             return node;
         }
 
-        public static FilePattern FromXml(XElement node, XName name)
+        public static FilePattern FromXml(XElement node)
         {
             string desc = node.Attribute("description")?.Value;
             var subpatterns = node.Elements("pattern").Select(o => o.Attribute("mask")?.Value);

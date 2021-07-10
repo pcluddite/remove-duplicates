@@ -58,6 +58,7 @@
     <Compile Include="Native\PMSF.cs" />
     <Compile Include="Native\Win32.cs" />
     <Compile Include="Resolution\FileNameComparer.cs" />
+    <Compile Include="Resolution\FileResolution.cs" />
     <Compile Include="Resolution\IFileComparer.cs" />
     <Compile Include="Resolution\FileDateComparer.cs" />
     <Compile Include="Resolution\FileDirectoryComparer.cs" />
