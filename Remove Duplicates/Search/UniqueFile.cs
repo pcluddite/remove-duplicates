@@ -40,7 +40,7 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        [XmlSerializableProperty(Name = "paths", BackingField = nameof(_filePaths))]
+        [XmlSerializableProperty(Name = "paths", BackingField = nameof(_filePaths), ElementName = "uri", AttributeName = "value")]
         public IReadOnlyCollection<string> Paths
         {
             get
@@ -55,7 +55,7 @@ namespace Baxendale.RemoveDuplicates.Search
         [XmlSerializableProperty(Name = "size")]
         public long FileSize { get; private set; }
 
-        public UniqueFile()
+        private UniqueFile()
         {
         }
 

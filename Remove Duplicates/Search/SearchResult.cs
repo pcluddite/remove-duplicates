@@ -28,7 +28,7 @@ namespace Baxendale.RemoveDuplicates.Search
         public Query Query { get; private set; }
 
 
-        [XmlSerializableProperty(Name = "found", BackingField = nameof(_files))]
+        [XmlSerializableProperty(Name = "found", BackingField = nameof(_files), ElementName = "file")]
         public IEnumerable<UniqueFile> Files
         {
             get
@@ -37,7 +37,7 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public SearchResult()
+        private SearchResult()
         {
         }
 
