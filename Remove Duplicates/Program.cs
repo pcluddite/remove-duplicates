@@ -25,16 +25,17 @@ namespace Baxendale.RemoveDuplicates
 {
     internal static class Program
     {
-
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         public static void Main()
         {
-            XmlSerializer.Default.RegisterType<QueryFile>("query");
+            XmlSerializer.Default.CacheTypes = true;
+            XmlSerializer.Default.RegisterType<Query>("query");
             XmlSerializer.Default.RegisterType<FilePattern>("patterns");
+            XmlSerializer.Default.RegisterType<Md5Hash>("hash");
+            XmlSerializer.Default.RegisterType<SearchResult>("result");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

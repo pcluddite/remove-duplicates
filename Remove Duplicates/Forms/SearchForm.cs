@@ -24,6 +24,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Forms
@@ -103,8 +105,8 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 duplicateGroup = new ListViewGroup(hash, hash);
                 lstViewResults.Groups.Add(duplicateGroup);
-                duplicateGroup.Tag = fileMetaData.Length;
-                foreach(string path in file.Paths)
+                duplicateGroup.Tag = file;
+                foreach (string path in file.Paths)
                 {
                     item = new ListViewItem(path, duplicateGroup);
                     lstViewResults.Items.Add(item);
@@ -113,7 +115,8 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
             item = new ListViewItem(fileMetaData.FullName, duplicateGroup);
             lstViewResults.Items.Add(item);
-            duplicateGroup.Header = $"{duplicateGroup.Items.Count} files, {((long)duplicateGroup.Tag).FormatAsSize(decimals: 1)} per file";
+            ((UniqueFile)duplicateGroup.Tag).Add(fileMetaData);
+            duplicateGroup.Header = $"{duplicateGroup.Items.Count} files, {file.FileSize.FormatAsSize(decimals: 1)} per file";
             item.EnsureVisible();
             IncrementDuplicatesFound();
             IncrementFilesSearched();
@@ -130,12 +133,13 @@ namespace Baxendale.RemoveDuplicates.Forms
             dotTimer.Stop();
             Text = "Remove Duplicates | Results";
             toolStripProgressBar.Visible = false;
+            saveResultsToolStripMenuItem.Enabled = true;
 
             long totalDupSize = 0;
 
             foreach(ListViewGroup group in lstViewResults.Groups)
             {
-                long size = (long)group.Tag;
+                long size = ((UniqueFile)group.Tag).FileSize;
                 int dupCount = group.Items.Count - 1;
                 totalDupSize += (size * dupCount);
             }
@@ -147,6 +151,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void Disable()
         {
+            saveResultsToolStripMenuItem.Enabled = false;
             toolStripProgressBar.Visible = true;
             dotTimer.Start();
         }
@@ -282,6 +287,31 @@ namespace Baxendale.RemoveDuplicates.Forms
             MinimumSize = new Size((toolStripProgressBar.Visible ? toolStripProgressBar.Width : 0) +
                 toolStripStatusFilesCount.Width + toolStripStatusDuplicatesCount.Width + 50,
                 MinimumSize.Height);
+        }
+
+        private void saveResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveResultsFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                IEnumerable<UniqueFile> files = lstViewResults.Groups.Cast<ListViewGroup>().Select(i => i.Tag).Cast<UniqueFile>();
+                SearchResult results = new SearchResult(new Query(SearchPaths, Pattern), files);
+                try
+                {
+                    XmlSerializer.Default.Save(results, saveResultsFileDialog.FileName);
+                    Program.ShowInfo(this, "Results saved");
+                }
+                catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
+                {
+                    Program.ShowError(this, ex.Message);
+                }
+            }
+        }
+
+        private void rightClickMenu_Opening(object sender, CancelEventArgs e)
+        {
+            openToolStripMenuItem.Visible = showInExplorerToolStripMenuItem.Visible =
+                toolStripSeparator.Visible = resolveToolStripMenuItem.Visible = 
+                toolStripSeparator1.Visible = lstViewResults.SelectedItems.Count > 0;
         }
     }
 }

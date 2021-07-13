@@ -20,16 +20,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baxendale.Data.Collections;
+using Baxendale.Data.Xml;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
-    internal class UniqueFile : IEquatable<UniqueFile>
+    internal class UniqueFile : IEquatable<UniqueFile>, IXmlSerializableObject
     {
         private readonly object _object = new object();
 
         private HashSet<string> _filePaths;
         private Md5Hash _checksum;
 
+        [XmlSerializableProperty(Name = "hash", BackingField = nameof(_checksum))]
         public Md5Hash Hash
         {
             get
@@ -38,6 +40,7 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
+        [XmlSerializableProperty(Name = "paths", BackingField = nameof(_filePaths))]
         public IReadOnlyCollection<string> Paths
         {
             get
@@ -49,7 +52,12 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public long FileSize { get; }
+        [XmlSerializableProperty(Name = "size")]
+        public long FileSize { get; private set; }
+
+        public UniqueFile()
+        {
+        }
 
         public UniqueFile(UniqueFile other)
         {

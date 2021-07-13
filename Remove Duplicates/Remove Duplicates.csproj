@@ -70,8 +70,9 @@
     <Compile Include="Resolution\FileDirectoryComparer.cs" />
     <Compile Include="Resolution\ResolveRule.cs" />
     <Compile Include="Search\PathEqualityComparer.cs" />
+    <Compile Include="Search\SearchResult.cs" />
     <Compile Include="SizeFormatter.cs" />
-    <Compile Include="QueryFile.cs" />
+    <Compile Include="Query.cs" />
     <Compile Include="Search\Md5Hash.cs" />
     <Compile Include="Forms\SearchForm.cs">
       <SubType>Form</SubType>

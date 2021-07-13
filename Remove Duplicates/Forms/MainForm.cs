@@ -16,13 +16,10 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Linq;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
@@ -121,7 +118,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 try
                 {
-                    QueryFile file = XmlSerializer.Default.Load<QueryFile>(openQueryFileDialog.FileName);
+                    Query file = XmlSerializer.Default.Load<Query>(openQueryFileDialog.FileName);
                     lstPaths.Items.Clear();
                     foreach (string path in file.SearchPaths)
                     {
@@ -130,7 +127,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
                     comboBoxPatterns.Text = file.Pattern.ToString();
                 }
-                catch (Exception ex) when (ex is IOException || ex is XmlException || ex is ArgumentException)
+                catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
                 {
                     Program.ShowError(this, ex.Message);
                 }
@@ -143,10 +140,10 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 try
                 {
-                    QueryFile file = new QueryFile(lstPaths.Items.Cast<string>(), GetSelectedPattern());
+                    Query file = new Query(lstPaths.Items.Cast<string>(), GetSelectedPattern());
                     XmlSerializer.Default.Save(file);
                 }
-                catch (Exception ex) when (ex is IOException || ex is XmlException || ex is ArgumentException)
+                catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
                 {
                     Program.ShowError(this, ex.Message);
                 }

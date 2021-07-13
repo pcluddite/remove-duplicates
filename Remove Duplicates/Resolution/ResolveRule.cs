@@ -77,25 +77,26 @@ namespace Baxendale.RemoveDuplicates.Resolution
 
         public IEnumerable<FileResolution> Resolve(IEnumerable<UniqueFile> files)
         {
-            throw new NotImplementedException();
+            foreach (UniqueFile file in files)
+                yield return Resolve(file);
         }
 
-        public IEnumerable<FileInfo> Resolve(UniqueFile duplicates)
-        {
-            return Resolve(duplicates.Paths.Select(p => new FileInfo(p)));
-        }
-
-        public IEnumerable<FileInfo> Resolve(IEnumerable<FileInfo> duplicates)
+        public FileResolution Resolve(UniqueFile uniqueFile)
         {
             CompositeComparer<FileInfo> comparer = new CompositeComparer<FileInfo>(_rules);
-            using (IEnumerator<FileInfo> e = duplicates.OrderBy(x => x, comparer).GetEnumerator())
+            List<FileInfo> originals = new List<FileInfo>();
+            List<FileInfo> duplicates = new List<FileInfo>();
+            using (IEnumerator<FileInfo> e = uniqueFile.Paths.Select(p => new FileInfo(p)).OrderBy(x => x, comparer).GetEnumerator())
             {
                 FileInfo last = null;
                 if (e.MoveNext())
-                    yield return last = e.Current;
+                    originals.Add(e.Current);
                 while (e.MoveNext() && comparer.Compare(e.Current, last) == 0)
-                    yield return last = e.Current;
+                    originals.Add(last = e.Current);
+                while (e.MoveNext())
+                    duplicates.Add(e.Current);
             }
+            return new FileResolution(uniqueFile.Hash, originals, duplicates);
         }
 
         public void Clear()

@@ -15,17 +15,16 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
+using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
-    internal class FileResolution
+    internal class FileResolution : IXmlSerializableObject
     {
         public Md5Hash Hash { get; }
         public IEnumerable<FileInfo> Originals { get; }
@@ -36,6 +35,35 @@ namespace Baxendale.RemoveDuplicates.Resolution
             Originals = originals.ToArray();
             Duplicates = duplicates.ToArray();
             Hash = hash;
+        }
+
+        public XElement ToXml(XName name)
+        {
+            XElement content = new XElement(name);
+            content.Add(XmlSerializer.Default.Serialize(Hash, "hash"));
+            content.Add(new XElement("originals", 
+                            from fileInfo in Originals
+                            let attr = new XAttribute("path", fileInfo.FullName)
+                            select new XElement("file", attr)));
+            content.Add(new XElement("duplicates",
+                            from fileInfo in Duplicates
+                            let attr = new XAttribute("path", fileInfo.FullName)
+                            select new XElement("file", attr)));
+            return content;
+        }
+
+        public static FileResolution FromXml(XElement content)
+        {
+            Md5Hash hash = XmlSerializer.Default.Deserialize<Md5Hash>(content.Attribute("hash"));
+            IEnumerable<FileInfo> originals = from file in content.Elements("file")
+                                              let path = file.Attribute("path")
+                                              where path != null
+                                              select new FileInfo(path.Value);
+            IEnumerable<FileInfo> duplicates = from file in content.Elements("file")
+                                               let path = file.Attribute("path")
+                                               where path != null
+                                               select new FileInfo(path.Value);
+            return new FileResolution(hash, originals, duplicates);
         }
     }
 }

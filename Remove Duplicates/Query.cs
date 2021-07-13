@@ -17,25 +17,24 @@
 //
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
 {
-    internal class QueryFile : IXmlSerializableObject
+    internal class Query : IXmlSerializableObject
     {
         public IEnumerable<string> SearchPaths { get; private set; }
         public FilePattern Pattern { get; set; }
 
-        public QueryFile(IEnumerable<string> paths, FilePattern pattern)
+        public Query(IEnumerable<string> paths, FilePattern pattern)
         {
             SearchPaths = new List<string>(paths);
             Pattern = pattern;
         }
 
-        public XElement ToXml(XName name)
+        public XElement ToXml(XmlSerializer serializer, XName name)
         {
             XElement node = new XElement(name);
             XElement paths = new XElement("paths");
@@ -46,18 +45,18 @@ namespace Baxendale.RemoveDuplicates
                 paths.Add(pathNode);
             }
             node.Add(paths);
-            node.Add(XmlSerializer.Default.Serialize(Pattern, "patterns"));
+            node.Add(serializer.Serialize(Pattern, "patterns"));
             return node;
         }
 
-        public static QueryFile FromXml(XElement node)
+        public static Query FromXml(XmlSerializer serializer, XElement node)
         {
             List<string> paths = new List<string>();
 
             XElement pathsNode = node.Element("paths");
             IEnumerable<XElement> pathNodeList;
-            if (paths == null || !(pathNodeList = pathsNode.Elements("path")).Any())
-                throw new XmlException("There are no paths listed in this query file");
+            if (pathsNode == null || !(pathNodeList = pathsNode.Elements("path")).Any())
+                throw new XmlSerializationException("There are no paths listed in this query file");
 
             foreach (XElement pathNode in pathNodeList)
             {
@@ -70,10 +69,10 @@ namespace Baxendale.RemoveDuplicates
 
             XElement patternsNode = node.Element("patterns");
             if (patternsNode == null || !patternsNode.Elements("pattern").Any())
-                throw new XmlException("There are no patterns to match in this query file");
+                throw new XmlSerializationException("There are no patterns to match in this query file");
             
-            FilePattern pattern = XmlSerializer.Default.Deserialize<FilePattern>(patternsNode);
-            return new QueryFile(paths, pattern);
+            FilePattern pattern = serializer.Deserialize<FilePattern>(patternsNode);
+            return new Query(paths, pattern);
         }
     }
 }
