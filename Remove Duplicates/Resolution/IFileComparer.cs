@@ -17,7 +17,7 @@
 //
 using System.Collections.Generic;
 using System.IO;
-using Baxendale.DataManagement.Xml;
+using Baxendale.Data.Xml;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {

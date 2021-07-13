@@ -19,7 +19,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
-using Baxendale.DataManagement.Xml;
+using Baxendale.Data.Xml;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {

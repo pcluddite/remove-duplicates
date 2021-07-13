@@ -21,8 +21,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using Baxendale.DataManagement.Collections;
-using Baxendale.DataManagement.Xml;
+using Baxendale.Data.Collections;
+using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Native;
 
 namespace Baxendale.RemoveDuplicates.Search

@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using Baxendale.DataManagement.Xml;
+using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
@@ -46,7 +46,7 @@ namespace Baxendale.RemoveDuplicates
                 paths.Add(pathNode);
             }
             node.Add(paths);
-            node.Add(XmlSerializer.Serialize(Pattern, "patterns"));
+            node.Add(XmlSerializer.Default.Serialize(Pattern, "patterns"));
             return node;
         }
 
@@ -72,7 +72,7 @@ namespace Baxendale.RemoveDuplicates
             if (patternsNode == null || !patternsNode.Elements("pattern").Any())
                 throw new XmlException("There are no patterns to match in this query file");
             
-            FilePattern pattern = XmlSerializer.Deserialize<FilePattern>(patternsNode);
+            FilePattern pattern = XmlSerializer.Default.Deserialize<FilePattern>(patternsNode);
             return new QueryFile(paths, pattern);
         }
     }

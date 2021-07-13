@@ -35,15 +35,21 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dmcollct">
+      <HintPath>..\..\dataman\Serialization\bin\Debug\dmcollct.dll</HintPath>
+    </Reference>
+    <Reference Include="dmreflct">
+      <HintPath>..\..\dataman\Serialization\bin\Debug\dmreflct.dll</HintPath>
+    </Reference>
+    <Reference Include="dmserial">
+      <HintPath>..\..\dataman\Serialization\bin\Debug\dmserial.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -118,12 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\dataman\DataMan\DataMan.csproj">
-      <Project>{26d9068f-cf73-4b51-8f17-3cf2aadf5cb4}</Project>
-      <Name>DataMan</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

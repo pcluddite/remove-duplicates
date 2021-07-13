@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Baxendale.DataManagement.Collections;
+using Baxendale.Data.Collections;
 
 namespace Baxendale.RemoveDuplicates.Search
 {

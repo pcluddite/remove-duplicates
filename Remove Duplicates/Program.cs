@@ -17,24 +17,24 @@
 //
 using System;
 using System.Windows.Forms;
-using Baxendale.DataManagement.Xml;
+using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Forms;
-using Baxendale.RemoveDuplicates.Resolution;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
 {
     internal static class Program
     {
+
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         public static void Main()
         {
-            XmlSerializer.RegisterType<QueryFile>("query");
-            XmlSerializer.RegisterType<FilePattern>("patterns");
-            XmlSerializer.RegisterType<ResolveRule>("rules");
+            XmlSerializer.Default.RegisterType<QueryFile>("query");
+            XmlSerializer.Default.RegisterType<FilePattern>("patterns");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

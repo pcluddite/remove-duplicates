@@ -22,8 +22,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using Baxendale.DataManagement.Collections;
-using Baxendale.DataManagement.Xml;
+using Baxendale.Data.Collections;
+using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
@@ -92,7 +92,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
             {
                 FileInfo last = null;
                 if (e.MoveNext())
-                    last = e.Current;
+                    yield return last = e.Current;
                 while (e.MoveNext() && comparer.Compare(e.Current, last) == 0)
                     yield return last = e.Current;
             }
