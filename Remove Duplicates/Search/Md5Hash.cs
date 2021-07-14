@@ -54,7 +54,7 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             get
             {
-                return Convert.ToString(_part1, 16) + Convert.ToString(_part2, 16);
+                return Convert.ToString(_part1, 16).PadLeft(sizeof(long) * 2, '0') + Convert.ToString(_part2, 16).PadLeft(sizeof(long) * 2, '0');
             }
         }
 
