@@ -25,36 +25,42 @@ namespace Baxendale.RemoveDuplicates.Search
 {
     internal struct Md5Hash : IEquatable<Md5Hash>, IXmlSerializableObject
     {
-        private const int INT64_STR16_SIZE = sizeof(long) * 2;
-        private const int INT128_STR16_SIZE = INT64_STR16_SIZE * 2;
+        private const int CHAR_BIT = 8; // bits in a byte
+        private const int HEX_RADIX = 16; // hex base
+        private const int LONG_BYTES = sizeof(long); // bytes in long
+        private const int LLONG_BYTES = LONG_BYTES * 2; // bytes in a double long (heareafter "long long" or "llong")
 
-        private const string INVALID_HASH_MSG = "Invalid Md5 Hash";
+        private const int LONG_STR16_SIZE = LONG_BYTES * 2;
+        private const int LLONG_STR16_SIZE = LLONG_BYTES * 2;
 
         private static readonly MD5 md5 = MD5.Create();
         private static readonly object _syncRoot = new object();
 
-        private long _part1;
-        private long _part2;
+        private readonly long _part1;
+        private readonly long _part2;
 
         public unsafe byte[] Bytes
         {
             get
             {
-                byte[] bytes = new byte[sizeof(long) * 2];
+                byte[] bytes = new byte[LLONG_BYTES];
                 fixed (byte* lpBytes = bytes)
-                {
-                    *((long*)lpBytes) = _part1;
-                    *((long*)(lpBytes + sizeof(long))) = _part2;
-                }
+                    GetBytes(lpBytes, _part1, _part2);
                 return bytes;
             }
         }
 
-        public string Base16
+        public unsafe string Base16
         {
             get
             {
-                return Convert.ToString(_part1, 16).PadLeft(sizeof(long) * 2, '0') + Convert.ToString(_part2, 16).PadLeft(sizeof(long) * 2, '0');
+                char* lpBuff = stackalloc char[LLONG_STR16_SIZE];
+                byte* lpBytes = stackalloc byte[LLONG_BYTES];
+
+                GetBytes(lpBytes, _part1, _part2);
+                BytesToString(lpBuff, 0, lpBytes, LLONG_BYTES, HEX_RADIX);
+
+                return new string(lpBuff, 0, LLONG_STR16_SIZE);
             }
         }
 
@@ -66,13 +72,11 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        private unsafe Md5Hash(byte[] hash)
+        private unsafe Md5Hash(byte* lpHash)
         {
-            fixed (byte* lpBytes = hash)
-            {
-                _part1 = *((long*)lpBytes);
-                _part2 = *((long*)(lpBytes + sizeof(long)));
-            }
+            _part1 = 0;
+            _part2 = 0;
+            SetBytes(lpHash, ref _part1, ref _part2);
         }
 
         private Md5Hash(long part1, long part2)
@@ -81,24 +85,28 @@ namespace Baxendale.RemoveDuplicates.Search
             _part2 = part2;
         }
 
-        public static Md5Hash ComputeHash(byte[] data)
+        public unsafe static Md5Hash ComputeHash(byte[] data)
         {
-            return new Md5Hash(md5.ComputeHash(data));
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            fixed(byte* lpHash = LockComputeHash(data))
+                return new Md5Hash(lpHash);
         }
 
-        public static Md5Hash ComputeHash(Stream byteStream)
+        public unsafe static Md5Hash ComputeHash(Stream byteStream)
         {
-            try
-            {
-                byte[] hashBytes;
-                lock (_syncRoot)
-                    hashBytes = md5.ComputeHash(byteStream);
-                return new Md5Hash(hashBytes);
-            }
-            finally
-            {
-                byteStream?.Dispose();
-            }
+            if (byteStream == null) throw new ArgumentNullException(nameof(byteStream));
+            fixed (byte* lpHash = LockComputeHash(byteStream))
+                return new Md5Hash(lpHash);
+        }
+
+        private static byte[] LockComputeHash(byte[] data)
+        {
+            lock (_syncRoot) return md5.ComputeHash(data);
+        }
+
+        private static byte[] LockComputeHash(Stream byteStream)
+        {
+            lock (_syncRoot) return md5.ComputeHash(byteStream);
         }
 
         public override bool Equals(object obj)
@@ -134,22 +142,69 @@ namespace Baxendale.RemoveDuplicates.Search
             return new XAttribute(name, Base16);
         }
 
-        public static Md5Hash FromXml(XAttribute attribute)
+        public unsafe static Md5Hash FromXml(XAttribute attribute)
         {
             string base16hash = attribute.Value;
-            if (base16hash == null || base16hash.Length != INT128_STR16_SIZE)
-                throw new XmlSerializationException(INVALID_HASH_MSG);
-            long part1, part2;
-            try
+            if (base16hash == null || base16hash.Length != LLONG_STR16_SIZE)
+                throw new XmlSerializationException("String is not the correct size to be an MD5 hash.");
+
+            byte* hashBytes = stackalloc byte[LLONG_BYTES];
+
+            int cIdx = 0;
+            int len = base16hash.Length;
+
+            do
             {
-                part1 = Convert.ToInt64(base16hash.Substring(0, INT64_STR16_SIZE), 16);
-                part2 = Convert.ToInt64(base16hash.Substring(INT64_STR16_SIZE, INT64_STR16_SIZE), 16);
+                uint u = GetByte(base16hash[cIdx++]) * (uint)HEX_RADIX;
+                u += GetByte(base16hash[cIdx++]);
+                *hashBytes++ = (byte)u;
             }
-            catch(Exception ex) when (ex is FormatException || ex is OverflowException)
+            while (cIdx < len);
+
+            return new Md5Hash(hashBytes);
+        }
+
+        private static unsafe void BytesToString(char* buffer, int buffStart, byte* data, int count, int radix)
+        {
+            int buffIdx = buffStart;
+            for (int datIdx = 0; datIdx < count; ++datIdx)
             {
-                throw new XmlSerializationException($"{INVALID_HASH_MSG}. {ex.Message}");
+                byte b = data[datIdx];
+                uint div = b / (uint)radix;
+                uint mod = b % (uint)radix;
+                buffer[buffIdx++] = GetHexChar(div);
+                buffer[buffIdx++] = GetHexChar(mod);
             }
-            return new Md5Hash(part1, part2);
+        }
+
+        private static unsafe void GetBytes(byte* lpBuff, long part1, long part2)
+        {
+            *((long*)lpBuff) = part1;
+            *((long*)(lpBuff + LONG_BYTES)) = part2;
+        }
+
+        private static unsafe void SetBytes(byte* lpBytes, ref long part1, ref long part2)
+        {
+            part1 = *((long*)lpBytes);
+            part2 = *((long*)(lpBytes + LONG_BYTES));
+        }
+
+        private static char GetHexChar(uint n)
+        {
+            return (char)(n < 10 ? '0' + n : 'a' + (n % 10));
+        }
+
+        public static byte GetByte(char c)
+        {
+            if (c >= '0' && c <= '9')
+            {
+                return (byte)(c - '0');
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                return (byte)(c - 'a' + 10);
+            }
+            throw new FormatException($"Unexpected character in hexadecimal string '{c}'.");
         }
     }
 }
