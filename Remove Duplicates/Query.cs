@@ -56,7 +56,7 @@ namespace Baxendale.RemoveDuplicates
             XElement pathsNode = node.Element("paths");
             IEnumerable<XElement> pathNodeList;
             if (pathsNode == null || !(pathNodeList = pathsNode.Elements("path")).Any())
-                throw new XmlSerializationException("There are no paths listed in this query file");
+                throw new XmlSerializationException(node, "There are no paths listed in this query file");
 
             foreach (XElement pathNode in pathNodeList)
             {
@@ -69,7 +69,7 @@ namespace Baxendale.RemoveDuplicates
 
             XElement patternsNode = node.Element("patterns");
             if (patternsNode == null || !patternsNode.Elements("pattern").Any())
-                throw new XmlSerializationException("There are no patterns to match in this query file");
+                throw new XmlSerializationException(node, "There are no patterns to match in this query file");
             
             FilePattern pattern = serializer.Deserialize<FilePattern>(patternsNode);
             return new Query(paths, pattern);

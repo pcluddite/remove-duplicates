@@ -146,7 +146,7 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             string base16hash = attribute.Value;
             if (base16hash == null || base16hash.Length != LLONG_STR16_SIZE)
-                throw new XmlSerializationException("String is not the correct size to be an MD5 hash.");
+                throw new XmlSerializationException(attribute, "String is not the correct size to be an MD5 hash.");
 
             byte* hashBytes = stackalloc byte[LLONG_BYTES];
 
