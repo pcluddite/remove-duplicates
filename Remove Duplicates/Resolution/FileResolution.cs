@@ -18,52 +18,28 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
+using Baxendale.Data.Collections.ReadOnly;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
+    [XmlSerializableClass(AllProperties = true)]
     internal class FileResolution : IXmlSerializableObject
     {
-        public Md5Hash Hash { get; }
-        public IEnumerable<FileInfo> Originals { get; }
-        public IEnumerable<FileInfo> Duplicates { get; }
+        public Md5Hash Hash { get; private set; }
+
+        [XmlSerializableProperty(ElementName = "file", AttributeName = "uri")]
+        public ICollection<FileInfo> Originals { get; private set; }
+
+        [XmlSerializableProperty(ElementName = "file", AttributeName = "uri")]
+        public ICollection<FileInfo> Duplicates { get; private set; }
 
         public FileResolution(Md5Hash hash, IEnumerable<FileInfo> originals, IEnumerable<FileInfo> duplicates)
         {
-            Originals = originals.ToArray();
-            Duplicates = duplicates.ToArray();
+            Originals = new ReadOnlyList<FileInfo>(originals.ToArray());
+            Duplicates = new ReadOnlyList<FileInfo>(duplicates.ToArray());
             Hash = hash;
-        }
-
-        public XElement ToXml(XName name)
-        {
-            XElement content = new XElement(name);
-            content.Add(XmlSerializer.Default.Serialize(Hash, "hash"));
-            content.Add(new XElement("originals", 
-                            from fileInfo in Originals
-                            let attr = new XAttribute("path", fileInfo.FullName)
-                            select new XElement("file", attr)));
-            content.Add(new XElement("duplicates",
-                            from fileInfo in Duplicates
-                            let attr = new XAttribute("path", fileInfo.FullName)
-                            select new XElement("file", attr)));
-            return content;
-        }
-
-        public static FileResolution FromXml(XElement content)
-        {
-            Md5Hash hash = XmlSerializer.Default.Deserialize<Md5Hash>(content.Attribute("hash"));
-            IEnumerable<FileInfo> originals = from file in content.Elements("file")
-                                              let path = file.Attribute("path")
-                                              where path != null
-                                              select new FileInfo(path.Value);
-            IEnumerable<FileInfo> duplicates = from file in content.Elements("file")
-                                               let path = file.Attribute("path")
-                                               where path != null
-                                               select new FileInfo(path.Value);
-            return new FileResolution(hash, originals, duplicates);
         }
     }
 }

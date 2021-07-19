@@ -16,7 +16,9 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Forms;
 using Baxendale.RemoveDuplicates.Search;
@@ -31,11 +33,14 @@ namespace Baxendale.RemoveDuplicates
         [STAThread]
         public static void Main()
         {
-            XmlSerializer.Default.CacheTypes = true;
             XmlSerializer.Default.RegisterType<Query>("query");
             XmlSerializer.Default.RegisterType<FilePattern>("patterns");
             XmlSerializer.Default.RegisterType<Md5Hash>("hash");
             XmlSerializer.Default.RegisterType<SearchResult>("result");
+
+            XmlSerializer.Default.RegisterType("file", 
+                (s, o, n) => new XAttribute(n, o.FullName),
+                (s, x) => new FileInfo(x.Value));
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
