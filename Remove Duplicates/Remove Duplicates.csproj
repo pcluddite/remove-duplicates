@@ -35,14 +35,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dmcollct">
-      <HintPath>..\..\dataman\Serialization\bin\Debug\dmcollct.dll</HintPath>
-    </Reference>
-    <Reference Include="dmreflct">
-      <HintPath>..\..\dataman\Serialization\bin\Debug\dmreflct.dll</HintPath>
-    </Reference>
-    <Reference Include="dmserial">
-      <HintPath>..\..\dataman\Serialization\bin\Debug\dmserial.dll</HintPath>
+    <Reference Include="dataman">
+      <HintPath>..\..\dataman\dataman\bin\Release\dataman.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
