@@ -29,10 +29,10 @@ namespace Baxendale.RemoveDuplicates.Resolution
     {
         public Md5Hash Hash { get; private set; }
 
-        [XmlSerializableProperty(ElementName = "file", AttributeName = "uri")]
+        [XmlSerializableProperty(ElementName = "file")]
         public ICollection<FileInfo> Originals { get; private set; }
 
-        [XmlSerializableProperty(ElementName = "file", AttributeName = "uri")]
+        [XmlSerializableProperty(ElementName = "file")]
         public ICollection<FileInfo> Duplicates { get; private set; }
 
         public FileResolution(Md5Hash hash, IEnumerable<FileInfo> originals, IEnumerable<FileInfo> duplicates)

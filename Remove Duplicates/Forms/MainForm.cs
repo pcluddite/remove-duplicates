@@ -119,6 +119,10 @@ namespace Baxendale.RemoveDuplicates.Forms
                 try
                 {
                     Query file = XmlSerializer.Default.Load<Query>(openQueryFileDialog.FileName);
+                    if (file.SearchPaths == null)
+                        throw new ArgumentException("No paths were specified in this query file");
+                    if (file.Pattern == null)
+                        throw new ArgumentException("No search pattern was specified in this query file");
                     lstPaths.Items.Clear();
                     foreach (string path in file.SearchPaths)
                     {
