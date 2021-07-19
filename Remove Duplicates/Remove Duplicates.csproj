@@ -35,8 +35,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dataman">
-      <HintPath>..\..\dataman\dataman\bin\Release\dataman.dll</HintPath>
+    <Reference Include="dataman, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dataman\dataman\bin\Debug\dataman.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

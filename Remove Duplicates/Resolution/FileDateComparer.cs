@@ -37,6 +37,10 @@ namespace Baxendale.RemoveDuplicates.Resolution
                 typeName = typeName.Remove(typeName.Length - nameof(FileDateComparer).Length);
                 return char.ToLower(typeName[0]) + typeName.Substring(1);
             }
+            set
+            {
+                throw new NotSupportedException();
+            }
         }
 
         protected abstract DateTime GetDate(FileInfo file);

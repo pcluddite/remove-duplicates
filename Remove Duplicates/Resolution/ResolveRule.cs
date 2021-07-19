@@ -36,11 +36,11 @@ namespace Baxendale.RemoveDuplicates.Resolution
                 .Where(type => type.Namespace == typeof(ResolveRule).Namespace
                     && type.IsClass && !type.IsAbstract 
                     && typeof(IFileComparer).IsAssignableFrom(type));
-            MethodInfo registerMethod = typeof(XmlSerializer).GetMethod(nameof(XmlSerializer.RegisterType), BindingFlags.Static | BindingFlags.Public, Type.DefaultBinder, CallingConventions.Standard, new[] { typeof(XName) }, Collections<ParameterModifier>.EmptyArray);
+            MethodInfo registerMethod = typeof(XmlSerializer).GetMethod(nameof(XmlSerializer.RegisterType), BindingFlags.Instance | BindingFlags.Public, Type.DefaultBinder, CallingConventions.Standard, new[] { typeof(XName) }, Collections<ParameterModifier>.EmptyArray);
             foreach (TypeInfo typeInfo in fileComparers)
             {
                 MethodInfo typeRegisterMethod = registerMethod.MakeGenericMethod(typeInfo);
-                typeRegisterMethod.Invoke(null, new [] { (XName)typeInfo.Name });
+                typeRegisterMethod.Invoke(XmlSerializer.Default, new [] { (XName)typeInfo.Name });
             }
         }
 
@@ -118,8 +118,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
 
         public IEnumerator<IFileComparer> GetEnumerator()
         {
-            foreach (IComparer<FieldInfo> comparer in _rules)
-                yield return (IFileComparer)comparer;
+            return _rules.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
