@@ -28,7 +28,7 @@ using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
-    internal class ResolveRule : ICollection<IFileComparer>
+    internal class ResolveRule : ICollection<IFileComparer>, IXmlSerializableObject
     {
         static ResolveRule()
         {
@@ -44,7 +44,8 @@ namespace Baxendale.RemoveDuplicates.Resolution
             }
         }
 
-        private readonly List<IFileComparer> _rules;
+        [XmlSerializableField(Name = "rules", ElementName = "rule")]
+        private List<IFileComparer> _rules;
 
         public IEnumerable<IFileComparer> Rules => _rules.AsReadOnly();
 
