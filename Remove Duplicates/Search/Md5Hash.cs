@@ -149,7 +149,7 @@ namespace Baxendale.RemoveDuplicates.Search
                 throw new XmlSerializationException(attribute, "String is not the correct size to be an MD5 hash.");
 
             byte* hashBytes = stackalloc byte[LLONG_BYTES];
-
+            byte* lpByte = hashBytes;
             int cIdx = 0;
             int len = base16hash.Length;
 
@@ -157,7 +157,7 @@ namespace Baxendale.RemoveDuplicates.Search
             {
                 uint u = GetByte(base16hash[cIdx++]) * (uint)HEX_RADIX;
                 u += GetByte(base16hash[cIdx++]);
-                *hashBytes++ = (byte)u;
+                *lpByte++ = (byte)u;
             }
             while (cIdx < len);
 
