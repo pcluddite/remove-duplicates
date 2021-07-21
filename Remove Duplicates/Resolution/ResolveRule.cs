@@ -44,7 +44,7 @@ namespace Baxendale.RemoveDuplicates.Resolution
             }
         }
 
-        [XmlSerializableField(Name = "rules", ElementName = "rule")]
+        [XmlSerializableField(Name = "rules")]
         private List<IFileComparer> _rules;
 
         public IEnumerable<IFileComparer> Rules => _rules.AsReadOnly();
@@ -87,16 +87,26 @@ namespace Baxendale.RemoveDuplicates.Resolution
             CompositeComparer<FileInfo> comparer = new CompositeComparer<FileInfo>(_rules);
             List<FileInfo> originals = new List<FileInfo>();
             List<FileInfo> duplicates = new List<FileInfo>();
-            using (IEnumerator<FileInfo> e = uniqueFile.Paths.Select(p => new FileInfo(p)).OrderBy(x => x, comparer).GetEnumerator())
+
+            FileInfo[] files = uniqueFile.Paths.Select(p => new FileInfo(p)).ToArray();
+            if (files.Length == 0)
+                return new FileResolution(uniqueFile.Hash, originals, duplicates);
+
+            Array.Sort(files, comparer);
+            originals.Add(files[0]);
+
+            for(int idx = 1; idx < files.Length; ++idx)
             {
-                FileInfo last = null;
-                if (e.MoveNext())
-                    originals.Add(e.Current);
-                while (e.MoveNext() && comparer.Compare(e.Current, last) == 0)
-                    originals.Add(last = e.Current);
-                while (e.MoveNext())
-                    duplicates.Add(e.Current);
+                if (comparer.Compare(files[idx], files[0]) == 0)
+                {
+                    originals.Add(files[idx]);
+                }
+                else
+                {
+                    duplicates.Add(files[idx]);
+                }
             }
+
             return new FileResolution(uniqueFile.Hash, originals, duplicates);
         }
 

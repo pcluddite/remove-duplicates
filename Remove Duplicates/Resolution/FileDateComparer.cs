@@ -50,15 +50,15 @@ namespace Baxendale.RemoveDuplicates.Resolution
             return GetDate(x).CompareTo(GetDate(y));
         }
 
-        public static FileDateComparer FromXml(XElement node, XName name)
+        public static FileDateComparer FromXml(XElement node)
         {
             string typeName = node.Attribute("type")?.Value;
             if (typeName == null)
-                throw new XmlException("File date comparer type is not set");
+                throw new XmlSerializationException(node, "File date comparer type is not set");
             typeName = char.ToUpper(typeName[0]) + typeName.Substring(1);
             Type comparerType = Type.GetType($"{typeof(FileDateComparer).Namespace}.{typeName}{nameof(FileDateComparer)}");
             if (comparerType == null)
-                throw new XmlException($"The file comparer type '{typeName}' is not recognized");
+                throw new XmlSerializationException(node, $"The file comparer type '{typeName}' is not recognized");
             FileDateComparer comparer = (FileDateComparer)Activator.CreateInstance(comparerType);
             comparer.Reverse = bool.TrueString.EqualsIgnoreCase(node.Attribute("reverse")?.Value);
             return comparer;

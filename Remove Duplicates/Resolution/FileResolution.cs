@@ -24,21 +24,24 @@ using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
-    [XmlSerializableClass(AllProperties = true)]
     internal class FileResolution : IXmlSerializableObject
     {
+        private List<FileInfo> _originals;
+        private List<FileInfo> _duplicates;
+
+        [XmlSerializableProperty(Name = "hash")]
         public Md5Hash Hash { get; private set; }
 
-        [XmlSerializableProperty(ElementName = "file")]
-        public ICollection<FileInfo> Originals { get; private set; }
+        [XmlSerializableProperty(Name = "originals", ElementName = "file", BackingField = nameof(_originals))]
+        public ICollection<FileInfo> Originals => new ReadOnlyCollection<FileInfo>(_originals);
 
-        [XmlSerializableProperty(ElementName = "file")]
-        public ICollection<FileInfo> Duplicates { get; private set; }
+        [XmlSerializableProperty(Name = "duplicates", ElementName = "file", BackingField = nameof(_duplicates))]
+        public ICollection<FileInfo> Duplicates => new ReadOnlyCollection<FileInfo>(_duplicates);
 
         public FileResolution(Md5Hash hash, IEnumerable<FileInfo> originals, IEnumerable<FileInfo> duplicates)
         {
-            Originals = new ReadOnlyList<FileInfo>(originals.ToArray());
-            Duplicates = new ReadOnlyList<FileInfo>(duplicates.ToArray());
+            _originals = originals.ToList();
+            _duplicates = duplicates.ToList();
             Hash = hash;
         }
     }

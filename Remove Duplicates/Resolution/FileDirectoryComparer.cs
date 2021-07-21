@@ -50,6 +50,10 @@ namespace Baxendale.RemoveDuplicates.Resolution
         
         public int Compare(FileInfo x, FileInfo y)
         {
+            if (x == y) return 0;
+            if (x == null) return 1;
+            if (y == null) return -1;
+
             int p1, p2;
             if (!_dirPriority.TryGetValue(x.DirectoryName, out p1)) throw new ArgumentException("Directory has not been prioritized", nameof(x));
             if (!_dirPriority.TryGetValue(y.DirectoryName, out p2)) throw new ArgumentException("Directory has not been prioritized", nameof(y));
