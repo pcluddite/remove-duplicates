@@ -34,8 +34,6 @@ namespace Baxendale.RemoveDuplicates
         public static void Main()
         {
             XmlSerializer.Default.RegisterType<Query>("query");
-            XmlSerializer.Default.RegisterType<FilePattern>("patterns");
-            XmlSerializer.Default.RegisterType<Md5Hash>("hash");
             XmlSerializer.Default.RegisterType<SearchResult>("result");
 
             XmlSerializer.Default.RegisterType<FileInfo>("uri", 

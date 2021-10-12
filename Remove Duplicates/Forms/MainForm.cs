@@ -145,7 +145,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 try
                 {
                     Query file = new Query(lstPaths.Items.Cast<string>(), GetSelectedPattern());
-                    XmlSerializer.Default.Save(file);
+                    XmlSerializer.Default.Save(file, saveQueryFileDialog.FileName);
                 }
                 catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
                 {
