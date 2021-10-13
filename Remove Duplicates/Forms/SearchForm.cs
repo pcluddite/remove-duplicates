@@ -24,7 +24,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 
@@ -45,6 +44,12 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private DateTime StartTime { get; set; }
 
+        public bool LiveUpdates { get; set; }
+
+        private bool _liveUpdates;
+        private Dictionary<Md5Hash, ListViewGroup> _groups;
+        private List<ListViewItem> _results;
+
         public SearchForm(IEnumerable<string> paths, FilePattern pattern)
         {
             SearchPaths = paths;
@@ -54,8 +59,6 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         protected override void OnLoad(EventArgs e)
         {
-            Disable();
-            StartTime = DateTime.Now;
             SearchTask = StartSearch(SearchPaths, Pattern);
             base.OnLoad(e);
         }
@@ -67,13 +70,21 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private Task<IEnumerable<UniqueFile>> StartSearch(IEnumerable<string> paths, FilePattern pattern)
         {
+            _liveUpdates = LiveUpdates;
             duplicatesFound = 0;
             numberOfDots = 0;
+            StartTime = DateTime.Now;
 
+            toolStripStatusLabelDirectory.Text = "Initializing Search...";
+            _groups = new Dictionary<Md5Hash, ListViewGroup>();
+            _results = new List<ListViewItem>();
+
+            Disable();
+
+            DuplicateFinder finder = new DuplicateFinder(pattern);
             UpdateFoundDuplicateDelegate = new Action<UniqueFile, FileInfo>(UpdateFoundDuplicate);
             UpdateNewFileFoundDelegate = new Action<UniqueFile, FileInfo>(UpdateNewFileFound);
 
-            DuplicateFinder finder = new DuplicateFinder(pattern);
             finder.OnFoundDuplicate += Finder_OnFoundDuplicate;
             finder.OnNewFileFound += Finder_OnNewFileFound;
             finder.OnSearchCompleted += Finder_OnSearchCompleted;
@@ -98,29 +109,63 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void UpdateFoundDuplicate(UniqueFile file, FileInfo fileMetaData)
         {
-            string hash = file.Hash.Base16;
-            ListViewGroup duplicateGroup = lstViewResults.Groups[hash];
+            ListViewItem item = AddDuplicateToList(file, fileMetaData);
+            if (_liveUpdates)
+                item.EnsureVisible();
+            IncrementDuplicatesFound();
+            IncrementFilesSearched();
+            toolStripStatusLabelDirectory.Text = fileMetaData.FullName;
+        }
+
+        private ListViewGroup FindResultGroup(Md5Hash hash)
+        {
+            if (_liveUpdates)
+                return lstViewResults.Groups[hash.Base16];
+            ListViewGroup group;
+            if (_groups.TryGetValue(hash, out group))
+                return group;
+            return null;
+        }
+
+        private void AddListViewResult(ListViewItem item)
+        {
+            if (_liveUpdates)
+            {
+                lstViewResults.Items.Add(item);
+            }
+            else
+            {
+                _results.Add(item);
+            }
+        }
+
+        private ListViewItem AddDuplicateToList(UniqueFile file, FileInfo fileMetaData)
+        {
+            ListViewGroup duplicateGroup = FindResultGroup(file.Hash);
             ListViewItem item;
             if (duplicateGroup == null)
             {
-                duplicateGroup = new ListViewGroup(hash, hash);
-                lstViewResults.Groups.Add(duplicateGroup);
+                duplicateGroup = new ListViewGroup(file.Hash.Base16, "");
+                if (_liveUpdates)
+                {
+                    lstViewResults.Groups.Add(duplicateGroup);
+                }
+                else
+                {
+                    _groups[file.Hash] = duplicateGroup;
+                }
                 duplicateGroup.Tag = file;
                 foreach (string path in file.Paths)
                 {
                     item = new ListViewItem(path, duplicateGroup);
-                    lstViewResults.Items.Add(item);
-                    item.EnsureVisible();
+                    AddListViewResult(item);
                 }
             }
             item = new ListViewItem(fileMetaData.FullName, duplicateGroup);
-            lstViewResults.Items.Add(item);
+            AddListViewResult(item);
             ((UniqueFile)duplicateGroup.Tag).Add(fileMetaData);
             duplicateGroup.Header = $"{duplicateGroup.Items.Count} files, {file.FileSize.FormatAsSize(decimals: 1)} per file";
-            item.EnsureVisible();
-            IncrementDuplicatesFound();
-            IncrementFilesSearched();
-            toolStripStatusLabelDirectory.Text = fileMetaData.FullName;
+            return item;
         }
 
         private void Finder_OnSearchCompleted(object sender, DuplicateFinder.SearchCompletedEventArgs e)
@@ -131,7 +176,20 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void Enable()
         {
             dotTimer.Stop();
+
+            if (!_liveUpdates)
+            {
+                toolStripStatusLabelDirectory.Text = "Updating Results View...";
+                lstViewResults.Groups.AddRange(_groups.Values.ToArray());
+                lstViewResults.Items.AddRange(_results.ToArray());
+                lstViewResults.Enabled = true;
+                _results.Clear();
+                _groups.Clear();
+                _results.TrimExcess();
+            }
+
             Text = "Remove Duplicates | Results";
+
             toolStripProgressBar.Visible = false;
             saveResultsToolStripMenuItem.Enabled = true;
 
@@ -145,7 +203,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
             string verb = duplicatesFound == 1 ? "duplicate is" : "duplicates are";
             toolStripStatusDuplicatesCount.Text = $"{duplicatesFound} {verb} taking up {totalDupSize.FormatAsSize()}";
-            toolStripStatusLabelDirectory.Text = $"Completed in {(DateTime.Now - StartTime).ToString(@"h\:mm\:ss")}";
+            toolStripStatusLabelDirectory.Text = $"Completed in {DateTime.Now - StartTime:h\\:mm\\:ss}";
             StatusBar_TextUpdated(this, EventArgs.Empty);
         }
 
@@ -153,6 +211,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             saveResultsToolStripMenuItem.Enabled = false;
             toolStripProgressBar.Visible = true;
+            lstViewResults.Enabled = _liveUpdates;
             dotTimer.Start();
         }
 
