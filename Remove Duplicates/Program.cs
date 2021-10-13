@@ -16,12 +16,7 @@
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 using System;
-using System.IO;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using Baxendale.Data.Xml;
-using Baxendale.RemoveDuplicates.Forms;
-using Baxendale.RemoveDuplicates.Search;
 
 namespace Baxendale.RemoveDuplicates
 {
@@ -31,18 +26,11 @@ namespace Baxendale.RemoveDuplicates
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        public static void Main()
+        public static void Main(string[] args)
         {
-            XmlSerializer.Default.RegisterType<Query>("query");
-            XmlSerializer.Default.RegisterType<SearchResult>("result");
-
-            XmlSerializer.Default.RegisterType<FileInfo>("uri", 
-                (s, o, n) => new XAttribute(n, o.FullName),
-                (s, x) => new FileInfo(x.Value));
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new AppContext(args));
         }
 
         public static DialogResult ShowError(IWin32Window owner, Exception ex)

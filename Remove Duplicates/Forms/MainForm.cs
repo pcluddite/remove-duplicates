@@ -56,6 +56,11 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
+            StartSearch();
+        }
+
+        public void StartSearch()
+        {
             if (lstPaths.Items.Count == 0)
             {
                 Program.ShowError(this, "You must specify at least one directory");
@@ -116,25 +121,32 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             if (openQueryFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                try
-                {
-                    Query file = XmlSerializer.Default.Load<Query>(openQueryFileDialog.FileName);
-                    if (file.SearchPaths == null)
-                        throw new ArgumentException("No paths were specified in this query file");
-                    if (file.Pattern == null)
-                        throw new ArgumentException("No search pattern was specified in this query file");
-                    lstPaths.Items.Clear();
-                    foreach (string path in file.SearchPaths)
-                    {
-                        lstPaths.Items.Add(path);
-                    }
+                LoadQuery(openQueryFileDialog.FileName);
+            }
+        }
 
-                    comboBoxPatterns.Text = file.Pattern.ToString();
-                }
-                catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
+        public bool LoadQuery(string queryPath)
+        {
+            try
+            {
+                Query file = XmlSerializer.Default.Load<Query>(queryPath);
+                if (file.SearchPaths == null)
+                    throw new ArgumentException("No paths were specified in this query file");
+                if (file.Pattern == null)
+                    throw new ArgumentException("No search pattern was specified in this query file");
+                lstPaths.Items.Clear();
+                foreach (string path in file.SearchPaths)
                 {
-                    Program.ShowError(this, ex.Message);
+                    lstPaths.Items.Add(path);
                 }
+
+                comboBoxPatterns.Text = file.Pattern.ToString();
+                return true;
+            }
+            catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
+            {
+                Program.ShowError(this, ex.Message);
+                return false;
             }
         }
 
