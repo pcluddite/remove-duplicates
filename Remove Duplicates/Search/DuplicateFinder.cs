@@ -58,45 +58,55 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             FilePattern pattern = Pattern ?? FilePattern.AllFiles;
             ConcurrentDictionary<Md5Hash, UniqueFile> uniqueFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
+            ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
             List<Task> searchTasks = new List<Task>();
             foreach (string subpattern in pattern)
             {
                 foreach (DirectoryInfo directory in directories)
-                    searchTasks.Add(RecursiveSearchAsync(directory, subpattern, uniqueFiles));
+                    searchTasks.Add(SearchAsync(directory, subpattern, uniqueFiles, duplicatedFiles));
             }
             Task.WaitAll(searchTasks.ToArray());
-            IEnumerable<UniqueFile> duplicates = uniqueFiles.Values.Where(o => o.Paths.Count > 1);
-            OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicates));
-            return duplicates;
+            OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicatedFiles.Values));
+            return duplicatedFiles.Values;
         }
 
-        private async Task RecursiveSearchAsync(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> fileDictionary)
+        private async Task SearchAsync(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
         {
-            await Task.Run(() => RecursiveSearch(dirMetaData, pattern, fileDictionary));
+            await Task.Run(() => Search(dirMetaData, pattern, allFiles, duplicatedFiles));
         }
 
-        private void RecursiveSearch(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> fileDictionary)
+        private void Search(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
         {
-            DirectorySearchEventArgs args = new DirectorySearchEventArgs(dirMetaData);
-            OnBeginDirectorySearch?.Invoke(this, args);
-            dirMetaData = args.Directory;
-
-            List<UniqueFile> foundDupes = SearchFiles(dirMetaData, pattern, fileDictionary);
-
-            OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, foundDupes.ToArray()));
-
-            DirectoryInfo[] subDirs = dirMetaData.GetDirectories();
-            if (subDirs.Length > 0)
+            Queue<DirectoryInfo> directories = new Queue<DirectoryInfo>();
+            directories.Enqueue(dirMetaData);
+            List<Task<List<UniqueFile>>> searchTasks = new List<Task<List<UniqueFile>>>();
+            do
             {
-                Task[] searchTasks = new Task[subDirs.Length];
-                int n = 0;
-                foreach (DirectoryInfo dirInfo in subDirs)
-                    searchTasks[n++] = RecursiveSearchAsync(dirInfo, pattern, fileDictionary);
-                Task.WaitAll(searchTasks);
+                dirMetaData = directories.Dequeue();
+                if (OnBeginDirectorySearch != null)
+                {
+                    DirectorySearchEventArgs args = new DirectorySearchEventArgs(dirMetaData);
+                    OnBeginDirectorySearch.Invoke(this, args);
+                    dirMetaData = args.Directory;
+                }
+
+                foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
+                    directories.Enqueue(subDirectory);
+                
+                Task<List<UniqueFile>> searchTask = ScanFilesAsync(dirMetaData, pattern, allFiles, duplicatedFiles);
+                searchTask.ContinueWith((Task<List<UniqueFile>> task) => OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, task.Result.ToArray())));
+                searchTasks.Add(searchTask);
             }
+            while (directories.Count > 0);
+            Task.WaitAll(searchTasks.ToArray());
         }
 
-        private List<UniqueFile> SearchFiles(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> fileDictionary)
+        private async Task<List<UniqueFile>> ScanFilesAsync(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
+        {
+            return await Task.Run(() => ScanFiles(dirMetaData, pattern, allFiles, duplicatedFiles));
+        }
+
+        private List<UniqueFile> ScanFiles(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
         { 
             FileInfo[] files = dirMetaData.GetFiles(pattern);
             List<UniqueFile> foundDupes = new List<UniqueFile>(files.Length);
@@ -106,7 +116,7 @@ namespace Baxendale.RemoveDuplicates.Search
                 UniqueFile uniqueFile;
                 Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
 
-                if (fileDictionary.TryGetValue(checksum, out uniqueFile) && !uniqueFile.ContainsPath(fileMetaData.FullName))
+                if (allFiles.TryGetValue(checksum, out uniqueFile) && !uniqueFile.ContainsPath(fileMetaData.FullName))
                 {
                     bool cancelled = false;
                     if (OnFoundDuplicate != null)
@@ -120,11 +130,12 @@ namespace Baxendale.RemoveDuplicates.Search
                         uniqueFile.Add(fileMetaData);
                         foundDupes.Add(uniqueFile);
                     }
+                    duplicatedFiles[checksum] = uniqueFile;
                 }
                 else
                 {
                     uniqueFile = new UniqueFile(fileMetaData, checksum);
-                    fileDictionary[checksum] = uniqueFile;
+                    allFiles[checksum] = uniqueFile;
                     OnNewFileFound?.Invoke(this, new NewFileFoundEventArgs(uniqueFile, fileMetaData));
                 }
             }

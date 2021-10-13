@@ -33,9 +33,6 @@ namespace Baxendale.RemoveDuplicates.Search
         private const int LONG_STR16_SIZE = LONG_BYTES * 2;
         private const int LLONG_STR16_SIZE = LLONG_BYTES * 2;
 
-        private static readonly MD5 md5 = MD5.Create();
-        private static readonly object _syncRoot = new object();
-
         private readonly long _part1;
         private readonly long _part2;
 
@@ -88,25 +85,21 @@ namespace Baxendale.RemoveDuplicates.Search
         public unsafe static Md5Hash ComputeHash(byte[] data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
-            fixed(byte* lpHash = LockComputeHash(data))
-                return new Md5Hash(lpHash);
+            using (MD5 md5 = MD5.Create())
+            {
+                fixed (byte* lpHash = md5.ComputeHash(data))
+                    return new Md5Hash(lpHash);
+            }
         }
 
         public unsafe static Md5Hash ComputeHash(Stream byteStream)
         {
             if (byteStream == null) throw new ArgumentNullException(nameof(byteStream));
-            fixed (byte* lpHash = LockComputeHash(byteStream))
-                return new Md5Hash(lpHash);
-        }
-
-        private static byte[] LockComputeHash(byte[] data)
-        {
-            lock (_syncRoot) return md5.ComputeHash(data);
-        }
-
-        private static byte[] LockComputeHash(Stream byteStream)
-        {
-            lock (_syncRoot) return md5.ComputeHash(byteStream);
+            using (MD5 md5 = MD5.Create())
+            {
+                fixed (byte* lpHash = md5.ComputeHash(byteStream))
+                    return new Md5Hash(lpHash);
+            }
         }
 
         public override bool Equals(object obj)
