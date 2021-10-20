@@ -37,11 +37,11 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         public IEnumerable<string> SearchPaths { get; set; }
         public FilePattern Pattern { get; set; }
-        internal Task<IEnumerable<UniqueFile>> SearchTask { get; private set; }
+        public Task<IEnumerable<UniqueFile>> SearchTask { get; private set; }
 
         private Action<UniqueFile, FileInfo> UpdateFoundDuplicateDelegate;
         private Action<UniqueFile, FileInfo> UpdateNewFileFoundDelegate;
-        private Action<DirectoryInfo> UpdateBeginDirectorySearchDelegate;
+        private Action<DirectoryInfo> UpdateDirectorySearchDelegate;
 
         private DateTime StartTime { get; set; }
 
@@ -86,7 +86,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
             UpdateFoundDuplicateDelegate = new Action<UniqueFile, FileInfo>(UpdateFoundDuplicate);
             UpdateNewFileFoundDelegate = new Action<UniqueFile, FileInfo>(UpdateNewFileFound);
-            UpdateBeginDirectorySearchDelegate = new Action<DirectoryInfo>(UpdateBeginDirectorySearch);
+            UpdateDirectorySearchDelegate = new Action<DirectoryInfo>(UpdateDirectorySearch);
 
             finder.OnNewFileFound += Finder_OnNewFileFound;
             finder.OnFoundDuplicate += Finder_OnFoundDuplicate;
@@ -96,9 +96,14 @@ namespace Baxendale.RemoveDuplicates.Forms
             return finder.SearchAsync(paths);
         }
 
+        private void Finder_OnEndDirectorySearch(object sender, DuplicateFinder.DirectorySearchEventArgs e)
+        {
+            BeginInvoke(UpdateDirectorySearchDelegate, e.Directory);
+        }
+
         private void Finder_OnBeginDirectorySearch(object sender, DuplicateFinder.DirectorySearchEventArgs e)
         {
-            BeginInvoke(UpdateBeginDirectorySearchDelegate, e.Directory);
+            BeginInvoke(UpdateDirectorySearchDelegate, e.Directory);
         }
 
         private void Finder_OnNewFileFound(object sender, DuplicateFinder.NewFileFoundEventArgs e)
@@ -111,7 +116,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             BeginInvoke(UpdateFoundDuplicateDelegate, e.Duplicate, e.DuplicateFileMetaData);
         }
 
-        private void UpdateBeginDirectorySearch(DirectoryInfo directoryInfo)
+        private void UpdateDirectorySearch(DirectoryInfo directoryInfo)
         {
             toolStripStatusLabelDirectory.Text = directoryInfo.FullName;
         }
