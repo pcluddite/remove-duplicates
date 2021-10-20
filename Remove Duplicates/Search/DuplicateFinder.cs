@@ -56,26 +56,21 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public IEnumerable<UniqueFile> Search(IEnumerable<DirectoryInfo> directories)
         {
-            FilePattern pattern = Pattern ?? FilePattern.AllFiles;
-            ConcurrentDictionary<Md5Hash, UniqueFile> uniqueFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
-            ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
+            SearchSettings settings = new SearchSettings(Pattern ?? FilePattern.AllFiles);
             List<Task> searchTasks = new List<Task>();
-            foreach (string subpattern in pattern)
-            {
-                foreach (DirectoryInfo directory in directories)
-                    searchTasks.Add(SearchAsync(directory, subpattern, uniqueFiles, duplicatedFiles));
-            }
+            foreach (DirectoryInfo directory in directories)
+                searchTasks.Add(SearchAsync(directory, settings));
             Task.WaitAll(searchTasks.ToArray());
-            OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicatedFiles.Values));
-            return duplicatedFiles.Values;
+            OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(settings.DuplicateFiles.Values));
+            return settings.DuplicateFiles.Values;
         }
 
-        private async Task SearchAsync(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
+        private async Task SearchAsync(DirectoryInfo dirMetaData, SearchSettings settings)
         {
-            await Task.Run(() => Search(dirMetaData, pattern, allFiles, duplicatedFiles));
+            await Task.Run(() => Search(dirMetaData, settings));
         }
 
-        private void Search(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
+        private void Search(DirectoryInfo dirMetaData, SearchSettings settings)
         {
             Queue<DirectoryInfo> directories = new Queue<DirectoryInfo>();
             directories.Enqueue(dirMetaData);
@@ -86,37 +81,42 @@ namespace Baxendale.RemoveDuplicates.Search
                 if (OnBeginDirectorySearch != null)
                 {
                     DirectorySearchEventArgs args = new DirectorySearchEventArgs(dirMetaData);
-                    OnBeginDirectorySearch.Invoke(this, args);
+                    OnBeginDirectorySearch(this, args);
                     dirMetaData = args.Directory;
                 }
 
                 foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
                     directories.Enqueue(subDirectory);
-                
-                Task<List<UniqueFile>> searchTask = ScanFilesAsync(dirMetaData, pattern, allFiles, duplicatedFiles);
-                searchTask.ContinueWith((Task<List<UniqueFile>> task) => OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, task.Result.ToArray())));
+
+                Task<List<UniqueFile>> searchTask = ScanFilesAsync(dirMetaData, settings);
+                if (OnEndDirectorySearch != null)
+                    searchTask.ContinueWith((Task<List<UniqueFile>> task) => OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, task.Result)));
                 searchTasks.Add(searchTask);
             }
             while (directories.Count > 0);
             Task.WaitAll(searchTasks.ToArray());
         }
 
-        private async Task<List<UniqueFile>> ScanFilesAsync(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
+        private async Task<List<UniqueFile>> ScanFilesAsync(DirectoryInfo dirMetaData, SearchSettings settings)
         {
-            return await Task.Run(() => ScanFiles(dirMetaData, pattern, allFiles, duplicatedFiles));
+            return await Task.Run(() => ScanFiles(dirMetaData, settings));
         }
 
-        private List<UniqueFile> ScanFiles(DirectoryInfo dirMetaData, string pattern, ConcurrentDictionary<Md5Hash, UniqueFile> allFiles, ConcurrentDictionary<Md5Hash, UniqueFile> duplicatedFiles)
-        { 
-            FileInfo[] files = dirMetaData.GetFiles(pattern);
-            List<UniqueFile> foundDupes = new List<UniqueFile>(files.Length);
+        private List<UniqueFile> ScanFiles(DirectoryInfo dirMetaData, SearchSettings settings)
+        {
+            HashSet<FileInfo> files = new HashSet<FileInfo>();
+
+            foreach (string subpattern in settings.Pattern)
+                files.UnionWith(dirMetaData.GetFiles(subpattern));
+
+            List<UniqueFile> foundDupes = new List<UniqueFile>(files.Count);
 
             foreach (FileInfo fileMetaData in files)
             {
                 UniqueFile uniqueFile;
                 Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
 
-                if (allFiles.TryGetValue(checksum, out uniqueFile) && !uniqueFile.ContainsPath(fileMetaData.FullName))
+                if (settings.AllFiles.TryGetValue(checksum, out uniqueFile) && !uniqueFile.ContainsPath(fileMetaData.FullName))
                 {
                     bool cancelled = false;
                     if (OnFoundDuplicate != null)
@@ -130,12 +130,12 @@ namespace Baxendale.RemoveDuplicates.Search
                         uniqueFile.Add(fileMetaData);
                         foundDupes.Add(uniqueFile);
                     }
-                    duplicatedFiles[checksum] = uniqueFile;
+                    settings.DuplicateFiles[checksum] = uniqueFile;
                 }
                 else
                 {
                     uniqueFile = new UniqueFile(fileMetaData, checksum);
-                    allFiles[checksum] = uniqueFile;
+                    settings.AllFiles[checksum] = uniqueFile;
                     OnNewFileFound?.Invoke(this, new NewFileFoundEventArgs(uniqueFile, fileMetaData));
                 }
             }
@@ -152,6 +152,20 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             DuplicateFinder finder = new DuplicateFinder(pattern);
             return finder.Search(searchDirectories);
+        }
+
+        private struct SearchSettings
+        {
+            public ConcurrentDictionary<Md5Hash, UniqueFile> AllFiles { get; }
+            public ConcurrentDictionary<Md5Hash, UniqueFile> DuplicateFiles { get; }
+            public FilePattern Pattern { get; }
+
+            public SearchSettings(FilePattern pattern)
+            {
+                AllFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
+                DuplicateFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
+                Pattern = pattern;
+            }
         }
 
         public class DirectorySearchEventArgs : EventArgs

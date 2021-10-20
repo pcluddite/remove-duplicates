@@ -41,6 +41,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private Action<UniqueFile, FileInfo> UpdateFoundDuplicateDelegate;
         private Action<UniqueFile, FileInfo> UpdateNewFileFoundDelegate;
+        private Action<DirectoryInfo> UpdateBeginDirectorySearchDelegate;
 
         private DateTime StartTime { get; set; }
 
@@ -82,13 +83,22 @@ namespace Baxendale.RemoveDuplicates.Forms
             Disable();
 
             DuplicateFinder finder = new DuplicateFinder(pattern);
+
             UpdateFoundDuplicateDelegate = new Action<UniqueFile, FileInfo>(UpdateFoundDuplicate);
             UpdateNewFileFoundDelegate = new Action<UniqueFile, FileInfo>(UpdateNewFileFound);
+            UpdateBeginDirectorySearchDelegate = new Action<DirectoryInfo>(UpdateBeginDirectorySearch);
 
-            finder.OnFoundDuplicate += Finder_OnFoundDuplicate;
             finder.OnNewFileFound += Finder_OnNewFileFound;
+            finder.OnFoundDuplicate += Finder_OnFoundDuplicate;
+            finder.OnBeginDirectorySearch += Finder_OnBeginDirectorySearch;
             finder.OnSearchCompleted += Finder_OnSearchCompleted;
+
             return finder.SearchAsync(paths);
+        }
+
+        private void Finder_OnBeginDirectorySearch(object sender, DuplicateFinder.DirectorySearchEventArgs e)
+        {
+            BeginInvoke(UpdateBeginDirectorySearchDelegate, e.Directory);
         }
 
         private void Finder_OnNewFileFound(object sender, DuplicateFinder.NewFileFoundEventArgs e)
@@ -101,9 +111,13 @@ namespace Baxendale.RemoveDuplicates.Forms
             BeginInvoke(UpdateFoundDuplicateDelegate, e.Duplicate, e.DuplicateFileMetaData);
         }
 
+        private void UpdateBeginDirectorySearch(DirectoryInfo directoryInfo)
+        {
+            toolStripStatusLabelDirectory.Text = directoryInfo.FullName;
+        }
+
         private void UpdateNewFileFound(UniqueFile file, FileInfo fileMetaData)
         {
-            toolStripStatusLabelDirectory.Text = fileMetaData.FullName;
             IncrementFilesSearched();
         }
 
@@ -114,7 +128,6 @@ namespace Baxendale.RemoveDuplicates.Forms
                 item.EnsureVisible();
             IncrementDuplicatesFound();
             IncrementFilesSearched();
-            toolStripStatusLabelDirectory.Text = fileMetaData.FullName;
         }
 
         private ListViewGroup FindResultGroup(Md5Hash hash)
