@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
+using Baxendale.Serialization;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
@@ -377,7 +378,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                     XmlSerializer.Default.Save(results, saveResultsFileDialog.FileName);
                     Program.ShowInfo(this, "Results saved");
                 }
-                catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
+                catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
                 {
                     Program.ShowError(this, ex.Message);
                 }

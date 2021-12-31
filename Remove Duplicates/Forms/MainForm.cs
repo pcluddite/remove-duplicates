@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
+using Baxendale.Serialization;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
@@ -143,7 +144,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 comboBoxPatterns.Text = file.Pattern.ToString();
                 return true;
             }
-            catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
+            catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
             {
                 Program.ShowError(this, ex.Message);
                 return false;
@@ -159,7 +160,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                     Query file = new Query(lstPaths.Items.Cast<string>(), GetSelectedPattern());
                     XmlSerializer.Default.Save(file, saveQueryFileDialog.FileName);
                 }
-                catch (Exception ex) when (ex is IOException || ex is XmlSerializationException || ex is ArgumentException)
+                catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
                 {
                     Program.ShowError(this, ex.Message);
                 }

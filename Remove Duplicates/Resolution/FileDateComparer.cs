@@ -20,6 +20,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using Baxendale.Data.Xml;
+using Baxendale.Serialization;
 
 namespace Baxendale.RemoveDuplicates.Resolution
 {
@@ -54,11 +55,11 @@ namespace Baxendale.RemoveDuplicates.Resolution
         {
             string typeName = node.Attribute("type")?.Value;
             if (typeName == null)
-                throw new XmlSerializationException(node, "File date comparer type is not set");
+                throw new SerializationException(node, "File date comparer type is not set");
             typeName = char.ToUpper(typeName[0]) + typeName.Substring(1);
             Type comparerType = Type.GetType($"{typeof(FileDateComparer).Namespace}.{typeName}{nameof(FileDateComparer)}");
             if (comparerType == null)
-                throw new XmlSerializationException(node, $"The file comparer type '{typeName}' is not recognized");
+                throw new SerializationException(node, $"The file comparer type '{typeName}' is not recognized");
             FileDateComparer comparer = (FileDateComparer)Activator.CreateInstance(comparerType);
             comparer.Reverse = bool.TrueString.EqualsIgnoreCase(node.Attribute("reverse")?.Value);
             return comparer;
