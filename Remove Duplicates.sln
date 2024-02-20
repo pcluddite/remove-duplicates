@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remove Duplicates", "Remove Duplicates\Remove Duplicates.csproj", "{2C0FFE9B-DF18-40F6-815F-8E4B1CFA1AF0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dataman", "..\dataman\dataman\dataman.csproj", "{B6DAA621-380F-4014-81A1-581B6A0703FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{2C0FFE9B-DF18-40F6-815F-8E4B1CFA1AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C0FFE9B-DF18-40F6-815F-8E4B1CFA1AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C0FFE9B-DF18-40F6-815F-8E4B1CFA1AF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6DAA621-380F-4014-81A1-581B6A0703FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6DAA621-380F-4014-81A1-581B6A0703FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6DAA621-380F-4014-81A1-581B6A0703FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6DAA621-380F-4014-81A1-581B6A0703FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
