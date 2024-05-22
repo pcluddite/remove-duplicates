@@ -342,7 +342,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (item.HasDropDownItems) return;
             try
             {
-                Process.Start((string)item.Tag);
+                Process.Start(new ProcessStartInfo((string)item.Tag) { UseShellExecute = true });
             }
             catch (Exception ex) when (ex is Win32Exception || ex is IOException)
             {
