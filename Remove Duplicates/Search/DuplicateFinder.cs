@@ -35,8 +35,6 @@ namespace Baxendale.RemoveDuplicates.Search
         public event EventHandler<DuplicateFoundEventArgs> OnFoundDuplicate;
         public event EventHandler<SearchCompletedEventArgs> OnSearchCompleted;
 
-        public bool InProgress { get; private set; }
-
         public DuplicateFinder(FilePattern pattern)
         {
             Pattern = pattern;
