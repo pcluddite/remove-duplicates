@@ -35,7 +35,7 @@ namespace Baxendale.RemoveDuplicates
 
         public static DialogResult ShowError(IWin32Window owner, Exception ex)
         {
-            return ShowError(owner, ex);
+            return ShowError(owner, ex.Message);
         }
 
         public static DialogResult ShowError(IWin32Window owner, string message)
