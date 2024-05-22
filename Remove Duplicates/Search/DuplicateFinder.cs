@@ -20,6 +20,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Baxendale.RemoveDuplicates.Search
@@ -55,22 +56,32 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public async Task<IEnumerable<UniqueFile>> SearchAsync(IEnumerable<string> directoryPaths)
         {
-            return await SearchAsync(directoryPaths.Select(path => new DirectoryInfo(path)));
+            return await SearchAsync(directoryPaths, CancellationToken.None);
+        }
+
+        public async Task<IEnumerable<UniqueFile>> SearchAsync(IEnumerable<string> directoryPaths, CancellationToken cancellationToken)
+        {
+            return await SearchAsync(directoryPaths.Select(path => new DirectoryInfo(path)), cancellationToken);
         }
 
         public async Task<IEnumerable<UniqueFile>> SearchAsync(IEnumerable<DirectoryInfo> directories)
+        {
+            return await SearchAsync(directories, CancellationToken.None);
+        }
+
+        public async Task<IEnumerable<UniqueFile>> SearchAsync(IEnumerable<DirectoryInfo> directories, CancellationToken cancellationToken)
         {
             SearchSettings settings = new SearchSettings(Pattern ?? FilePattern.AllFiles);
             List<UniqueFile> duplicates = new List<UniqueFile>();
 
             foreach (DirectoryInfo directory in directories)
-                duplicates.AddRange(await SearchAsync(directory, settings));
+                duplicates.AddRange(await SearchAsync(directory, settings, cancellationToken));
             
             OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicates));
             return duplicates;
         }
 
-        private async Task<IEnumerable<UniqueFile>> SearchAsync(DirectoryInfo dirMetaData, SearchSettings settings)
+        private async Task<IEnumerable<UniqueFile>> SearchAsync(DirectoryInfo dirMetaData, SearchSettings settings, CancellationToken cancellationToken)
         {
             Queue<DirectoryInfo> directories = new Queue<DirectoryInfo>();
             directories.Enqueue(dirMetaData);
@@ -79,24 +90,27 @@ namespace Baxendale.RemoveDuplicates.Search
 
             do
             {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+
                 dirMetaData = directories.Dequeue();
 
                 foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
                     directories.Enqueue(subDirectory);
 
-                duplicates.AddRange(await ScanFilesAsync(dirMetaData, settings));
+                duplicates.AddRange(await ScanFilesAsync(dirMetaData, settings, cancellationToken));
             }
             while (directories.Count > 0);
 
             return duplicates;
         }
 
-        private async Task<IEnumerable<UniqueFile>> ScanFilesAsync(DirectoryInfo dirMetaData, SearchSettings settings)
+        private async Task<IEnumerable<UniqueFile>> ScanFilesAsync(DirectoryInfo dirMetaData, SearchSettings settings, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => ScanFiles(dirMetaData, settings));
+            return await Task.Run(() => ScanFiles(dirMetaData, settings, cancellationToken));
         }
 
-        private IEnumerable<UniqueFile> ScanFiles(DirectoryInfo dirMetaData, SearchSettings settings)
+        private IEnumerable<UniqueFile> ScanFiles(DirectoryInfo dirMetaData, SearchSettings settings, CancellationToken cancellationToken)
         {
             OnBeginDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData));
 
@@ -111,6 +125,9 @@ namespace Baxendale.RemoveDuplicates.Search
             {
                 UniqueFile uniqueFile;
                 Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
+
+                if (cancellationToken.IsCancellationRequested)
+                    break;
 
                 if (settings.AllFiles.TryGetValue(checksum, out uniqueFile))
                 {

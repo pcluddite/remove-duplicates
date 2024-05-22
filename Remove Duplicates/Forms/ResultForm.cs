@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Baxendale.Data.Xml;
@@ -51,6 +52,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         private bool _liveUpdates;
         private Dictionary<Md5Hash, ListViewGroup> _groups;
         private List<ListViewItem> _results;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public ResultForm(IEnumerable<string> paths, FilePattern pattern)
         {
@@ -63,6 +65,13 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             SearchTask = StartSearch(SearchPaths, Pattern);
             base.OnLoad(e);
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (!SearchTask.IsCompleted && !_cancellationTokenSource.IsCancellationRequested)
+                _cancellationTokenSource.Cancel();
+            base.OnFormClosing(e);
         }
 
         private void dotTimer_Tick(object sender, EventArgs e)
@@ -94,7 +103,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             finder.OnBeginDirectorySearch += Finder_OnBeginDirectorySearch;
             finder.OnSearchCompleted += Finder_OnSearchCompleted;
 
-            return finder.SearchAsync(paths);
+            return finder.SearchAsync(paths, _cancellationTokenSource.Token);
         }
 
         private void Finder_OnEndDirectorySearch(object sender, DuplicateFinder.DirectorySearchEventArgs e)
