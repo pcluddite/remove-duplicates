@@ -73,7 +73,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 FilePattern pattern = GetSelectedPattern();
 
                 string[] paths = lstPaths.Items.Cast<string>().ToArray();
-                SearchForm searchForm = new SearchForm(paths, pattern);
+                ResultForm searchForm = new ResultForm(paths, pattern);
                 searchForm.ShowDialog(this);
             }
             catch (Exception ex) when (ex is ArgumentException)
