@@ -74,7 +74,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 FilePattern pattern = GetSelectedPattern();
 
                 string[] paths = lstPaths.Items.Cast<string>().ToArray();
-                ResultForm searchForm = new ResultForm(paths, pattern);
+                ResultForm searchForm = new ResultForm(paths, pattern, checkSubdirs.Checked);
                 searchForm.ShowDialog(this);
             }
             catch (Exception ex) when (ex is ArgumentException)

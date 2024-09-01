@@ -40,6 +40,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         public IEnumerable<string> SearchPaths { get; set; }
         public FilePattern Pattern { get; set; }
+        public bool IncludeSubdirectories { get; set; }
         public Task<IEnumerable<UniqueFile>> SearchTask { get; private set; }
 
         private Action<UniqueFile, FileInfo> UpdateFoundDuplicateDelegate;
@@ -55,10 +56,11 @@ namespace Baxendale.RemoveDuplicates.Forms
         private List<ListViewItem> _results;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public ResultForm(IEnumerable<string> paths, FilePattern pattern)
+        public ResultForm(IEnumerable<string> paths, FilePattern pattern, bool subdirs = true)
         {
             SearchPaths = paths;
             Pattern = pattern;
+            IncludeSubdirectories = subdirs;
             InitializeComponent();
         }
 
@@ -93,7 +95,10 @@ namespace Baxendale.RemoveDuplicates.Forms
 
             Disable();
 
-            DuplicateFinder finder = new DuplicateFinder(pattern);
+            DuplicateFinder finder = new DuplicateFinder(pattern)
+            {
+                IncludeSubdirectories = IncludeSubdirectories
+            };
 
             UpdateFoundDuplicateDelegate = new Action<UniqueFile, FileInfo>(UpdateFoundDuplicate);
             UpdateNewFileFoundDelegate = new Action<UniqueFile, FileInfo>(UpdateNewFileFound);

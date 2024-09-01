@@ -45,166 +45,175 @@ namespace Baxendale.RemoveDuplicates.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.lstPaths = new System.Windows.Forms.ListBox();
-            this.grpPaths = new System.Windows.Forms.GroupBox();
-            this.btnRemovePath = new System.Windows.Forms.Button();
-            this.btnAddPath = new System.Windows.Forms.Button();
-            this.grpBoxPattern = new System.Windows.Forms.GroupBox();
-            this.comboBoxPatterns = new System.Windows.Forms.ComboBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnLoad = new System.Windows.Forms.Button();
-            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.openQueryFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveQueryFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.grpPaths.SuspendLayout();
-            this.grpBoxPattern.SuspendLayout();
-            this.SuspendLayout();
+            lstPaths = new System.Windows.Forms.ListBox();
+            grpPaths = new System.Windows.Forms.GroupBox();
+            btnRemovePath = new System.Windows.Forms.Button();
+            btnAddPath = new System.Windows.Forms.Button();
+            grpBoxPattern = new System.Windows.Forms.GroupBox();
+            comboBoxPatterns = new System.Windows.Forms.ComboBox();
+            btnSearch = new System.Windows.Forms.Button();
+            btnSave = new System.Windows.Forms.Button();
+            btnLoad = new System.Windows.Forms.Button();
+            folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            openQueryFileDialog = new System.Windows.Forms.OpenFileDialog();
+            saveQueryFileDialog = new System.Windows.Forms.SaveFileDialog();
+            checkSubdirs = new System.Windows.Forms.CheckBox();
+            grpPaths.SuspendLayout();
+            grpBoxPattern.SuspendLayout();
+            SuspendLayout();
             // 
             // lstPaths
             // 
-            this.lstPaths.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstPaths.FormattingEnabled = true;
-            this.lstPaths.ItemHeight = 16;
-            this.lstPaths.Location = new System.Drawing.Point(5, 21);
-            this.lstPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.lstPaths.Name = "lstPaths";
-            this.lstPaths.Size = new System.Drawing.Size(473, 116);
-            this.lstPaths.TabIndex = 0;
-            this.lstPaths.SelectedIndexChanged += new System.EventHandler(this.lstPaths_SelectedIndexChanged);
+            lstPaths.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            lstPaths.FormattingEnabled = true;
+            lstPaths.ItemHeight = 15;
+            lstPaths.Location = new System.Drawing.Point(4, 20);
+            lstPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            lstPaths.Name = "lstPaths";
+            lstPaths.Size = new System.Drawing.Size(414, 109);
+            lstPaths.TabIndex = 0;
+            lstPaths.SelectedIndexChanged += lstPaths_SelectedIndexChanged;
             // 
             // grpPaths
             // 
-            this.grpPaths.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpPaths.Controls.Add(this.btnRemovePath);
-            this.grpPaths.Controls.Add(this.btnAddPath);
-            this.grpPaths.Controls.Add(this.lstPaths);
-            this.grpPaths.Location = new System.Drawing.Point(12, 12);
-            this.grpPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.grpPaths.Name = "grpPaths";
-            this.grpPaths.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.grpPaths.Size = new System.Drawing.Size(485, 177);
-            this.grpPaths.TabIndex = 1;
-            this.grpPaths.TabStop = false;
-            this.grpPaths.Text = "Search Paths";
+            grpPaths.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            grpPaths.Controls.Add(checkSubdirs);
+            grpPaths.Controls.Add(btnRemovePath);
+            grpPaths.Controls.Add(btnAddPath);
+            grpPaths.Controls.Add(lstPaths);
+            grpPaths.Location = new System.Drawing.Point(10, 11);
+            grpPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            grpPaths.Name = "grpPaths";
+            grpPaths.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            grpPaths.Size = new System.Drawing.Size(424, 166);
+            grpPaths.TabIndex = 1;
+            grpPaths.TabStop = false;
+            grpPaths.Text = "Search Paths";
             // 
             // btnRemovePath
             // 
-            this.btnRemovePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRemovePath.Enabled = false;
-            this.btnRemovePath.Location = new System.Drawing.Point(324, 143);
-            this.btnRemovePath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnRemovePath.Name = "btnRemovePath";
-            this.btnRemovePath.Size = new System.Drawing.Size(75, 23);
-            this.btnRemovePath.TabIndex = 2;
-            this.btnRemovePath.Text = "Re&move";
-            this.btnRemovePath.UseVisualStyleBackColor = true;
-            this.btnRemovePath.Click += new System.EventHandler(this.btnRemovePath_Click);
+            btnRemovePath.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnRemovePath.Enabled = false;
+            btnRemovePath.Location = new System.Drawing.Point(284, 134);
+            btnRemovePath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            btnRemovePath.Name = "btnRemovePath";
+            btnRemovePath.Size = new System.Drawing.Size(66, 22);
+            btnRemovePath.TabIndex = 2;
+            btnRemovePath.Text = "Re&move";
+            btnRemovePath.UseVisualStyleBackColor = true;
+            btnRemovePath.Click += btnRemovePath_Click;
             // 
             // btnAddPath
             // 
-            this.btnAddPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAddPath.Location = new System.Drawing.Point(404, 143);
-            this.btnAddPath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnAddPath.Name = "btnAddPath";
-            this.btnAddPath.Size = new System.Drawing.Size(75, 23);
-            this.btnAddPath.TabIndex = 1;
-            this.btnAddPath.Text = "&Add";
-            this.btnAddPath.UseVisualStyleBackColor = true;
-            this.btnAddPath.Click += new System.EventHandler(this.btnAddPath_Click);
+            btnAddPath.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnAddPath.Location = new System.Drawing.Point(354, 134);
+            btnAddPath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            btnAddPath.Name = "btnAddPath";
+            btnAddPath.Size = new System.Drawing.Size(66, 22);
+            btnAddPath.TabIndex = 1;
+            btnAddPath.Text = "&Add";
+            btnAddPath.UseVisualStyleBackColor = true;
+            btnAddPath.Click += btnAddPath_Click;
             // 
             // grpBoxPattern
             // 
-            this.grpBoxPattern.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpBoxPattern.Controls.Add(this.comboBoxPatterns);
-            this.grpBoxPattern.Location = new System.Drawing.Point(12, 194);
-            this.grpBoxPattern.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.grpBoxPattern.Name = "grpBoxPattern";
-            this.grpBoxPattern.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.grpBoxPattern.Size = new System.Drawing.Size(485, 64);
-            this.grpBoxPattern.TabIndex = 2;
-            this.grpBoxPattern.TabStop = false;
-            this.grpBoxPattern.Text = "Pattern";
+            grpBoxPattern.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            grpBoxPattern.Controls.Add(comboBoxPatterns);
+            grpBoxPattern.Location = new System.Drawing.Point(10, 182);
+            grpBoxPattern.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            grpBoxPattern.Name = "grpBoxPattern";
+            grpBoxPattern.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            grpBoxPattern.Size = new System.Drawing.Size(424, 60);
+            grpBoxPattern.TabIndex = 2;
+            grpBoxPattern.TabStop = false;
+            grpBoxPattern.Text = "Pattern";
             // 
             // comboBoxPatterns
             // 
-            this.comboBoxPatterns.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBoxPatterns.FormattingEnabled = true;
-            this.comboBoxPatterns.Location = new System.Drawing.Point(12, 25);
-            this.comboBoxPatterns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.comboBoxPatterns.Name = "comboBoxPatterns";
-            this.comboBoxPatterns.Size = new System.Drawing.Size(467, 24);
-            this.comboBoxPatterns.TabIndex = 3;
+            comboBoxPatterns.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            comboBoxPatterns.FormattingEnabled = true;
+            comboBoxPatterns.Location = new System.Drawing.Point(10, 23);
+            comboBoxPatterns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            comboBoxPatterns.Name = "comboBoxPatterns";
+            comboBoxPatterns.Size = new System.Drawing.Size(409, 23);
+            comboBoxPatterns.TabIndex = 3;
             // 
             // btnSearch
             // 
-            this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSearch.Location = new System.Drawing.Point(311, 265);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(187, 23);
-            this.btnSearch.TabIndex = 3;
-            this.btnSearch.Text = "&Find Duplicates";
-            this.btnSearch.UseVisualStyleBackColor = true;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            btnSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnSearch.Location = new System.Drawing.Point(272, 248);
+            btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new System.Drawing.Size(164, 22);
+            btnSearch.TabIndex = 3;
+            btnSearch.Text = "&Find Duplicates";
+            btnSearch.UseVisualStyleBackColor = true;
+            btnSearch.Click += btnSearch_Click;
             // 
             // btnSave
             // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnSave.Location = new System.Drawing.Point(12, 265);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 4;
-            this.btnSave.Text = "&Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            btnSave.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnSave.Location = new System.Drawing.Point(10, 248);
+            btnSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new System.Drawing.Size(66, 22);
+            btnSave.TabIndex = 4;
+            btnSave.Text = "&Save";
+            btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += btnSave_Click;
             // 
             // btnLoad
             // 
-            this.btnLoad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnLoad.Location = new System.Drawing.Point(93, 265);
-            this.btnLoad.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnLoad.Name = "btnLoad";
-            this.btnLoad.Size = new System.Drawing.Size(75, 23);
-            this.btnLoad.TabIndex = 5;
-            this.btnLoad.Text = "L&oad";
-            this.btnLoad.UseVisualStyleBackColor = true;
-            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            btnLoad.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnLoad.Location = new System.Drawing.Point(81, 248);
+            btnLoad.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            btnLoad.Name = "btnLoad";
+            btnLoad.Size = new System.Drawing.Size(66, 22);
+            btnLoad.TabIndex = 5;
+            btnLoad.Text = "L&oad";
+            btnLoad.UseVisualStyleBackColor = true;
+            btnLoad.Click += btnLoad_Click;
             // 
             // openQueryFileDialog
             // 
-            this.openQueryFileDialog.FileName = "*.xml";
-            this.openQueryFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            openQueryFileDialog.FileName = "*.xml";
+            openQueryFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
             // 
             // saveQueryFileDialog
             // 
-            this.saveQueryFileDialog.FileName = "*.xml";
-            this.saveQueryFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            saveQueryFileDialog.FileName = "*.xml";
+            saveQueryFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
+            // 
+            // checkSubdirs
+            // 
+            checkSubdirs.AutoSize = true;
+            checkSubdirs.Checked = true;
+            checkSubdirs.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkSubdirs.Location = new System.Drawing.Point(10, 137);
+            checkSubdirs.Name = "checkSubdirs";
+            checkSubdirs.Size = new System.Drawing.Size(142, 19);
+            checkSubdirs.TabIndex = 3;
+            checkSubdirs.Text = "Include subdirectories";
+            checkSubdirs.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(509, 300);
-            this.Controls.Add(this.btnLoad);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnSearch);
-            this.Controls.Add(this.grpBoxPattern);
-            this.Controls.Add(this.grpPaths);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.MaximizeBox = false;
-            this.Name = "MainForm";
-            this.Text = "Duplicate File Remover Tool";
-            this.grpPaths.ResumeLayout(false);
-            this.grpBoxPattern.ResumeLayout(false);
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(445, 281);
+            Controls.Add(btnLoad);
+            Controls.Add(btnSave);
+            Controls.Add(btnSearch);
+            Controls.Add(grpBoxPattern);
+            Controls.Add(grpPaths);
+            Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            MaximizeBox = false;
+            Name = "MainForm";
+            Text = "Duplicate File Remover Tool";
+            grpPaths.ResumeLayout(false);
+            grpPaths.PerformLayout();
+            grpBoxPattern.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
@@ -221,6 +230,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.OpenFileDialog openQueryFileDialog;
         private System.Windows.Forms.SaveFileDialog saveQueryFileDialog;
+        private System.Windows.Forms.CheckBox checkSubdirs;
     }
 }
 

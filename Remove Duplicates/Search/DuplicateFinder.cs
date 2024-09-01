@@ -28,6 +28,7 @@ namespace Baxendale.RemoveDuplicates.Search
     internal class DuplicateFinder
     {
         public FilePattern Pattern { get; set; }
+        public bool IncludeSubdirectories { get; set; }
 
         public event EventHandler<DirectorySearchEventArgs> OnBeginDirectorySearch;
         public event EventHandler<DirectorySearchEventArgs> OnEndDirectorySearch;
@@ -69,7 +70,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public async Task<IEnumerable<UniqueFile>> SearchAsync(IEnumerable<DirectoryInfo> directories, CancellationToken cancellationToken)
         {
-            SearchSettings settings = new SearchSettings(Pattern ?? FilePattern.AllFiles);
+            SearchSettings settings = new SearchSettings(Pattern ?? FilePattern.AllFiles, IncludeSubdirectories);
             List<UniqueFile> duplicates = new List<UniqueFile>();
 
             foreach (DirectoryInfo directory in directories)
@@ -93,8 +94,11 @@ namespace Baxendale.RemoveDuplicates.Search
 
                 dirMetaData = directories.Dequeue();
 
-                foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
-                    directories.Enqueue(subDirectory);
+                if (settings.IncludeSubdirectories)
+                {
+                    foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
+                        directories.Enqueue(subDirectory);
+                }
 
                 duplicates.AddRange(await ScanFilesAsync(dirMetaData, settings, cancellationToken));
             }
@@ -174,11 +178,13 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             public ConcurrentDictionary<Md5Hash, UniqueFile> AllFiles { get; }
             public FilePattern Pattern { get; }
+            public bool IncludeSubdirectories { get; }
 
-            public SearchSettings(FilePattern pattern)
+            public SearchSettings(FilePattern pattern, bool subdirs = true)
             {
                 AllFiles = new ConcurrentDictionary<Md5Hash, UniqueFile>();
                 Pattern = pattern;
+                IncludeSubdirectories = subdirs;
             }
         }
 
