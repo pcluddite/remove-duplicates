@@ -72,10 +72,12 @@ namespace Baxendale.RemoveDuplicates.Forms
             try
             {
                 FilePattern pattern = GetSelectedPattern();
-
                 string[] paths = lstPaths.Items.Cast<string>().ToArray();
+
+                Hide();
                 ResultForm searchForm = new ResultForm(paths, pattern, checkSubdirs.Checked);
                 searchForm.ShowDialog(this);
+                Show();
             }
             catch (Exception ex) when (ex is ArgumentException)
             {
