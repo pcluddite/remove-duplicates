@@ -31,14 +31,18 @@ namespace Baxendale.RemoveDuplicates
         [XmlSerializableProperty(Name = "patterns")]
         public FilePattern Pattern { get; set; }
 
+        [XmlSerializableProperty(Name = "subdirs")]
+        public bool IncludeSubdirectories { get; set; }
+
         private Query()
         {
         }
 
-        public Query(IEnumerable<string> paths, FilePattern pattern)
+        public Query(IEnumerable<string> paths, FilePattern pattern = null, bool subdirs = true)
         {
             _paths = new List<string>(paths);
-            Pattern = pattern;
+            Pattern = pattern ?? FilePattern.AllFiles;
+            IncludeSubdirectories = subdirs;
         }
     }
 }

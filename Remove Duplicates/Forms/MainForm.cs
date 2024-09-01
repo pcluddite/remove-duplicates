@@ -138,12 +138,14 @@ namespace Baxendale.RemoveDuplicates.Forms
                     throw new ArgumentException("No paths were specified in this query file");
                 if (file.Pattern == null)
                     throw new ArgumentException("No search pattern was specified in this query file");
+                
                 lstPaths.Items.Clear();
                 foreach (string path in file.SearchPaths)
                 {
                     lstPaths.Items.Add(path);
                 }
 
+                checkSubdirs.Checked = file.IncludeSubdirectories;
                 comboBoxPatterns.Text = file.Pattern.ToString();
                 return true;
             }
@@ -160,7 +162,11 @@ namespace Baxendale.RemoveDuplicates.Forms
             {
                 try
                 {
-                    Query file = new Query(lstPaths.Items.Cast<string>(), GetSelectedPattern());
+                    Query file = new Query(lstPaths.Items.Cast<string>())
+                    {
+                        Pattern = GetSelectedPattern(),
+                        IncludeSubdirectories = checkSubdirs.Checked
+                    };
                     XmlSerializer.Default.Save(file, saveQueryFileDialog.FileName);
                 }
                 catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
