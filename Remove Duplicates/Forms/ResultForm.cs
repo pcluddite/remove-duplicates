@@ -236,7 +236,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 totalDupSize += (size * dupCount);
             }
             string verb = duplicatesFound == 1 ? "duplicate is" : "duplicates are";
-            toolStripStatusDuplicatesCount.Text = $"{duplicatesFound} {verb} taking up {totalDupSize.FormatAsSize()}";
+            toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} {verb} taking up {totalDupSize.FormatAsSize()}";
             toolStripStatusLabelDirectory.Text = $"Completed in {DateTime.Now - StartTime:h\\:mm\\:ss}";
             StatusBar_TextUpdated(this, EventArgs.Empty);
         }
