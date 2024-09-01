@@ -60,7 +60,7 @@ namespace Baxendale.RemoveDuplicates
 
         public static DialogResult ShowDialog(IWin32Window owner, string message, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
-            return MessageBox.Show(owner, message, (owner as Form)?.Name ?? Application.ProductName, buttons, icon);
+            return MessageBox.Show(owner, message, (owner as Form)?.Text ?? Application.ProductName, buttons, icon);
         }
     }
 }
