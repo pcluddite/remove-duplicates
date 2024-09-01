@@ -69,7 +69,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(169, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // pathColumnHeader
             // 
@@ -140,39 +140,40 @@ namespace Baxendale.RemoveDuplicates.Forms
             rightClickMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, showInExplorerToolStripMenuItem, toolStripSeparator, resolveToolStripMenuItem, toolStripSeparator1, saveResultsToolStripMenuItem });
             rightClickMenu.Name = "rightClickItemMenu";
-            rightClickMenu.Size = new System.Drawing.Size(173, 104);
+            rightClickMenu.Size = new System.Drawing.Size(181, 126);
             rightClickMenu.Opening += rightClickMenu_Opening;
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += OpenToolStripItem_Click;
             // 
             // showInExplorerToolStripMenuItem
             // 
             showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
-            showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             showInExplorerToolStripMenuItem.Text = "Show in Explorer";
             showInExplorerToolStripMenuItem.Click += ExplorerToolStripItem_Click;
             // 
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new System.Drawing.Size(169, 6);
+            toolStripSeparator.Size = new System.Drawing.Size(177, 6);
             // 
             // resolveToolStripMenuItem
             // 
             resolveToolStripMenuItem.Name = "resolveToolStripMenuItem";
-            resolveToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            resolveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             resolveToolStripMenuItem.Text = "&Resolve Duplicates";
+            resolveToolStripMenuItem.Click += resolveToolStripMenuItem_Click;
             // 
             // saveResultsToolStripMenuItem
             // 
             saveResultsToolStripMenuItem.Enabled = false;
             saveResultsToolStripMenuItem.Name = "saveResultsToolStripMenuItem";
-            saveResultsToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            saveResultsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             saveResultsToolStripMenuItem.Text = "Save Results";
             saveResultsToolStripMenuItem.Click += saveResultsToolStripMenuItem_Click;
             // 

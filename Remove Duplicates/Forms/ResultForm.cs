@@ -229,7 +229,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
             long totalDupSize = 0;
 
-            foreach(ListViewGroup group in lstViewResults.Groups)
+            foreach (ListViewGroup group in lstViewResults.Groups)
             {
                 long size = ((UniqueFile)group.Tag).FileSize;
                 int dupCount = group.Items.Count - 1;
@@ -403,8 +403,13 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void rightClickMenu_Opening(object sender, CancelEventArgs e)
         {
             openToolStripMenuItem.Visible = showInExplorerToolStripMenuItem.Visible =
-                toolStripSeparator.Visible = resolveToolStripMenuItem.Visible = 
+                toolStripSeparator.Visible = resolveToolStripMenuItem.Visible =
                 toolStripSeparator1.Visible = lstViewResults.SelectedItems.Count > 0;
+        }
+
+        private void resolveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.ShowError(this, "This operation is not currently supported");
         }
     }
 }
