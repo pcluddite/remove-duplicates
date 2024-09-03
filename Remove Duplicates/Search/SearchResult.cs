@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021 Timothy Baxendale
+//    Copyright (C) 2021-2024 Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ namespace Baxendale.RemoveDuplicates.Search
 {
     internal class SearchResult : IXmlSerializableObject
     {
-        private List<UniqueFile> _files;
+        private readonly List<UniqueFile> _files;
         
         [XmlSerializableProperty(Name = "query")]
         public Query Query { get; private set; }
@@ -31,10 +31,7 @@ namespace Baxendale.RemoveDuplicates.Search
         [XmlSerializableProperty(Name = "found", BackingField = nameof(_files), ElementName = "file")]
         public IEnumerable<UniqueFile> Files
         {
-            get
-            {
-                return _files.AsReadOnly();
-            }
+            get => _files.AsReadOnly();
         }
 
         private SearchResult()

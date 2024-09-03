@@ -72,7 +72,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             lstPaths.Name = "lstPaths";
             lstPaths.Size = new System.Drawing.Size(413, 109);
             lstPaths.TabIndex = 0;
-            lstPaths.SelectedIndexChanged += lstPaths_SelectedIndexChanged;
+            lstPaths.SelectedIndexChanged += LstPaths_SelectedIndexChanged;
             // 
             // grpPaths
             // 
@@ -114,7 +114,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnRemovePath.TabIndex = 3;
             btnRemovePath.Text = "Re&move";
             btnRemovePath.UseVisualStyleBackColor = true;
-            btnRemovePath.Click += btnRemovePath_Click;
+            btnRemovePath.Click += BtnRemovePath_Click;
             // 
             // btnAddPath
             // 
@@ -126,7 +126,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnAddPath.TabIndex = 2;
             btnAddPath.Text = "&Add";
             btnAddPath.UseVisualStyleBackColor = true;
-            btnAddPath.Click += btnAddPath_Click;
+            btnAddPath.Click += BtnAddPath_Click;
             // 
             // grpBoxPattern
             // 
@@ -161,7 +161,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnSearch.TabIndex = 3;
             btnSearch.Text = "&Find Duplicates";
             btnSearch.UseVisualStyleBackColor = true;
-            btnSearch.Click += btnSearch_Click;
+            btnSearch.Click += BtnSearch_Click;
             // 
             // btnSave
             // 
@@ -173,7 +173,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnSave.TabIndex = 4;
             btnSave.Text = "&Save";
             btnSave.UseVisualStyleBackColor = true;
-            btnSave.Click += btnSave_Click;
+            btnSave.Click += BtnSave_Click;
             // 
             // btnLoad
             // 
@@ -185,7 +185,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnLoad.TabIndex = 5;
             btnLoad.Text = "L&oad";
             btnLoad.UseVisualStyleBackColor = true;
-            btnLoad.Click += btnLoad_Click;
+            btnLoad.Click += BtnLoad_Click;
             // 
             // openQueryFileDialog
             // 

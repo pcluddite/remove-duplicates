@@ -28,27 +28,21 @@ namespace Baxendale.RemoveDuplicates.Search
     {
         private readonly object _object = new object();
 
-        private HashSet<string> _filePaths;
-        private Md5Hash _checksum;
+        private readonly HashSet<string> _filePaths;
+        private readonly Md5Hash _checksum;
 
         [XmlSerializableProperty(Name = "hash", BackingField = nameof(_checksum))]
         public Md5Hash Hash
         {
-            get
-            {
-                return _checksum;
-            }
+            get => _checksum;
         }
 
         [XmlSerializableProperty(Name = "paths", BackingField = nameof(_filePaths), ElementName = "uri", AttributeName = "value")]
         public IReadOnlyCollection<string> Paths
         {
-            get
-            {
+            get {
                 lock (_object)
-                {
                     return _filePaths.AsReadOnly();
-                }
             }
         }
 
@@ -63,12 +57,11 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             if (other == null) throw new ArgumentNullException(nameof(other));
             lock (_object)
-            lock (other._object)
-            {
-                _filePaths = new HashSet<string>(other._filePaths);
-                _checksum = other._checksum;
-                FileSize = other.FileSize;
-            }
+                lock (other._object) {
+                    _filePaths = new HashSet<string>(other._filePaths);
+                    _checksum = other._checksum;
+                    FileSize = other.FileSize;
+                }
         }
 
         public UniqueFile(string path)
@@ -84,8 +77,7 @@ namespace Baxendale.RemoveDuplicates.Search
         public UniqueFile(FileInfo fileInfo, Md5Hash checksum)
             : this(new HashSet<string>(), checksum, fileInfo.Length)
         {
-            lock (_object)
-            {
+            lock (_object) {
                 _filePaths.Add(fileInfo.FullName);
             }
         }
@@ -99,16 +91,14 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public bool Add(string path)
         {
-            lock (_object)
-            {
+            lock (_object) {
                 return _filePaths.Add(Path.GetFullPath(path));
             }
         }
 
         public bool Add(FileInfo fileInfo)
         {
-            lock (_object)
-            {
+            lock (_object) {
                 return _filePaths.Add(fileInfo.FullName);
             }
         }
@@ -118,17 +108,15 @@ namespace Baxendale.RemoveDuplicates.Search
             if (!Equals(file))
                 return false;
             lock (_object)
-            lock (file._object)
-            {
-                _filePaths.UnionWith(file._filePaths);
-                return true;
-            }
+                lock (file._object) {
+                    _filePaths.UnionWith(file._filePaths);
+                    return true;
+                }
         }
 
         public bool ContainsPath(string fullName)
         {
-            lock (_object)
-            {
+            lock (_object) {
                 return _filePaths.Contains(fullName);
             }
         }
@@ -136,8 +124,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public bool Remove(string path)
         {
-            lock (_object)
-            {
+            lock (_object) {
                 return _filePaths.Remove(Path.GetFullPath(path));
             }
         }
@@ -166,10 +153,9 @@ namespace Baxendale.RemoveDuplicates.Search
                 return true;
 
             lock (_object)
-            lock (other._object)
-            {
-                return FileSize == other.FileSize && _checksum == other.Hash;
-            }
+                lock (other._object) {
+                    return FileSize == other.FileSize && _checksum == other.Hash;
+                }
         }
 
         public bool Equals(FileInfo metaData)
@@ -177,8 +163,7 @@ namespace Baxendale.RemoveDuplicates.Search
             if (metaData == null) throw new ArgumentNullException(nameof(metaData));
             // check file size first since we can determine inequality quickly
 
-            lock (_object)
-            {
+            lock (_object) {
                 return metaData.Length == FileSize && Hash == Md5Hash.ComputeHash(metaData.OpenRead());
             }
         }
@@ -190,8 +175,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public void TrimExcess()
         {
-            lock (_object)
-            {
+            lock (_object) {
                 _filePaths.TrimExcess();
             }
         }

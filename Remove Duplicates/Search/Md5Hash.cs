@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021 Timothy Baxendale
+//    Copyright (C) 2021-2024 Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -36,10 +36,9 @@ namespace Baxendale.RemoveDuplicates.Search
         private readonly long _part1;
         private readonly long _part2;
 
-        public unsafe byte[] Bytes
+        public readonly unsafe byte[] Bytes
         {
-            get
-            {
+            get {
                 byte[] bytes = new byte[LLONG_BYTES];
                 fixed (byte* lpBytes = bytes)
                     GetBytes(lpBytes, _part1, _part2);
@@ -47,10 +46,9 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public unsafe string Base16
+        public readonly unsafe string Base16
         {
-            get
-            {
+            get {
                 char* lpBuff = stackalloc char[LLONG_STR16_SIZE];
                 byte* lpBytes = stackalloc byte[LLONG_BYTES];
 
@@ -61,12 +59,9 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public string Base64
+        public readonly string Base64
         {
-            get
-            {
-                return Convert.ToBase64String(Bytes);
-            }
+            get => Convert.ToBase64String(Bytes);
         }
 
         private unsafe Md5Hash(byte* lpHash)
@@ -84,9 +79,8 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public unsafe static Md5Hash ComputeHash(byte[] data)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
-            using (MD5 md5 = MD5.Create())
-            {
+            ArgumentNullException.ThrowIfNull(data, nameof(data));
+            using (MD5 md5 = MD5.Create()) {
                 fixed (byte* lpHash = md5.ComputeHash(data))
                     return new Md5Hash(lpHash);
             }
@@ -94,9 +88,8 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public unsafe static Md5Hash ComputeHash(Stream byteStream)
         {
-            if (byteStream == null) throw new ArgumentNullException(nameof(byteStream));
-            using (MD5 md5 = MD5.Create())
-            {
+            ArgumentNullException.ThrowIfNull(byteStream, nameof(byteStream));
+            using (MD5 md5 = MD5.Create()) {
                 fixed (byte* lpHash = md5.ComputeHash(byteStream))
                     return new Md5Hash(lpHash);
             }
@@ -104,18 +97,15 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public override bool Equals(object obj)
         {
-            Md5Hash? other = obj as Md5Hash?;
-            if (other == null)
-                return false;
-            return Equals(other);
+            return obj is Md5Hash hash && Equals(hash);
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return _part1.GetHashCode() ^ _part2.GetHashCode();
         }
 
-        public bool Equals(Md5Hash other)
+        public readonly bool Equals(Md5Hash other)
         {
             return _part1 == other._part1 && _part2 == other._part2;
         }
@@ -130,7 +120,7 @@ namespace Baxendale.RemoveDuplicates.Search
             return !left.Equals(right);
         }
 
-        public XAttribute ToXml(XName name)
+        public readonly XAttribute ToXml(XName name)
         {
             return new XAttribute(name, Base16);
         }
@@ -146,8 +136,7 @@ namespace Baxendale.RemoveDuplicates.Search
             int cIdx = 0;
             int len = base16hash.Length;
 
-            do
-            {
+            do {
                 uint u = GetByte(base16hash[cIdx++]) * (uint)HEX_RADIX;
                 u += GetByte(base16hash[cIdx++]);
                 *lpByte++ = (byte)u;
@@ -160,8 +149,7 @@ namespace Baxendale.RemoveDuplicates.Search
         private static unsafe void BytesToString(char* buffer, int buffStart, byte* data, int count, int radix)
         {
             int buffIdx = buffStart;
-            for (int datIdx = 0; datIdx < count; ++datIdx)
-            {
+            for (int datIdx = 0; datIdx < count; ++datIdx) {
                 byte b = data[datIdx];
                 uint div = b / (uint)radix;
                 uint mod = b % (uint)radix;
@@ -189,12 +177,10 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public static byte GetByte(char c)
         {
-            if (c >= '0' && c <= '9')
-            {
+            if (c >= '0' && c <= '9') {
                 return (byte)(c - '0');
             }
-            else if (c >= 'a' && c <= 'f')
-            {
+            else if (c >= 'a' && c <= 'f') {
                 return (byte)(c - 'a' + 10);
             }
             throw new FormatException($"Unexpected character in hexadecimal string '{c}'.");

@@ -167,12 +167,10 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void AddListViewResult(ListViewItem item)
         {
-            if (_liveUpdates)
-            {
+            if (_liveUpdates) {
                 lstViewResults.Items.Add(item);
             }
-            else
-            {
+            else {
                 _results.Add(item);
             }
         }
@@ -181,20 +179,16 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             ListViewGroup duplicateGroup = FindResultGroup(file.Hash);
             ListViewItem item;
-            if (duplicateGroup == null)
-            {
+            if (duplicateGroup == null) {
                 duplicateGroup = new ListViewGroup(file.Hash.Base16, "");
-                if (_liveUpdates)
-                {
+                if (_liveUpdates) {
                     lstViewResults.Groups.Add(duplicateGroup);
                 }
-                else
-                {
+                else {
                     _groups[file.Hash] = duplicateGroup;
                 }
                 duplicateGroup.Tag = file;
-                foreach (string path in file.Paths)
-                {
+                foreach (string path in file.Paths) {
                     item = new ListViewItem(path, duplicateGroup);
                     AddListViewResult(item);
                 }
@@ -215,8 +209,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             dotTimer.Stop();
 
-            if (!_liveUpdates)
-            {
+            if (!_liveUpdates) {
                 toolStripStatusLabelDirectory.Text = "Updating Results View...";
                 lstViewResults.Groups.AddRange(_groups.Values.ToArray());
                 lstViewResults.Items.AddRange(_results.ToArray());
@@ -233,12 +226,12 @@ namespace Baxendale.RemoveDuplicates.Forms
 
             long totalDupSize = 0;
 
-            foreach (ListViewGroup group in lstViewResults.Groups)
-            {
+            foreach (ListViewGroup group in lstViewResults.Groups) {
                 long size = ((UniqueFile)group.Tag).FileSize;
                 int dupCount = group.Items.Count - 1;
                 totalDupSize += (size * dupCount);
             }
+
             string verb = duplicatesFound == 1 ? "duplicate is" : "duplicates are";
             toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} {verb} taking up {totalDupSize.FormatAsSize()}";
             toolStripStatusLabelDirectory.Text = $"Completed in {DateTime.Now - StartTime:h\\:mm\\:ss}";
@@ -255,24 +248,20 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void IncrementDuplicatesFound()
         {
-            if (duplicatesFound == 1)
-            {
+            if (duplicatesFound == 1) {
                 toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicate Found";
             }
-            else
-            {
+            else {
                 toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicates Found";
             }
         }
 
         private void IncrementFilesSearched()
         {
-            if (filesSearched == 1)
-            {
+            if (filesSearched == 1) {
                 toolStripStatusFilesCount.Text = $"{++filesSearched:N0} File Searched";
             }
-            else
-            {
+            else {
                 toolStripStatusFilesCount.Text = $"{++filesSearched:N0} Files Searched";
             }
         }
@@ -282,8 +271,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (e.Button != MouseButtons.Right)
                 return;
 
-            if (lstViewResults.SelectedItems.Count > 1)
-            {
+            if (lstViewResults.SelectedItems.Count > 1) {
                 openToolStripMenuItem.Visible = false;
                 showInExplorerToolStripMenuItem.Visible = false;
 
@@ -294,8 +282,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 deleteAllInFolderToolStripMenuItem.Visible = false;
                 toolStripSeparator2.Visible = false;
             }
-            else if (lstViewResults.SelectedItems.Count == 1)
-            {
+            else if (lstViewResults.SelectedItems.Count == 1) {
                 ListViewItem selectedItem = lstViewResults.SelectedItems[0];
                 showInExplorerToolStripMenuItem.Tag = selectedItem.Text;
                 openToolStripMenuItem.Tag = selectedItem.Text;
@@ -310,8 +297,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 deleteAllInFolderToolStripMenuItem.Visible = true;
                 toolStripSeparator2.Visible = true;
             }
-            else
-            {
+            else {
                 openToolStripMenuItem.Visible = false;
                 showInExplorerToolStripMenuItem.Visible = false;
 
@@ -330,12 +316,10 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
             if (item.HasDropDownItems) return;
-            try
-            {
+            try {
                 Process.Start("explorer.exe", $"/select,\"{(string)item.Tag}\"");
             }
-            catch (Exception ex) when (ex is Win32Exception || ex is IOException)
-            {
+            catch (Exception ex) when (ex is Win32Exception || ex is IOException) {
                 Program.ShowError(this, ex);
             }
         }
@@ -344,12 +328,10 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
             if (item.HasDropDownItems) return;
-            try
-            {
+            try {
                 Process.Start(new ProcessStartInfo((string)item.Tag) { UseShellExecute = true });
             }
-            catch (Exception ex) when (ex is Win32Exception || ex is IOException)
-            {
+            catch (Exception ex) when (ex is Win32Exception || ex is IOException) {
                 Program.ShowError(this, ex);
             }
         }
@@ -373,17 +355,14 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void SaveResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (saveResultsFileDialog.ShowDialog() == DialogResult.OK)
-            {
+            if (saveResultsFileDialog.ShowDialog() == DialogResult.OK) {
                 IEnumerable<UniqueFile> files = lstViewResults.Groups.Cast<ListViewGroup>().Select(i => i.Tag).Cast<UniqueFile>();
                 SearchResult results = new SearchResult(new Query(SearchPaths, Pattern), files);
-                try
-                {
+                try {
                     XmlSerializer.Default.Save(results, saveResultsFileDialog.FileName);
                     Program.ShowInfo(this, "Results saved");
                 }
-                catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
-                {
+                catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException) {
                     Program.ShowError(this, ex.Message);
                 }
             }
@@ -392,20 +371,16 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void RecycleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string files = lstViewResults.SelectedItems.Count > 1 ? "these files" : "this file";
-            if (Program.ShowDialog(this, $"Are you sure you want to recycle {files}?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
+            if (Program.ShowDialog(this, $"Are you sure you want to recycle {files}?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
                 List<ListViewItem> deleted = new List<ListViewItem>();
-                foreach (ListViewItem item in lstViewResults.SelectedItems)
-                {
-                    try
-                    {
+                foreach (ListViewItem item in lstViewResults.SelectedItems) {
+                    try {
 #if !DEBUG
                         FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 #endif
                         deleted.Add(item);
                     }
-                    catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException)
-                    {
+                    catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException) {
                         Program.ShowError(this, ex);
                     }
                 }
@@ -416,20 +391,16 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void DeleteFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string files = lstViewResults.SelectedItems.Count > 1 ? "these files" : "this file";
-            if (Program.ShowDialog(this, $"Are you sure you want to delete {files}?\nThis operation cannot be undone!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-            {
+            if (Program.ShowDialog(this, $"Are you sure you want to delete {files}?\nThis operation cannot be undone!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) {
                 List<ListViewItem> deleted = new List<ListViewItem>();
-                foreach (ListViewItem item in lstViewResults.SelectedItems)
-                {
-                    try
-                    {
+                foreach (ListViewItem item in lstViewResults.SelectedItems) {
+                    try {
 #if !DEBUG
                         File.Delete(item.Text);
 #endif
                         deleted.Add(item);
                     }
-                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-                    {
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
                         Program.ShowError(this, ex);
                     }
                 }
@@ -451,8 +422,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             file.Remove(item.Text);
             lstViewResults.Items.Remove(item);
 
-            if (group.Items.Count < 2)
-            {
+            if (group.Items.Count < 2) {
                 lstViewResults.Items.Remove(group.Items[0]);
                 lstViewResults.Groups.Remove(group);
             }

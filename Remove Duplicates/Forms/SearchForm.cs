@@ -36,10 +36,8 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         protected override void OnLoad(EventArgs e)
         {
-            foreach (FieldInfo field in typeof(FilePattern).GetFields(BindingFlags.Static | BindingFlags.Public))
-            {
-                if (field.Name.EndsWith("Files") && field.FieldType == typeof(FilePattern))
-                {
+            foreach (FieldInfo field in typeof(FilePattern).GetFields(BindingFlags.Static | BindingFlags.Public)) {
+                if (field.Name.EndsWith("Files") && field.FieldType == typeof(FilePattern)) {
                     comboBoxPatterns.Items.Add(field.GetValue(null));
                 }
             }
@@ -47,30 +45,27 @@ namespace Baxendale.RemoveDuplicates.Forms
             base.OnLoad(e);
         }
 
-        private void btnAddPath_Click(object sender, EventArgs e)
+        private void BtnAddPath_Click(object sender, EventArgs e)
         {
-            if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
-            {
+            if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK) {
                 lstPaths.Items.Add(folderBrowserDialog.SelectedPath);
             }
             ToggleSaveButton();
         }
 
-        private void btnSearch_Click(object sender, EventArgs e)
+        private void BtnSearch_Click(object sender, EventArgs e)
         {
             StartSearch();
         }
 
         public void StartSearch()
         {
-            if (lstPaths.Items.Count == 0)
-            {
+            if (lstPaths.Items.Count == 0) {
                 Program.ShowError(this, "You must specify at least one directory");
                 return;
             }
 
-            try
-            {
+            try {
                 FilePattern pattern = GetSelectedPattern();
                 string[] paths = lstPaths.Items.Cast<string>().ToArray();
 
@@ -79,38 +74,30 @@ namespace Baxendale.RemoveDuplicates.Forms
                 searchForm.ShowDialog(this);
                 Show();
             }
-            catch (Exception ex) when (ex is ArgumentException)
-            {
+            catch (Exception ex) when (ex is ArgumentException) {
                 Program.ShowError(this, ex.Message);
             }
         }
 
         private FilePattern GetSelectedPattern()
         {
-            if (comboBoxPatterns.SelectedItem == null)
-            {
+            if (comboBoxPatterns.SelectedItem == null) {
                 if (string.IsNullOrEmpty(comboBoxPatterns.Text))
-                {
                     throw new ArgumentException("You mast specify a pattern");
-                }
-                else
-                {
-                    return new FilePattern(comboBoxPatterns.Text);
-                }
+                return new FilePattern(comboBoxPatterns.Text);
             }
             return ((FilePattern)comboBoxPatterns.SelectedItem);
         }
 
-        private void lstPaths_SelectedIndexChanged(object sender, EventArgs e)
+        private void LstPaths_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnRemovePath.Enabled = lstPaths.SelectedIndex > -1;
             ToggleSaveButton();
         }
 
-        private void btnRemovePath_Click(object sender, EventArgs e)
+        private void BtnRemovePath_Click(object sender, EventArgs e)
         {
-            for (int index = lstPaths.SelectedIndices.Count - 1; index >= 0; --index)
-            {
+            for (int index = lstPaths.SelectedIndices.Count - 1; index >= 0; --index) {
                 lstPaths.Items.RemoveAt(lstPaths.SelectedIndices[index]);
             }
             ToggleSaveButton();
@@ -121,27 +108,24 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnSave.Enabled = lstPaths.Items.Count > 0 && comboBoxPatterns.Text.Length > 0;
         }
 
-        private void btnLoad_Click(object sender, EventArgs e)
+        private void BtnLoad_Click(object sender, EventArgs e)
         {
-            if (openQueryFileDialog.ShowDialog(this) == DialogResult.OK)
-            {
+            if (openQueryFileDialog.ShowDialog(this) == DialogResult.OK) {
                 LoadQuery(openQueryFileDialog.FileName);
             }
         }
 
         public bool LoadQuery(string queryPath)
         {
-            try
-            {
+            try {
                 Query file = XmlSerializer.Default.Load<Query>(queryPath);
                 if (file.SearchPaths == null)
                     throw new ArgumentException("No paths were specified in this query file");
                 if (file.Pattern == null)
                     throw new ArgumentException("No search pattern was specified in this query file");
-                
+
                 lstPaths.Items.Clear();
-                foreach (string path in file.SearchPaths)
-                {
+                foreach (string path in file.SearchPaths) {
                     lstPaths.Items.Add(path);
                 }
 
@@ -149,19 +133,16 @@ namespace Baxendale.RemoveDuplicates.Forms
                 comboBoxPatterns.Text = file.Pattern.ToString();
                 return true;
             }
-            catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
-            {
+            catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException) {
                 Program.ShowError(this, ex.Message);
                 return false;
             }
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private void BtnSave_Click(object sender, EventArgs e)
         {
-            if (saveQueryFileDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                try
-                {
+            if (saveQueryFileDialog.ShowDialog(this) == DialogResult.OK) {
+                try {
                     Query file = new Query(lstPaths.Items.Cast<string>())
                     {
                         Pattern = GetSelectedPattern(),
@@ -169,8 +150,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                     };
                     XmlSerializer.Default.Save(file, saveQueryFileDialog.FileName);
                 }
-                catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException)
-                {
+                catch (Exception ex) when (ex is IOException || ex is SerializationException || ex is ArgumentException) {
                     Program.ShowError(this, ex.Message);
                 }
             }

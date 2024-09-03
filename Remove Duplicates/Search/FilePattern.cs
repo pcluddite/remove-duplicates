@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021 Timothy Baxendale
+//    Copyright (C) 2021-2024 Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+
 using Baxendale.Data.Collections;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Native;
@@ -59,15 +60,12 @@ namespace Baxendale.RemoveDuplicates.Search
 
         private static char[] InvalidMaskCharacters
         {
-            get
-            {
-                if (_invalidMaskChars == null)
-                {
+            get {
+                if (_invalidMaskChars == null) {
                     char[] invalidFilenameChars = Path.GetInvalidFileNameChars();
                     _invalidMaskChars = new char[Math.Max(invalidFilenameChars.Length - ValidMaskChars.Length, 0)];
                     int idx = 0;
-                    foreach (char invalidFilenameChar in invalidFilenameChars)
-                    {
+                    foreach (char invalidFilenameChar in invalidFilenameChars) {
                         if (Array.IndexOf(ValidMaskChars, invalidFilenameChar) < 0)
                             _invalidMaskChars[idx++] = invalidFilenameChar;
                     }
@@ -81,16 +79,12 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public string Description
         {
-            get
-            {
-                return _description ?? string.Empty;
-            }
+            get => _description ?? string.Empty;
         }
 
         public string FullPattern
         {
-            get
-            {
+            get {
                 if (_subpatterns == null || _subpatterns.Length == 0)
                     return ALL_FILES_MASK[0];
                 if (_subpatterns.Length == 1)
@@ -101,24 +95,15 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public int Count
         {
-            get
-            {
-                return _subpatterns.Length;
-            }
+            get => _subpatterns.Length;
         }
 
         public IReadOnlyCollection<string> Subpatterns
         {
-            get
-            {
-                if (_subpatterns == null)
-                {
+            get {
+                if (_subpatterns == null) 
                     return ALL_FILES_MASK.AsReadOnly();
-                }
-                else
-                {
-                    return _subpatterns.AsReadOnly();
-                }
+                return _subpatterns.AsReadOnly();
             }
         }
 
@@ -145,7 +130,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public FilePattern(string description, IEnumerable<FilePattern> patterns)
         {
-            if (patterns == null) throw new ArgumentNullException(nameof(patterns));
+            ArgumentNullException.ThrowIfNull(patterns, nameof(patterns));
 
             IEnumerable<string> subpatterns = patterns.Select(p => p._subpatterns.AsEnumerable())
                                                       .Aggregate((a, next) => a.Concat(next));
@@ -160,14 +145,14 @@ namespace Baxendale.RemoveDuplicates.Search
 
         public FilePattern(string description, IEnumerable<string> subpatterns)
         {
-            if (subpatterns == null) throw new ArgumentNullException(nameof(subpatterns));
+            ArgumentNullException.ThrowIfNull(subpatterns, nameof(subpatterns));
             _description = description;
             _subpatterns = GetUniqueMasks(subpatterns);
         }
 
         private static string[] GetUniqueMasks(IEnumerable<string> enumerable, params string[] masks)
-        {            
-            ISet<string> subpatternSet = new HashSet<string>(enumerable, MaskComparer);
+        {
+            HashSet<string> subpatternSet = new HashSet<string>(enumerable, MaskComparer);
             subpatternSet.UnionWith(masks);
             subpatternSet.Remove(null);
 
@@ -176,10 +161,8 @@ namespace Baxendale.RemoveDuplicates.Search
 
             int index = 0;
             string[] uniqueMasks = new string[subpatternSet.Count];
-            foreach(string mask in masks.Concat(enumerable))
-            {
-                if (subpatternSet.Remove(mask))
-                {
+            foreach (string mask in masks.Concat(enumerable)) {
+                if (subpatternSet.Remove(mask)) {
                     ValidateMask(mask);
                     uniqueMasks[index++] = mask;
                 }
@@ -189,7 +172,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         private static void ValidateMask(string mask)
         {
-            if (mask == null) throw new ArgumentNullException(nameof(mask));
+            ArgumentNullException.ThrowIfNull(mask, nameof(mask));
 
             int invalidChar = mask.IndexOfAny(InvalidMaskCharacters);
             if (invalidChar > -1)
@@ -199,12 +182,10 @@ namespace Baxendale.RemoveDuplicates.Search
         public bool Matches(string fileName)
         {
             HRESULT hresult;
-            if (_subpatterns.Length == 1)
-            {
+            if (_subpatterns.Length == 1) {
                 hresult = Win32.PathMatchSpecEx(fileName, FullPattern, PMSF.NORMAL);
             }
-            else
-            {
+            else {
                 hresult = Win32.PathMatchSpecEx(fileName, FullPattern, PMSF.MULTIPLE | PMSF.DONT_STRIP_SPACES);
             }
             return hresult == HRESULT.S_OK;
@@ -253,8 +234,7 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             XElement node = new XElement(name);
             node.SetAttributeValue("description", Description);
-            foreach(string mask in _subpatterns)
-            {
+            foreach (string mask in _subpatterns) {
                 XElement pattern = new XElement("pattern");
                 pattern.SetAttributeValue("mask", mask);
                 node.Add(pattern);
@@ -271,13 +251,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
         #region ICollection<string>
 
-        bool ICollection<string>.IsReadOnly
-        {
-            get
-            {
-                return true;
-            }
-        }
+        bool ICollection<string>.IsReadOnly => true;
 
         void ICollection<string>.Add(string item)
         {

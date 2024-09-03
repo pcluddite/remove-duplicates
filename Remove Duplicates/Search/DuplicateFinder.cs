@@ -76,12 +76,11 @@ namespace Baxendale.RemoveDuplicates.Search
             SearchSettings settings = new SearchSettings(Pattern ?? FilePattern.AllFiles, IncludeSubdirectories);
             List<UniqueFile> duplicates = new List<UniqueFile>();
 
-            foreach (DirectoryInfo directory in directories)
-            {
+            foreach (DirectoryInfo directory in directories) {
                 if (_searchedDirs.TryAdd(directory.FullName, directory))
                     duplicates.AddRange(await SearchAsync(directory, settings, cancellationToken));
             }
-            
+
             OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicates));
             return duplicates;
         }
@@ -90,20 +89,17 @@ namespace Baxendale.RemoveDuplicates.Search
         {
             Queue<DirectoryInfo> directories = new Queue<DirectoryInfo>();
             directories.Enqueue(dirMetaData);
-            
+
             List<UniqueFile> duplicates = new List<UniqueFile>();
 
-            do
-            {
+            do {
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
                 dirMetaData = directories.Dequeue();
 
-                if (settings.IncludeSubdirectories)
-                {
-                    foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
-                    {
+                if (settings.IncludeSubdirectories) {
+                    foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories()) {
                         if (_searchedDirs.TryAdd(subDirectory.FullName, subDirectory))
                             directories.Enqueue(subDirectory);
                     }
@@ -132,40 +128,35 @@ namespace Baxendale.RemoveDuplicates.Search
 
             List<UniqueFile> foundDupes = new List<UniqueFile>(files.Count);
 
-            foreach (FileInfo fileMetaData in files)
-            {
+            foreach (FileInfo fileMetaData in files) {
                 UniqueFile uniqueFile;
                 Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
 
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
-                if (settings.AllFiles.TryGetValue(checksum, out uniqueFile))
-                {
+                if (settings.AllFiles.TryGetValue(checksum, out uniqueFile)) {
                     if (uniqueFile.ContainsPath(fileMetaData.FullName))
                         continue;
-                    
+
                     bool cancelled = false;
-                    if (OnFoundDuplicate != null)
-                    {
+                    if (OnFoundDuplicate != null) {
                         DuplicateFoundEventArgs foundArgs = new DuplicateFoundEventArgs(new UniqueFile(uniqueFile), fileMetaData);
                         OnFoundDuplicate(this, foundArgs);
                         cancelled = foundArgs.Cancel;
                     }
-                    if (!cancelled)
-                    {
+                    if (!cancelled) {
                         uniqueFile.Add(fileMetaData);
                         foundDupes.Add(uniqueFile);
                     }
                 }
-                else
-                {
+                else {
                     uniqueFile = new UniqueFile(fileMetaData, checksum);
                     settings.AllFiles[checksum] = uniqueFile;
                     OnNewFileFound?.Invoke(this, new NewFileFoundEventArgs(uniqueFile, fileMetaData));
                 }
             }
-            
+
             OnEndDirectorySearch?.Invoke(this, new DirectorySearchEventArgs(dirMetaData, foundDupes.ToArray()));
 
             return foundDupes;
