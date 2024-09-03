@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baxendale.Data.Collections.Concurrent;
 
 namespace Baxendale.RemoveDuplicates.Search
 {
@@ -35,6 +36,8 @@ namespace Baxendale.RemoveDuplicates.Search
         public event EventHandler<NewFileFoundEventArgs> OnNewFileFound;
         public event EventHandler<DuplicateFoundEventArgs> OnFoundDuplicate;
         public event EventHandler<SearchCompletedEventArgs> OnSearchCompleted;
+
+        private IDictionary<string, DirectoryInfo> _searchedDirs = new ConcurrentDictionary<string, DirectoryInfo>();
 
         public DuplicateFinder(FilePattern pattern)
         {
@@ -74,7 +77,10 @@ namespace Baxendale.RemoveDuplicates.Search
             List<UniqueFile> duplicates = new List<UniqueFile>();
 
             foreach (DirectoryInfo directory in directories)
-                duplicates.AddRange(await SearchAsync(directory, settings, cancellationToken));
+            {
+                if (_searchedDirs.TryAdd(directory.FullName, directory))
+                    duplicates.AddRange(await SearchAsync(directory, settings, cancellationToken));
+            }
             
             OnSearchCompleted?.Invoke(this, new SearchCompletedEventArgs(duplicates));
             return duplicates;
@@ -97,7 +103,10 @@ namespace Baxendale.RemoveDuplicates.Search
                 if (settings.IncludeSubdirectories)
                 {
                     foreach (DirectoryInfo subDirectory in dirMetaData.GetDirectories())
-                        directories.Enqueue(subDirectory);
+                    {
+                        if (_searchedDirs.TryAdd(subDirectory.FullName, subDirectory))
+                            directories.Enqueue(subDirectory);
+                    }
                 }
 
                 duplicates.AddRange(await ScanFilesAsync(dirMetaData, settings, cancellationToken));
@@ -174,7 +183,7 @@ namespace Baxendale.RemoveDuplicates.Search
             return finder.Search(searchDirectories);
         }
 
-        private struct SearchSettings
+        private readonly struct SearchSettings
         {
             public ConcurrentDictionary<Md5Hash, UniqueFile> AllFiles { get; }
             public FilePattern Pattern { get; }
