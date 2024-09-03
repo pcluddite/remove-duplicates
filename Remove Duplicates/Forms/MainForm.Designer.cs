@@ -99,7 +99,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             checkSubdirs.Location = new System.Drawing.Point(10, 137);
             checkSubdirs.Name = "checkSubdirs";
             checkSubdirs.Size = new System.Drawing.Size(142, 19);
-            checkSubdirs.TabIndex = 3;
+            checkSubdirs.TabIndex = 1;
             checkSubdirs.Text = "Include subdirectories";
             checkSubdirs.UseVisualStyleBackColor = true;
             // 
@@ -111,7 +111,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnRemovePath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             btnRemovePath.Name = "btnRemovePath";
             btnRemovePath.Size = new System.Drawing.Size(66, 22);
-            btnRemovePath.TabIndex = 2;
+            btnRemovePath.TabIndex = 3;
             btnRemovePath.Text = "Re&move";
             btnRemovePath.UseVisualStyleBackColor = true;
             btnRemovePath.Click += btnRemovePath_Click;
@@ -123,7 +123,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             btnAddPath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             btnAddPath.Name = "btnAddPath";
             btnAddPath.Size = new System.Drawing.Size(66, 22);
-            btnAddPath.TabIndex = 1;
+            btnAddPath.TabIndex = 2;
             btnAddPath.Text = "&Add";
             btnAddPath.UseVisualStyleBackColor = true;
             btnAddPath.Click += btnAddPath_Click;
@@ -149,7 +149,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             comboBoxPatterns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             comboBoxPatterns.Name = "comboBoxPatterns";
             comboBoxPatterns.Size = new System.Drawing.Size(408, 23);
-            comboBoxPatterns.TabIndex = 3;
+            comboBoxPatterns.TabIndex = 1;
             // 
             // btnSearch
             // 
