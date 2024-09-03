@@ -15,6 +15,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,6 +30,7 @@ using System.Windows.Forms;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 using Baxendale.Serialization;
+using System.Security;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
@@ -278,9 +280,6 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (e.Button != MouseButtons.Right)
                 return;
 
-            ClearOpenToolStripMenu();
-            ClearShowInExplorer();
-
             if (lstViewResults.SelectedItems.Count > 1)
             {
                 openToolStripMenuItem.Visible = false;
@@ -337,20 +336,6 @@ namespace Baxendale.RemoveDuplicates.Forms
                 toolStripSeparator2.Visible = false;
             }
             rightClickMenu.Show(lstViewResults, e.Location);
-        }
-
-        private void ClearOpenToolStripMenu()
-        {
-            foreach (ToolStripItem item in openToolStripMenuItem.DropDownItems)
-                item.Click -= OpenToolStripItem_Click;
-            openToolStripMenuItem.DropDownItems.Clear();
-        }
-
-        private void ClearShowInExplorer()
-        {
-            foreach (ToolStripItem item in showInExplorerToolStripMenuItem.DropDownItems)
-                item.Click -= ExplorerToolStripItem_Click;
-            showInExplorerToolStripMenuItem.DropDownItems.Clear();
         }
 
         private void ExplorerToolStripItem_Click(object sender, EventArgs e)
@@ -416,27 +401,72 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
         }
 
-        private void recycleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void deleteFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RecycleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string files = lstViewResults.SelectedItems.Count > 1 ? "these files" : "this file";
-            if (Program.ShowDialog(this, $"Are you sure you want to delete {files}? This operation cannot be undone!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            if (Program.ShowDialog(this, $"Are you sure you want to recycle {files}?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
+                List<ListViewItem> deleted = new List<ListViewItem>();
                 foreach (ListViewItem item in lstViewResults.SelectedItems)
                 {
                     try
                     {
-                        File.Delete(item.Text);
+#if !DEBUG
+                        FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+#endif
+                        deleted.Add(item);
                     }
-                    catch (IOException ex)
+                    catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException)
                     {
                         Program.ShowError(this, ex);
                     }
                 }
+                RemoveListViewItems(deleted);
+            }
+        }
+
+        private void DeleteFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string files = lstViewResults.SelectedItems.Count > 1 ? "these files" : "this file";
+            if (Program.ShowDialog(this, $"Are you sure you want to delete {files}?\nThis operation cannot be undone!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                List<ListViewItem> deleted = new List<ListViewItem>();
+                foreach (ListViewItem item in lstViewResults.SelectedItems)
+                {
+                    try
+                    {
+#if !DEBUG
+                        File.Delete(item.Text);
+#endif
+                        deleted.Add(item);
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                    {
+                        Program.ShowError(this, ex);
+                    }
+                }
+                RemoveListViewItems(deleted);
+            }
+        }
+
+        private void RemoveListViewItems(IEnumerable<ListViewItem> items)
+        {
+            foreach (ListViewItem item in items)
+                RemoveListViewItem(item);
+        }
+
+        private void RemoveListViewItem(ListViewItem item)
+        {
+            ListViewGroup group = item.Group;
+            UniqueFile file = (UniqueFile)group.Tag;
+
+            file.Remove(item.Text);
+            lstViewResults.Items.Remove(item);
+
+            if (group.Items.Count < 2)
+            {
+                lstViewResults.Items.Remove(group.Items[0]);
+                lstViewResults.Groups.Remove(group);
             }
         }
     }

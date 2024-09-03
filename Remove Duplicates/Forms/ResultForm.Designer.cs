@@ -168,14 +168,14 @@ namespace Baxendale.RemoveDuplicates.Forms
             recycleFileToolStripMenuItem.Name = "recycleFileToolStripMenuItem";
             recycleFileToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             recycleFileToolStripMenuItem.Text = "Recycle";
-            recycleFileToolStripMenuItem.Click += recycleToolStripMenuItem_Click;
+            recycleFileToolStripMenuItem.Click += RecycleToolStripMenuItem_Click;
             // 
             // deleteFileToolStripMenuItem
             // 
             deleteFileToolStripMenuItem.Name = "deleteFileToolStripMenuItem";
             deleteFileToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             deleteFileToolStripMenuItem.Text = "Delete (Cannot be undone!)";
-            deleteFileToolStripMenuItem.Click += deleteFileToolStripMenuItem_Click;
+            deleteFileToolStripMenuItem.Click += DeleteFileToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
