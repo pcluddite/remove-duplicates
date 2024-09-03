@@ -15,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +22,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,7 +30,8 @@ using System.Windows.Forms;
 using Baxendale.Data.Xml;
 using Baxendale.RemoveDuplicates.Search;
 using Baxendale.Serialization;
-using System.Security;
+
+using Microsoft.VisualBasic.FileIO;
 
 namespace Baxendale.RemoveDuplicates.Forms
 {
@@ -79,7 +80,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             base.OnFormClosing(e);
         }
 
-        private void dotTimer_Tick(object sender, EventArgs e)
+        private void DotTimer_Tick(object sender, EventArgs e)
         {
             Text = "Remove Duplicates | Searching" + "".PadRight(++numberOfDots % 4, '.');
         }
@@ -275,7 +276,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
         }
 
-        private void lstViewResults_MouseClick(object sender, MouseEventArgs e)
+        private void LstViewResults_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right)
                 return;
@@ -366,12 +367,12 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
         }
 
-        private void lstViewResults_ColumnClick(object sender, ColumnClickEventArgs e)
+        private void LstViewResults_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             lstViewResults.Sorting = (lstViewResults.Sorting == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
         }
 
-        private void lstViewResults_Resize(object sender, EventArgs e)
+        private void LstViewResults_Resize(object sender, EventArgs e)
         {
             pathColumnHeader.Width = lstViewResults.Width - 30;
         }
@@ -383,7 +384,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 MinimumSize.Height);
         }
 
-        private void saveResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (saveResultsFileDialog.ShowDialog() == DialogResult.OK)
             {

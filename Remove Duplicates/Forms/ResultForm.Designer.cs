@@ -131,9 +131,9 @@ namespace Baxendale.RemoveDuplicates.Forms
             lstViewResults.TabIndex = 1;
             lstViewResults.UseCompatibleStateImageBehavior = false;
             lstViewResults.View = System.Windows.Forms.View.Details;
-            lstViewResults.ColumnClick += lstViewResults_ColumnClick;
-            lstViewResults.MouseClick += lstViewResults_MouseClick;
-            lstViewResults.Resize += lstViewResults_Resize;
+            lstViewResults.ColumnClick += LstViewResults_ColumnClick;
+            lstViewResults.MouseClick += LstViewResults_MouseClick;
+            lstViewResults.Resize += LstViewResults_Resize;
             // 
             // rightClickMenu
             // 
@@ -212,12 +212,12 @@ namespace Baxendale.RemoveDuplicates.Forms
             saveResultsToolStripMenuItem.Name = "saveResultsToolStripMenuItem";
             saveResultsToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             saveResultsToolStripMenuItem.Text = "Save Results";
-            saveResultsToolStripMenuItem.Click += saveResultsToolStripMenuItem_Click;
+            saveResultsToolStripMenuItem.Click += SaveResultsToolStripMenuItem_Click;
             // 
             // dotTimer
             // 
             dotTimer.Interval = 1000;
-            dotTimer.Tick += dotTimer_Tick;
+            dotTimer.Tick += DotTimer_Tick;
             // 
             // saveResultsFileDialog
             // 
