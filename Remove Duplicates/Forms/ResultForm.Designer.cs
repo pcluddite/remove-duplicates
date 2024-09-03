@@ -46,7 +46,6 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             pathColumnHeader = new System.Windows.Forms.ColumnHeader();
             statusStrip = new System.Windows.Forms.StatusStrip();
             toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -57,19 +56,20 @@ namespace Baxendale.RemoveDuplicates.Forms
             rightClickMenu = new System.Windows.Forms.ContextMenuStrip(components);
             openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-            resolveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            recycleFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            deleteAllInFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            recycleAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            deleteAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             saveResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             dotTimer = new System.Windows.Forms.Timer(components);
             saveResultsFileDialog = new System.Windows.Forms.SaveFileDialog();
             statusStrip.SuspendLayout();
             rightClickMenu.SuspendLayout();
             SuspendLayout();
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // pathColumnHeader
             // 
@@ -138,42 +138,79 @@ namespace Baxendale.RemoveDuplicates.Forms
             // rightClickMenu
             // 
             rightClickMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, showInExplorerToolStripMenuItem, toolStripSeparator, resolveToolStripMenuItem, toolStripSeparator1, saveResultsToolStripMenuItem });
+            rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, showInExplorerToolStripMenuItem, deleteToolStripMenuItem, toolStripSeparator1, deleteAllInFolderToolStripMenuItem, toolStripSeparator2, saveResultsToolStripMenuItem });
             rightClickMenu.Name = "rightClickItemMenu";
-            rightClickMenu.Size = new System.Drawing.Size(181, 126);
-            rightClickMenu.Opening += rightClickMenu_Opening;
+            rightClickMenu.Size = new System.Drawing.Size(232, 126);
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            openToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += OpenToolStripItem_Click;
             // 
             // showInExplorerToolStripMenuItem
             // 
             showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
-            showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             showInExplorerToolStripMenuItem.Text = "Show in Explorer";
             showInExplorerToolStripMenuItem.Click += ExplorerToolStripItem_Click;
             // 
-            // toolStripSeparator
+            // deleteToolStripMenuItem
             // 
-            toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new System.Drawing.Size(177, 6);
+            deleteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { recycleFileToolStripMenuItem, deleteFileToolStripMenuItem });
+            deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            deleteToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            deleteToolStripMenuItem.Text = "Delete";
             // 
-            // resolveToolStripMenuItem
+            // recycleFileToolStripMenuItem
             // 
-            resolveToolStripMenuItem.Name = "resolveToolStripMenuItem";
-            resolveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            resolveToolStripMenuItem.Text = "&Resolve Duplicates";
-            resolveToolStripMenuItem.Click += resolveToolStripMenuItem_Click;
+            recycleFileToolStripMenuItem.Name = "recycleFileToolStripMenuItem";
+            recycleFileToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            recycleFileToolStripMenuItem.Text = "Recycle";
+            recycleFileToolStripMenuItem.Click += recycleToolStripMenuItem_Click;
+            // 
+            // deleteFileToolStripMenuItem
+            // 
+            deleteFileToolStripMenuItem.Name = "deleteFileToolStripMenuItem";
+            deleteFileToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            deleteFileToolStripMenuItem.Text = "Delete (Cannot be undone!)";
+            deleteFileToolStripMenuItem.Click += deleteFileToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(228, 6);
+            // 
+            // deleteAllInFolderToolStripMenuItem
+            // 
+            deleteAllInFolderToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { recycleAllToolStripMenuItem, deleteAllToolStripMenuItem });
+            deleteAllInFolderToolStripMenuItem.Name = "deleteAllInFolderToolStripMenuItem";
+            deleteAllInFolderToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            deleteAllInFolderToolStripMenuItem.Text = "Delete All Duplicates in Folder";
+            // 
+            // recycleAllToolStripMenuItem
+            // 
+            recycleAllToolStripMenuItem.Name = "recycleAllToolStripMenuItem";
+            recycleAllToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            recycleAllToolStripMenuItem.Text = "Recycle";
+            // 
+            // deleteAllToolStripMenuItem
+            // 
+            deleteAllToolStripMenuItem.Name = "deleteAllToolStripMenuItem";
+            deleteAllToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            deleteAllToolStripMenuItem.Text = "Delete (Cannot be undone!)";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(228, 6);
             // 
             // saveResultsToolStripMenuItem
             // 
             saveResultsToolStripMenuItem.Enabled = false;
             saveResultsToolStripMenuItem.Name = "saveResultsToolStripMenuItem";
-            saveResultsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            saveResultsToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             saveResultsToolStripMenuItem.Text = "Save Results";
             saveResultsToolStripMenuItem.Click += saveResultsToolStripMenuItem_Click;
             // 
@@ -217,11 +254,16 @@ namespace Baxendale.RemoveDuplicates.Forms
         private System.Windows.Forms.ContextMenuStrip rightClickMenu;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showInExplorerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
-        private System.Windows.Forms.ToolStripMenuItem resolveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ColumnHeader pathColumnHeader;
         private System.Windows.Forms.ToolStripMenuItem saveResultsToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveResultsFileDialog;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recycleFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteAllInFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recycleAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
