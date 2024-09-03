@@ -38,7 +38,7 @@ namespace Baxendale.RemoveDuplicates
 
         public AppContext(string[] args)
         {
-            MainForm main = new MainForm();
+            SearchForm main = new SearchForm();
             main.FormClosed += Main_FormClosed;
             main.Show();
             if (args.Length > 0)
