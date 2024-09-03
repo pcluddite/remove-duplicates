@@ -47,6 +47,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             lstPaths = new System.Windows.Forms.ListBox();
             grpPaths = new System.Windows.Forms.GroupBox();
+            checkSubdirs = new System.Windows.Forms.CheckBox();
             btnRemovePath = new System.Windows.Forms.Button();
             btnAddPath = new System.Windows.Forms.Button();
             grpBoxPattern = new System.Windows.Forms.GroupBox();
@@ -57,7 +58,6 @@ namespace Baxendale.RemoveDuplicates.Forms
             folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             openQueryFileDialog = new System.Windows.Forms.OpenFileDialog();
             saveQueryFileDialog = new System.Windows.Forms.SaveFileDialog();
-            checkSubdirs = new System.Windows.Forms.CheckBox();
             grpPaths.SuspendLayout();
             grpBoxPattern.SuspendLayout();
             SuspendLayout();
@@ -70,7 +70,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             lstPaths.Location = new System.Drawing.Point(4, 20);
             lstPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             lstPaths.Name = "lstPaths";
-            lstPaths.Size = new System.Drawing.Size(414, 109);
+            lstPaths.Size = new System.Drawing.Size(413, 109);
             lstPaths.TabIndex = 0;
             lstPaths.SelectedIndexChanged += lstPaths_SelectedIndexChanged;
             // 
@@ -85,16 +85,29 @@ namespace Baxendale.RemoveDuplicates.Forms
             grpPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             grpPaths.Name = "grpPaths";
             grpPaths.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            grpPaths.Size = new System.Drawing.Size(424, 166);
+            grpPaths.Size = new System.Drawing.Size(423, 166);
             grpPaths.TabIndex = 1;
             grpPaths.TabStop = false;
             grpPaths.Text = "Search Paths";
+            // 
+            // checkSubdirs
+            // 
+            checkSubdirs.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            checkSubdirs.AutoSize = true;
+            checkSubdirs.Checked = true;
+            checkSubdirs.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkSubdirs.Location = new System.Drawing.Point(10, 137);
+            checkSubdirs.Name = "checkSubdirs";
+            checkSubdirs.Size = new System.Drawing.Size(142, 19);
+            checkSubdirs.TabIndex = 3;
+            checkSubdirs.Text = "Include subdirectories";
+            checkSubdirs.UseVisualStyleBackColor = true;
             // 
             // btnRemovePath
             // 
             btnRemovePath.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             btnRemovePath.Enabled = false;
-            btnRemovePath.Location = new System.Drawing.Point(284, 134);
+            btnRemovePath.Location = new System.Drawing.Point(283, 134);
             btnRemovePath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             btnRemovePath.Name = "btnRemovePath";
             btnRemovePath.Size = new System.Drawing.Size(66, 22);
@@ -106,7 +119,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             // btnAddPath
             // 
             btnAddPath.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnAddPath.Location = new System.Drawing.Point(354, 134);
+            btnAddPath.Location = new System.Drawing.Point(353, 134);
             btnAddPath.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             btnAddPath.Name = "btnAddPath";
             btnAddPath.Size = new System.Drawing.Size(66, 22);
@@ -123,7 +136,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             grpBoxPattern.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             grpBoxPattern.Name = "grpBoxPattern";
             grpBoxPattern.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            grpBoxPattern.Size = new System.Drawing.Size(424, 60);
+            grpBoxPattern.Size = new System.Drawing.Size(423, 60);
             grpBoxPattern.TabIndex = 2;
             grpBoxPattern.TabStop = false;
             grpBoxPattern.Text = "Pattern";
@@ -135,13 +148,13 @@ namespace Baxendale.RemoveDuplicates.Forms
             comboBoxPatterns.Location = new System.Drawing.Point(10, 23);
             comboBoxPatterns.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             comboBoxPatterns.Name = "comboBoxPatterns";
-            comboBoxPatterns.Size = new System.Drawing.Size(409, 23);
+            comboBoxPatterns.Size = new System.Drawing.Size(408, 23);
             comboBoxPatterns.TabIndex = 3;
             // 
             // btnSearch
             // 
             btnSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnSearch.Location = new System.Drawing.Point(272, 248);
+            btnSearch.Location = new System.Drawing.Point(271, 248);
             btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new System.Drawing.Size(164, 22);
@@ -184,23 +197,11 @@ namespace Baxendale.RemoveDuplicates.Forms
             saveQueryFileDialog.FileName = "*.xml";
             saveQueryFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
             // 
-            // checkSubdirs
-            // 
-            checkSubdirs.AutoSize = true;
-            checkSubdirs.Checked = true;
-            checkSubdirs.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkSubdirs.Location = new System.Drawing.Point(10, 137);
-            checkSubdirs.Name = "checkSubdirs";
-            checkSubdirs.Size = new System.Drawing.Size(142, 19);
-            checkSubdirs.TabIndex = 3;
-            checkSubdirs.Text = "Include subdirectories";
-            checkSubdirs.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(445, 281);
+            ClientSize = new System.Drawing.Size(444, 281);
             Controls.Add(btnLoad);
             Controls.Add(btnSave);
             Controls.Add(btnSearch);
@@ -208,6 +209,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             Controls.Add(grpPaths);
             Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             MaximizeBox = false;
+            MinimumSize = new System.Drawing.Size(460, 320);
             Name = "MainForm";
             Text = "Duplicate File Remover Tool";
             grpPaths.ResumeLayout(false);
