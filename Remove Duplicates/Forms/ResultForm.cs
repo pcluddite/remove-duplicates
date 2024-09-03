@@ -57,7 +57,8 @@ namespace Baxendale.RemoveDuplicates.Forms
         private bool _liveUpdates;
         private Dictionary<Md5Hash, ListViewGroup> _groups;
         private List<ListViewItem> _results;
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public ResultForm(IEnumerable<string> paths, FilePattern pattern, bool subdirs = true)
         {
@@ -286,56 +287,42 @@ namespace Baxendale.RemoveDuplicates.Forms
                 openToolStripMenuItem.Visible = false;
                 showInExplorerToolStripMenuItem.Visible = false;
 
-                recycleFileToolStripMenuItem.Visible = false;
-                deleteFileToolStripMenuItem.Visible = false;
                 deleteToolStripMenuItem.Visible = false;
-
                 toolStripSeparator1.Visible = false;
 
-                recycleAllToolStripMenuItem.Visible = false;
-                deleteAllToolStripMenuItem.Visible = false;
+                deleteAllInFolderToolStripMenuItem.Text = string.Empty;
                 deleteAllInFolderToolStripMenuItem.Visible = false;
-
                 toolStripSeparator2.Visible = false;
             }
             else if (lstViewResults.SelectedItems.Count == 1)
             {
-                ListViewItem selItem = lstViewResults.SelectedItems[0];
-                showInExplorerToolStripMenuItem.Tag = selItem.Text;
-                openToolStripMenuItem.Tag = selItem.Text;
+                ListViewItem selectedItem = lstViewResults.SelectedItems[0];
+                showInExplorerToolStripMenuItem.Tag = selectedItem.Text;
+                openToolStripMenuItem.Tag = selectedItem.Text;
+
                 openToolStripMenuItem.Visible = true;
                 showInExplorerToolStripMenuItem.Visible = true;
 
-                recycleFileToolStripMenuItem.Visible = true;
-                deleteFileToolStripMenuItem.Visible = true;
                 deleteToolStripMenuItem.Visible = true;
-
                 toolStripSeparator1.Visible = true;
 
-                recycleAllToolStripMenuItem.Visible = true;
-                deleteAllToolStripMenuItem.Visible = true;
+                deleteAllInFolderToolStripMenuItem.Text = "Delete all duplicates in " + Path.GetDirectoryName(selectedItem.Text);
                 deleteAllInFolderToolStripMenuItem.Visible = true;
-
                 toolStripSeparator2.Visible = true;
             }
             else
             {
                 openToolStripMenuItem.Visible = false;
                 showInExplorerToolStripMenuItem.Visible = false;
-                toolStripSeparator1.Visible = false;
 
-                recycleFileToolStripMenuItem.Visible = false;
-                deleteFileToolStripMenuItem.Visible = false;
                 deleteToolStripMenuItem.Visible = false;
-
                 toolStripSeparator1.Visible = false;
 
-                recycleAllToolStripMenuItem.Visible = false;
-                deleteAllToolStripMenuItem.Visible = false;
+                deleteAllInFolderToolStripMenuItem.Text = string.Empty;
                 deleteAllInFolderToolStripMenuItem.Visible = false;
-
                 toolStripSeparator2.Visible = false;
             }
+
             rightClickMenu.Show(lstViewResults, e.Location);
         }
 
