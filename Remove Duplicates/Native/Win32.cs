@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021 Timothy Baxendale
+//    Copyright (C) 2021-2026 Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ namespace Baxendale.RemoveDuplicates.Native
 {
     internal static class Win32
     {
-        [DllImport("shlwapi.dll", SetLastError = false)]
+        [DllImport("shlwapi.dll", SetLastError = false, CharSet = CharSet.Unicode)]
         public static extern HRESULT PathMatchSpecEx(string pszFile, string pszSpec, PMSF dwFlags);
     }
 }
