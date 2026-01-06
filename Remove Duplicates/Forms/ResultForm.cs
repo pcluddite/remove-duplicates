@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021-2024 Timothy Baxendale
+//    Copyright (C) 2021-2026 Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -248,7 +248,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void IncrementDuplicatesFound()
         {
-            if (duplicatesFound == 1) {
+            if (duplicatesFound == 0) {
                 toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicate Found";
             }
             else {
@@ -258,7 +258,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void IncrementFilesSearched()
         {
-            if (filesSearched == 1) {
+            if (filesSearched == 0) {
                 toolStripStatusFilesCount.Text = $"{++filesSearched:N0} File Searched";
             }
             else {
