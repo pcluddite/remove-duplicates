@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Baxendale.Data.Xml;
+using Baxendale.RemoveDuplicates.Errors;
 using Baxendale.RemoveDuplicates.Search;
 using Baxendale.Serialization;
 
@@ -431,13 +432,18 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (moveBrowserDialog.ShowDialog(this) == DialogResult.OK) {
                 string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
                 List<ListViewItem> removedItems = new List<ListViewItem>();
-                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                try {
+                    foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
 #if !DEBUG
-                    File.Move(item.Text, Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text)));
+                        File.Move(item.Text, Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text)));
 #endif
-                    removedItems.Add(item);
+                        removedItems.Add(item);
+                    }
+                    RemoveListViewItems(removedItems);
                 }
-                RemoveListViewItems(removedItems);
+                catch (UnresolvedDuplicateException ex) {
+                    Program.ShowError(this, ex.Message);
+                }
             }
         }
 
@@ -445,26 +451,36 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
             List<ListViewItem> removedItems = new List<ListViewItem>();
-            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+            try {
+                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
 #if !DEBUG
-                FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 #endif
-                removedItems.Add(item);
+                    removedItems.Add(item);
+                }
+                RemoveListViewItems(removedItems);
             }
-            RemoveListViewItems(removedItems);
+            catch (UnresolvedDuplicateException ex) {
+                Program.ShowError(this, ex.Message);
+            }
         }
 
         private void DeleteAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
             List<ListViewItem> removedItems = new List<ListViewItem>();
-            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+            try {
+                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
 #if !DEBUG
-                File.Delete(item.Text);
+                    File.Delete(item.Text);
 #endif
-                removedItems.Add(item);
+                    removedItems.Add(item);
+                }
+                RemoveListViewItems(removedItems);
+            } 
+            catch (UnresolvedDuplicateException ex) {
+                Program.ShowError(this, ex.Message);
             }
-            RemoveListViewItems(removedItems);
         }
 
         private static string GetFilePlural(int count)
@@ -493,8 +509,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                         }
                     }
                     if (oldestFile == null || oldestTime == DateTime.MaxValue) {
-                        Program.ShowError(this, "Cannot determine which file to keep:" + Environment.NewLine + string.Join(Environment.NewLine, duplicatesInDir));
-                        break;
+                        throw new UnresolvedDuplicateException("Cannot determine which file to keep:" + Environment.NewLine + string.Join(Environment.NewLine, duplicatesInDir));
                     }
                     duplicatesInDir.Remove(oldestFile);
                 }
