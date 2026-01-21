@@ -429,13 +429,79 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void MoveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (moveBrowserDialog.ShowDialog(this) == DialogResult.OK) {
-
+                string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
+                List<ListViewItem> removedItems = new List<ListViewItem>();
+                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+#if !DEBUG
+                    File.Move(item.Text, moveBrowserDialog.SelectedPath);
+#endif
+                    removedItems.Add(item);
+                }
+                RemoveListViewItems(removedItems);
             }
+        }
+
+        private void RecycleAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
+            List<ListViewItem> removedItems = new List<ListViewItem>();
+            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+#if !DEBUG
+                FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+#endif
+                removedItems.Add(item);
+            }
+            RemoveListViewItems(removedItems);
+        }
+
+        private void DeleteAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
+            List<ListViewItem> removedItems = new List<ListViewItem>();
+            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+#if !DEBUG
+                File.Delete(item.Text);
+#endif
+                removedItems.Add(item);
+            }
+            RemoveListViewItems(removedItems);
         }
 
         private static string GetFilePlural(int count)
         {
             return count > 1 ? "these files" : "this file";
+        }
+
+        private IEnumerable<ListViewItem> GetAllListItemsInDirectory(string dir)
+        {
+            foreach (ListViewGroup group in lstViewResults.Groups) {
+                List<ListViewItem> duplicatesInDir = new List<ListViewItem>();
+                foreach (ListViewItem item in group.Items) {
+                    if (Path.GetDirectoryName(item.Text) == dir) {
+                        duplicatesInDir.Add(item);
+                    }
+                }
+                if (duplicatesInDir.Count == group.Items.Count) {
+                    ListViewItem latestFile = null;
+                    DateTime latestTime = DateTime.MinValue;
+                    foreach (ListViewItem listViewItem in duplicatesInDir) {
+                        string path = listViewItem.Text;
+                        DateTime lastWriteTime = File.GetLastWriteTime(path);
+                        if (lastWriteTime > latestTime) {
+                            latestFile = listViewItem;
+                            latestTime = lastWriteTime;
+                        }
+                    }
+                    if (latestFile == null || latestTime == DateTime.MinValue) {
+                        Program.ShowError(this, "Cannot determine which file to keep:" + Environment.NewLine + string.Join(Environment.NewLine, duplicatesInDir));
+                        break;
+                    }
+                    duplicatesInDir.Remove(latestFile);
+                }
+                foreach (ListViewItem item in duplicatesInDir) {
+                    yield return item;
+                }
+            }
         }
     }
 }

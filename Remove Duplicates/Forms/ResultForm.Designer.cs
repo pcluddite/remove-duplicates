@@ -63,12 +63,12 @@ namespace Baxendale.RemoveDuplicates.Forms
             deleteAllInFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             recycleAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             deleteAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             saveResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             dotTimer = new System.Windows.Forms.Timer(components);
             saveResultsFileDialog = new System.Windows.Forms.SaveFileDialog();
-            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             moveBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             statusStrip.SuspendLayout();
             rightClickMenu.SuspendLayout();
@@ -143,7 +143,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             rightClickMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, showInExplorerToolStripMenuItem, deleteToolStripMenuItem, toolStripSeparator1, deleteAllInFolderToolStripMenuItem, toolStripSeparator2, saveResultsToolStripMenuItem });
             rightClickMenu.Name = "rightClickItemMenu";
-            rightClickMenu.Size = new System.Drawing.Size(232, 148);
+            rightClickMenu.Size = new System.Drawing.Size(232, 126);
             // 
             // openToolStripMenuItem
             // 
@@ -197,12 +197,26 @@ namespace Baxendale.RemoveDuplicates.Forms
             recycleAllToolStripMenuItem.Name = "recycleAllToolStripMenuItem";
             recycleAllToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             recycleAllToolStripMenuItem.Text = "Recycle";
+            recycleAllToolStripMenuItem.Click += RecycleAllToolStripMenuItem_Click;
             // 
             // deleteAllToolStripMenuItem
             // 
             deleteAllToolStripMenuItem.Name = "deleteAllToolStripMenuItem";
             deleteAllToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
             deleteAllToolStripMenuItem.Text = "Delete (Cannot be undone!)";
+            deleteAllToolStripMenuItem.Click += DeleteAllToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new System.Drawing.Size(217, 6);
+            // 
+            // moveToolStripMenuItem
+            // 
+            moveToolStripMenuItem.Name = "moveToolStripMenuItem";
+            moveToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            moveToolStripMenuItem.Text = "Move";
+            moveToolStripMenuItem.Click += MoveToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
@@ -226,18 +240,6 @@ namespace Baxendale.RemoveDuplicates.Forms
             // 
             saveResultsFileDialog.FileName = "*.xml";
             saveResultsFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
-            // 
-            // toolStripSeparator3
-            // 
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(217, 6);
-            // 
-            // moveToolStripMenuItem
-            // 
-            moveToolStripMenuItem.Name = "moveToolStripMenuItem";
-            moveToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            moveToolStripMenuItem.Text = "Move";
-            moveToolStripMenuItem.Click += MoveToolStripMenuItem_Click;
             // 
             // moveBrowserDialog
             // 
