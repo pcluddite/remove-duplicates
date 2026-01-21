@@ -370,8 +370,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void RecycleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string files = lstViewResults.SelectedItems.Count > 1 ? "these files" : "this file";
-            if (Program.ShowDialog(this, $"Are you sure you want to recycle {files}?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+            if (Program.ShowDialog(this, $"Are you sure you want to recycle {GetFilePlural(lstViewResults.SelectedItems.Count)}?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
                 List<ListViewItem> deleted = new List<ListViewItem>();
                 foreach (ListViewItem item in lstViewResults.SelectedItems) {
                     try {
@@ -390,8 +389,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void DeleteFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string files = lstViewResults.SelectedItems.Count > 1 ? "these files" : "this file";
-            if (Program.ShowDialog(this, $"Are you sure you want to delete {files}?\nThis operation cannot be undone!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) {
+            if (Program.ShowDialog(this, $"Are you sure you want to delete {GetFilePlural(lstViewResults.SelectedItems.Count)}?\nThis operation cannot be undone!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) {
                 List<ListViewItem> deleted = new List<ListViewItem>();
                 foreach (ListViewItem item in lstViewResults.SelectedItems) {
                     try {
@@ -426,6 +424,18 @@ namespace Baxendale.RemoveDuplicates.Forms
                 lstViewResults.Items.Remove(group.Items[0]);
                 lstViewResults.Groups.Remove(group);
             }
+        }
+
+        private void MoveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (moveBrowserDialog.ShowDialog(this) == DialogResult.OK) {
+
+            }
+        }
+
+        private static string GetFilePlural(int count)
+        {
+            return count > 1 ? "these files" : "this file";
         }
     }
 }
