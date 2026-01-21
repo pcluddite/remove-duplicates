@@ -433,7 +433,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 List<ListViewItem> removedItems = new List<ListViewItem>();
                 foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
 #if !DEBUG
-                    File.Move(item.Text, moveBrowserDialog.SelectedPath);
+                    File.Move(item.Text, Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text)));
 #endif
                     removedItems.Add(item);
                 }
@@ -482,21 +482,21 @@ namespace Baxendale.RemoveDuplicates.Forms
                     }
                 }
                 if (duplicatesInDir.Count == group.Items.Count) {
-                    ListViewItem latestFile = null;
-                    DateTime latestTime = DateTime.MinValue;
+                    ListViewItem oldestFile = null;
+                    DateTime oldestTime = DateTime.MaxValue;
                     foreach (ListViewItem listViewItem in duplicatesInDir) {
                         string path = listViewItem.Text;
                         DateTime lastWriteTime = File.GetLastWriteTime(path);
-                        if (lastWriteTime > latestTime) {
-                            latestFile = listViewItem;
-                            latestTime = lastWriteTime;
+                        if (lastWriteTime < oldestTime) {
+                            oldestFile = listViewItem;
+                            oldestTime = lastWriteTime;
                         }
                     }
-                    if (latestFile == null || latestTime == DateTime.MinValue) {
+                    if (oldestFile == null || oldestTime == DateTime.MaxValue) {
                         Program.ShowError(this, "Cannot determine which file to keep:" + Environment.NewLine + string.Join(Environment.NewLine, duplicatesInDir));
                         break;
                     }
-                    duplicatesInDir.Remove(latestFile);
+                    duplicatesInDir.Remove(oldestFile);
                 }
                 foreach (ListViewItem item in duplicatesInDir) {
                     yield return item;
