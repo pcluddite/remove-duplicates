@@ -93,7 +93,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             numberOfDots = 0;
             StartTime = DateTime.Now;
 
-            toolStripStatusLabelDirectory.Text = "Initializing Search...";
+            toolStripStatusLabelDirectory.Text = "Initializing search...";
             _groups = new Dictionary<Md5Hash, ListViewGroup>();
             _results = new List<ListViewItem>();
 
@@ -210,7 +210,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             dotTimer.Stop();
 
             if (!_liveUpdates) {
-                toolStripStatusLabelDirectory.Text = "Updating Results View...";
+                toolStripStatusLabelDirectory.Text = "Updating results view...";
                 lstViewResults.Groups.AddRange(_groups.Values.ToArray());
                 lstViewResults.Items.AddRange(_results.ToArray());
                 lstViewResults.Enabled = true;
@@ -249,20 +249,20 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void IncrementDuplicatesFound()
         {
             if (duplicatesFound == 0) {
-                toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicate Found";
+                toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicate found";
             }
             else {
-                toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicates Found";
+                toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicates found";
             }
         }
 
         private void IncrementFilesSearched()
         {
             if (filesSearched == 0) {
-                toolStripStatusFilesCount.Text = $"{++filesSearched:N0} File Searched";
+                toolStripStatusFilesCount.Text = $"{++filesSearched:N0} File searched";
             }
             else {
-                toolStripStatusFilesCount.Text = $"{++filesSearched:N0} Files Searched";
+                toolStripStatusFilesCount.Text = $"{++filesSearched:N0} Files searched";
             }
         }
 
