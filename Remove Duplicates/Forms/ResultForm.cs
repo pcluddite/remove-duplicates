@@ -441,7 +441,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                     }
                     RemoveListViewItems(removedItems);
                 }
-                catch (UnresolvedDuplicateException ex) {
+                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
                     Program.ShowError(this, ex.Message);
                 }
             }
@@ -460,7 +460,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                 }
                 RemoveListViewItems(removedItems);
             }
-            catch (UnresolvedDuplicateException ex) {
+            catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
                 Program.ShowError(this, ex.Message);
             }
         }
@@ -477,8 +477,8 @@ namespace Baxendale.RemoveDuplicates.Forms
                     removedItems.Add(item);
                 }
                 RemoveListViewItems(removedItems);
-            } 
-            catch (UnresolvedDuplicateException ex) {
+            }
+            catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
                 Program.ShowError(this, ex.Message);
             }
         }
