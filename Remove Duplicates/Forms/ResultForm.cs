@@ -234,7 +234,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             }
 
             string verb = duplicatesFound == 1 ? "duplicate is" : "duplicates are";
-            toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} {verb} taking up {totalDupSize.FormatAsSize()}";
+            toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} {verb} taking up {totalDupSize.FormatAsSize(decimals: 2)}";
             toolStripStatusLabelDirectory.Text = $"Completed in {DateTime.Now - StartTime:h\\:mm\\:ss}";
             StatusBar_TextUpdated(this, EventArgs.Empty);
         }
@@ -249,11 +249,21 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void IncrementDuplicatesFound()
         {
-            if (duplicatesFound == 0) {
-                toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicate found";
+            if (++duplicatesFound == 1) {
+                toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} Duplicate found";
             }
             else {
-                toolStripStatusDuplicatesCount.Text = $"{++duplicatesFound:N0} Duplicates found";
+                toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} Duplicates found";
+            }
+        }
+
+        private void DecrementDuplicatesFound()
+        {
+            if (--duplicatesFound == 1) {
+                toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} Duplicate found";
+            }
+            else {
+                toolStripStatusDuplicatesCount.Text = $"{duplicatesFound:N0} Duplicates found";
             }
         }
 
@@ -429,19 +439,23 @@ namespace Baxendale.RemoveDuplicates.Forms
                 lstViewResults.Items.Remove(group.Items[0]);
                 lstViewResults.Groups.Remove(group);
             }
+            else {
+                group.Header = $"{group.Items.Count} files, {file.FileSize.FormatAsSize(decimals: 1)} per file";
+            }
+            DecrementDuplicatesFound();
         }
 
         private void MoveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (moveBrowserDialog.ShowDialog(this) == DialogResult.OK) {
                 string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
-                List<ListViewItem> removedItems = new List<ListViewItem>();
+                List<ListViewItem> moved = new List<ListViewItem>();
                 foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
                     try {
 #if !DEBUG
                         File.Move(item.Text, Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text)));
 #endif
-                        removedItems.Add(item);
+                        moved.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
                         if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
@@ -449,20 +463,20 @@ namespace Baxendale.RemoveDuplicates.Forms
                         }
                     }
                 }
-                RemoveListViewItems(removedItems);
+                RemoveListViewItems(moved);
             }
         }
 
         private void RecycleAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
-            List<ListViewItem> removedItems = new List<ListViewItem>();
+            List<ListViewItem> recycled = new List<ListViewItem>();
             foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
                 try {
 #if !DEBUG
                     FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 #endif
-                    removedItems.Add(item);
+                    recycled.Add(item);
 
                 }
                 catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
@@ -471,19 +485,19 @@ namespace Baxendale.RemoveDuplicates.Forms
                     }
                 }
             }
-            RemoveListViewItems(removedItems);
+            RemoveListViewItems(recycled);
         }
 
         private void DeleteAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
-            List<ListViewItem> removedItems = new List<ListViewItem>();
+            List<ListViewItem> deleted = new List<ListViewItem>();
             foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
                 try {
 #if !DEBUG
                     File.Delete(item.Text);
 #endif
-                    removedItems.Add(item);
+                    deleted.Add(item);
                 }
                 catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
                     if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
@@ -491,7 +505,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                     }
                 }
             }
-            RemoveListViewItems(removedItems);
+            RemoveListViewItems(deleted);
         }
 
         private static string GetFilePlural(int count)
