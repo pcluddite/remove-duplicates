@@ -381,7 +381,9 @@ namespace Baxendale.RemoveDuplicates.Forms
                         deleted.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException) {
-                        Program.ShowError(this, ex);
+                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                            break;
+                        }
                     }
                 }
                 RemoveListViewItems(deleted);
@@ -400,7 +402,9 @@ namespace Baxendale.RemoveDuplicates.Forms
                         deleted.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                        Program.ShowError(this, ex);
+                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                            break;
+                        }
                     }
                 }
                 RemoveListViewItems(deleted);
@@ -432,18 +436,20 @@ namespace Baxendale.RemoveDuplicates.Forms
             if (moveBrowserDialog.ShowDialog(this) == DialogResult.OK) {
                 string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
                 List<ListViewItem> removedItems = new List<ListViewItem>();
-                try {
-                    foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                    try {
 #if !DEBUG
                         File.Move(item.Text, Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text)));
 #endif
                         removedItems.Add(item);
                     }
-                    RemoveListViewItems(removedItems);
+                    catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
+                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                            break;
+                        }
+                    }
                 }
-                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                    Program.ShowError(this, ex.Message);
-                }
+                RemoveListViewItems(removedItems);
             }
         }
 
@@ -451,40 +457,46 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
             List<ListViewItem> removedItems = new List<ListViewItem>();
-            try {
-                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                try {
 #if !DEBUG
                     FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 #endif
                     removedItems.Add(item);
+
                 }
-                RemoveListViewItems(removedItems);
+                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
+                    if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        break;
+                    }
+                }
             }
-            catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                Program.ShowError(this, ex.Message);
-            }
+            RemoveListViewItems(removedItems);
         }
 
         private void DeleteAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
             List<ListViewItem> removedItems = new List<ListViewItem>();
-            try {
-                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                try {
 #if !DEBUG
                     File.Delete(item.Text);
 #endif
                     removedItems.Add(item);
                 }
-                RemoveListViewItems(removedItems);
+                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
+                    if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        break;
+                    }
+                }
             }
-            catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                Program.ShowError(this, ex.Message);
-            }
+            RemoveListViewItems(removedItems);
         }
 
         private static string GetFilePlural(int count)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count)); 
             return count > 1 ? "these files" : "this file";
         }
 
