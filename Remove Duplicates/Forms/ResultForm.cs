@@ -470,42 +470,46 @@ namespace Baxendale.RemoveDuplicates.Forms
         private void RecycleAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
-            List<ListViewItem> recycled = new List<ListViewItem>();
-            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
-                try {
+            if (Program.ShowDialog(this, $"Are you sure you want to recycle all duplicates in \"{dir}\"?\n(If all duplicates of a file are in this directory, the oldest file is retained.)", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) {
+                List<ListViewItem> recycled = new List<ListViewItem>();
+                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                    try {
 #if !DEBUG
-                    FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                        FileSystem.DeleteFile(item.Text, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 #endif
-                    recycled.Add(item);
+                        recycled.Add(item);
 
-                }
-                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                    if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
-                        break;
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
+                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                            break;
+                        }
                     }
                 }
+                RemoveListViewItems(recycled);
             }
-            RemoveListViewItems(recycled);
         }
 
         private void DeleteAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
-            List<ListViewItem> deleted = new List<ListViewItem>();
-            foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
-                try {
+            if (Program.ShowDialog(this, $"Are you sure you want to delete all duplicates in \"{dir}\"? This cannot be undone!\n(If all duplicates of a file are in this directory, the oldest file is retained.)", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) {
+                List<ListViewItem> deleted = new List<ListViewItem>();
+                foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                    try {
 #if !DEBUG
-                    File.Delete(item.Text);
+                        File.Delete(item.Text);
 #endif
-                    deleted.Add(item);
-                }
-                catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                    if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
-                        break;
+                        deleted.Add(item);
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
+                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                            break;
+                        }
                     }
                 }
+                RemoveListViewItems(deleted);
             }
-            RemoveListViewItems(deleted);
         }
 
         private static string GetFilePlural(int count)
