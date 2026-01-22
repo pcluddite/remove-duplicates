@@ -1,6 +1,4 @@
 # Remove Duplicates
-Find and remove duplicate files based on MD5 checksums.
-
-***Currently finds files but the implementation to resolve duplicates is incomplete***
+Finds duplicate files based on MD5 checksums and offers simple solutions to remove them
 
 *Requires [pcluddite/dataman](https://github.com/pcluddite/dataman)*
