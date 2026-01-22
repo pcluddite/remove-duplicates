@@ -94,5 +94,10 @@ namespace Baxendale.RemoveDuplicates
             if (str == null || other == null) return false;
             return string.Equals(str, other, StringComparison.CurrentCultureIgnoreCase);
         }
+
+        public static string InitLower(this string str)
+        {
+            return str.Length < 2 ? str.ToLower() : char.ToLower(str[0]) + str.Substring(1);
+        }
     }
 }

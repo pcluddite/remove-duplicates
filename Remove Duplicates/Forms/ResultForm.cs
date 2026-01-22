@@ -451,14 +451,15 @@ namespace Baxendale.RemoveDuplicates.Forms
                 string dir = Path.GetDirectoryName(lstViewResults.SelectedItems[0].Text);
                 List<ListViewItem> moved = new List<ListViewItem>();
                 foreach (ListViewItem item in GetAllListItemsInDirectory(dir)) {
+                    string newPath = Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text));
                     try {
 #if !DEBUG
-                        File.Move(item.Text, Path.Combine(moveBrowserDialog.SelectedPath, Path.GetFileName(item.Text)));
+                        File.Move(item.Text, newPath);
 #endif
                         moved.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                        if (Program.ShowError(this, $"{ex.Message}\n\"{item.Text}\"", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        if (Program.ShowError(this, $"\"{item.Text}\" cannot be moved to \"{newPath}\" because {ex.Message.InitLower()}", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                             break;
                         }
                     }
