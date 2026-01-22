@@ -391,7 +391,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                         deleted.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException) {
-                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        if (Program.ShowError(this, $"{ex.Message}\n\"{item.Text}\"", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                             break;
                         }
                     }
@@ -412,7 +412,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                         deleted.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        if (Program.ShowError(this, $"{ex.Message}\n\"{item.Text}\"", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                             break;
                         }
                     }
@@ -458,7 +458,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                         moved.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        if (Program.ShowError(this, $"{ex.Message}\n\"{item.Text}\"", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                             break;
                         }
                     }
@@ -481,7 +481,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        if (Program.ShowError(this, $"{ex.Message}\n\"{item.Text}\"", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                             break;
                         }
                     }
@@ -503,7 +503,7 @@ namespace Baxendale.RemoveDuplicates.Forms
                         deleted.Add(item);
                     }
                     catch (Exception ex) when (ex is IOException || ex is SecurityException || ex is UnauthorizedAccessException || ex is UnresolvedDuplicateException) {
-                        if (Program.ShowError(this, ex.Message, MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
+                        if (Program.ShowError(this, $"{ex.Message}\n\"{item.Text}\"", MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
                             break;
                         }
                     }
