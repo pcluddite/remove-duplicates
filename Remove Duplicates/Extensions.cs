@@ -101,14 +101,20 @@ namespace Baxendale.RemoveDuplicates
             return str.Length < 2 ? str.ToLower() : char.ToLower(str[0]) + str.Substring(1);
         }
 
-        public static bool IsEmpty(this Stream stream)
+        /// <summary>
+        /// Determines if a stream is composed only of empty bytes
+        /// </summary>
+        /// <param name="stream">the stream</param>
+        /// <param name="count">how many bytes to read</param>
+        /// <returns>true if the stream is composed only of zero bytes; otherwise, false</returns>
+        public static bool IsEmpty(this Stream stream, long count = long.MaxValue)
         {
             long pos = stream.Position;
             stream.Position = 0;
             try {
                 int b;
                 while ((b = stream.ReadByte()) != -1) {
-                    if (b != 0) return false;
+                    if (b != 0 || --count == 0) return false;
                 }
                 return true;
             }
