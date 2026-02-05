@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace Baxendale.RemoveDuplicates
@@ -98,6 +99,22 @@ namespace Baxendale.RemoveDuplicates
         public static string InitLower(this string str)
         {
             return str.Length < 2 ? str.ToLower() : char.ToLower(str[0]) + str.Substring(1);
+        }
+
+        public static bool IsEmpty(this Stream stream)
+        {
+            long pos = stream.Position;
+            stream.Position = 0;
+            try {
+                int b;
+                while ((b = stream.ReadByte()) != -1) {
+                    if (b != 0) return false;
+                }
+                return true;
+            }
+            finally {
+                stream.Position = pos;
+            }
         }
     }
 }

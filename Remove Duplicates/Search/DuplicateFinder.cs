@@ -137,6 +137,9 @@ namespace Baxendale.RemoveDuplicates.Search
                 Md5Hash checksum;
 
                 using (FileStream stream = fileMetaData.OpenRead()) {
+                    // ignore empty files
+                    if (stream.IsEmpty())
+                        continue;
                     checksum = Md5Hash.ComputeHash(stream);
                 }
 
