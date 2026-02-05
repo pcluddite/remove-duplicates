@@ -1,6 +1,6 @@
-﻿//
+//
 //    Remove Duplicates
-//    Copyright (C) 2021 Timothy Baxendale
+//    Copyright (C) Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,114 +19,59 @@ namespace Baxendale.RemoveDuplicates
 {
     partial class Extensions
     {
-        public static string FormatAsSize(this byte b)
+        public static string FormatAsSize(this byte b, int decimals = 0)
         {
-            return FormatAsSize(b, 0);
+            return Sizes.Format(b, decimals);
         }
 
-        public static string FormatAsSize(this byte b, int decimals)
+        public static string FormatAsSize(this sbyte s, int decimals = 0)
         {
-            return SizeFormatter.Format(b, decimals);
+            return Sizes.Format(s, decimals);
         }
 
-        public static string FormatAsSize(this sbyte s)
+        public static string FormatAsSize(this short s, int decimals = 0)
         {
-            return FormatAsSize(s, 0);
+            return Sizes.Format(s, decimals);
         }
 
-        public static string FormatAsSize(this sbyte s, int decimals)
+        public static string FormatAsSize(this ushort u, int decimals = 0)
         {
-            return SizeFormatter.Format(s, decimals);
+            return Sizes.Format(u, decimals);
         }
 
-        public static string FormatAsSize(this short s)
+        public static string FormatAsSize(this int i, int decimals = 0)
         {
-            return FormatAsSize(s, 0);
+            return Sizes.Format(i, decimals);
         }
 
-        public static string FormatAsSize(this short s, int decimals)
+        public static string FormatAsSize(this uint u, int decimals = 0)
         {
-            return SizeFormatter.Format(s, decimals);
+            return Sizes.Format(u, decimals);
         }
 
-        public static string FormatAsSize(this ushort u)
+        public static string FormatAsSize(this long l, int decimals = 0)
         {
-            return FormatAsSize(u, 0);
+            return Sizes.Format(l, decimals);
         }
 
-        public static string FormatAsSize(this ushort u, int decimals)
+        public static string FormatAsSize(this ulong u, int decimals = 0)
         {
-            return SizeFormatter.Format(u, decimals);
+            return Sizes.Format(u, decimals);
         }
 
-        public static string FormatAsSize(this int i)
+        public static string FormatAsSize(this float f, int decimals = 0)
         {
-            return FormatAsSize(i, 0);
+            return Sizes.Format(f, decimals);
         }
 
-        public static string FormatAsSize(this int i, int decimals)
+        public static string FormatAsSize(this double d, int decimals = 0)
         {
-            return SizeFormatter.Format(i, decimals);
+            return Sizes.Format(d, decimals);
         }
 
-        public static string FormatAsSize(this uint u)
+        public static string FormatAsSize(this decimal d, int decimals = 0)
         {
-            return FormatAsSize(u, 0);
-        }
-
-        public static string FormatAsSize(this uint u, int decimals)
-        {
-            return SizeFormatter.Format(u, decimals);
-        }
-
-        public static string FormatAsSize(this long l)
-        {
-            return FormatAsSize(l, 0);
-        }
-
-        public static string FormatAsSize(this long l, int decimals)
-        {
-            return SizeFormatter.Format(l, decimals);
-        }
-
-        public static string FormatAsSize(this ulong u)
-        {
-            return FormatAsSize(u, 0);
-        }
-
-        public static string FormatAsSize(this ulong u, int decimals)
-        {
-            return SizeFormatter.Format(u, decimals);
-        }
-
-        public static string FormatAsSize(this float f)
-        {
-            return FormatAsSize(f, 0);
-        }
-
-        public static string FormatAsSize(this float f, int decimals)
-        {
-            return SizeFormatter.Format(f, decimals);
-        }
-
-        public static string FormatAsSize(this double d)
-        {
-            return FormatAsSize(d, 0);
-        }
-
-        public static string FormatAsSize(this double d, int decimals)
-        {
-            return SizeFormatter.Format(d, decimals);
-        }
-
-        public static string FormatAsSize(this decimal d)
-        {
-            return FormatAsSize(d, 0);
-        }
-
-        public static string FormatAsSize(this decimal d, int decimals)
-        {
-            return SizeFormatter.Format(d, decimals);
+            return Sizes.Format(d, decimals);
         }
 
     }

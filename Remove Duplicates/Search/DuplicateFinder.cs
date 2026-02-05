@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021-2024 Timothy Baxendale
+//    Copyright (C) Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ namespace Baxendale.RemoveDuplicates.Search
 
                 using (FileStream stream = fileMetaData.OpenRead()) {
                     // ignore empty files up to 1 KB
-                    if (stream.IsEmpty(SizeFormatter.KB_SIZE))
+                    if (stream.IsEmpty(Sizes.KB_SIZE))
                         continue;
                     checksum = Md5Hash.ComputeHash(stream);
                 }
