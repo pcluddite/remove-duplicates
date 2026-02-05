@@ -134,7 +134,11 @@ namespace Baxendale.RemoveDuplicates.Search
                     continue;
 
                 UniqueFile uniqueFile;
-                Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
+                Md5Hash checksum;
+
+                using (FileStream stream = fileMetaData.OpenRead()) {
+                    checksum = Md5Hash.ComputeHash(stream);
+                }
 
                 if (cancellationToken.IsCancellationRequested)
                     break;
