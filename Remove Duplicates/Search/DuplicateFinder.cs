@@ -129,6 +129,10 @@ namespace Baxendale.RemoveDuplicates.Search
             List<UniqueFile> foundDupes = new List<UniqueFile>(files.Count);
 
             foreach (FileInfo fileMetaData in files) {
+                // ignore blank files
+                if (fileMetaData.Length == 0)
+                    continue;
+
                 UniqueFile uniqueFile;
                 Md5Hash checksum = Md5Hash.ComputeHash(fileMetaData.OpenRead());
 
