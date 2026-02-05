@@ -72,6 +72,7 @@ namespace Baxendale.RemoveDuplicates.Forms
         protected override void OnLoad(EventArgs e)
         {
             SearchTask = StartSearch(SearchPaths, Pattern);
+            ResetContextMenu();
             base.OnLoad(e);
         }
 
@@ -281,10 +282,16 @@ namespace Baxendale.RemoveDuplicates.Forms
         {
             if (e.Button != MouseButtons.Right)
                 return;
+            ResetContextMenu();
+            rightClickMenu.Show(lstViewResults, e.Location);
+        }
 
+        private void ResetContextMenu()
+        {
             if (lstViewResults.SelectedItems.Count > 1) {
                 openToolStripMenuItem.Visible = false;
                 showInExplorerToolStripMenuItem.Visible = false;
+                viewChecksumToolStripMenuItem.Visible = false;
 
                 deleteToolStripMenuItem.Visible = false;
                 toolStripSeparator1.Visible = false;
@@ -300,6 +307,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
                 openToolStripMenuItem.Visible = true;
                 showInExplorerToolStripMenuItem.Visible = true;
+                viewChecksumToolStripMenuItem.Visible = true;
 
                 deleteToolStripMenuItem.Visible = true;
                 toolStripSeparator1.Visible = true;
@@ -311,6 +319,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             else {
                 openToolStripMenuItem.Visible = false;
                 showInExplorerToolStripMenuItem.Visible = false;
+                viewChecksumToolStripMenuItem.Visible = false;
 
                 deleteToolStripMenuItem.Visible = false;
                 toolStripSeparator1.Visible = false;
@@ -319,8 +328,6 @@ namespace Baxendale.RemoveDuplicates.Forms
                 deleteAllInFolderToolStripMenuItem.Visible = false;
                 toolStripSeparator2.Visible = false;
             }
-
-            rightClickMenu.Show(lstViewResults, e.Location);
         }
 
         private void ExplorerToolStripItem_Click(object sender, EventArgs e)
@@ -515,7 +522,7 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private static string GetFilePlural(int count)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count)); 
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count, nameof(count));
             return count > 1 ? "these files" : "this file";
         }
 
@@ -547,6 +554,21 @@ namespace Baxendale.RemoveDuplicates.Forms
                 foreach (ListViewItem item in duplicatesInDir) {
                     yield return item;
                 }
+            }
+        }
+
+        private void ViewChecksumToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lstViewResults.SelectedItems.Count == 0) {
+                Program.ShowError(this, "No file selected");
+            }
+            else if (lstViewResults.SelectedItems.Count > 1) {
+                Program.ShowError(this, "Too many files selected");
+            }
+            else {
+                UniqueFile file = (UniqueFile)lstViewResults.SelectedItems[0].Group.Tag;
+                using (ChecksumForm checksumForm = new ChecksumForm(file.Hash))
+                    checksumForm.ShowDialog(this);
             }
         }
     }

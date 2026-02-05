@@ -56,6 +56,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             rightClickMenu = new System.Windows.Forms.ContextMenuStrip(components);
             openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            viewChecksumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             recycleFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             deleteFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -141,30 +142,37 @@ namespace Baxendale.RemoveDuplicates.Forms
             // rightClickMenu
             // 
             rightClickMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, showInExplorerToolStripMenuItem, deleteToolStripMenuItem, toolStripSeparator1, deleteAllInFolderToolStripMenuItem, toolStripSeparator2, saveResultsToolStripMenuItem });
+            rightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, showInExplorerToolStripMenuItem, viewChecksumToolStripMenuItem, deleteToolStripMenuItem, toolStripSeparator1, deleteAllInFolderToolStripMenuItem, toolStripSeparator2, saveResultsToolStripMenuItem });
             rightClickMenu.Name = "rightClickItemMenu";
-            rightClickMenu.Size = new System.Drawing.Size(232, 126);
+            rightClickMenu.Size = new System.Drawing.Size(232, 148);
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            openToolStripMenuItem.Text = "Open";
+            openToolStripMenuItem.Text = "&Open";
             openToolStripMenuItem.Click += OpenToolStripItem_Click;
             // 
             // showInExplorerToolStripMenuItem
             // 
             showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
             showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            showInExplorerToolStripMenuItem.Text = "Show in Explorer";
+            showInExplorerToolStripMenuItem.Text = "Show in &Explorer";
             showInExplorerToolStripMenuItem.Click += ExplorerToolStripItem_Click;
+            // 
+            // viewChecksumToolStripMenuItem
+            // 
+            viewChecksumToolStripMenuItem.Name = "viewChecksumToolStripMenuItem";
+            viewChecksumToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
+            viewChecksumToolStripMenuItem.Text = "View &Checksum";
+            viewChecksumToolStripMenuItem.Click += ViewChecksumToolStripMenuItem_Click;
             // 
             // deleteToolStripMenuItem
             // 
             deleteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { recycleFileToolStripMenuItem, deleteFileToolStripMenuItem });
             deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             deleteToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            deleteToolStripMenuItem.Text = "Delete";
+            deleteToolStripMenuItem.Text = "&Delete";
             // 
             // recycleFileToolStripMenuItem
             // 
@@ -190,7 +198,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             deleteAllInFolderToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { recycleAllToolStripMenuItem, deleteAllToolStripMenuItem, toolStripSeparator3, moveToolStripMenuItem });
             deleteAllInFolderToolStripMenuItem.Name = "deleteAllInFolderToolStripMenuItem";
             deleteAllInFolderToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
-            deleteAllInFolderToolStripMenuItem.Text = "Delete All Duplicates in Folder";
+            deleteAllInFolderToolStripMenuItem.Text = "Delete &All Duplicates in Folder";
             // 
             // recycleAllToolStripMenuItem
             // 
@@ -289,5 +297,6 @@ namespace Baxendale.RemoveDuplicates.Forms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog moveBrowserDialog;
+        private System.Windows.Forms.ToolStripMenuItem viewChecksumToolStripMenuItem;
     }
 }
