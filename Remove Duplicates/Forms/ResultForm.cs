@@ -225,6 +225,8 @@ namespace Baxendale.RemoveDuplicates.Forms
 
             toolStripProgressBar.Visible = false;
             saveResultsToolStripMenuItem.Enabled = true;
+            txtFilter.Enabled = true;
+            btnClearFilter.Enabled = true;
 
             long totalDupSize = 0;
 
@@ -242,6 +244,8 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void Disable()
         {
+            txtFilter.Enabled = false;
+            btnClearFilter.Enabled = false;
             saveResultsToolStripMenuItem.Enabled = false;
             toolStripProgressBar.Visible = true;
             lstViewResults.Enabled = _liveUpdates;

@@ -71,8 +71,12 @@ namespace Baxendale.RemoveDuplicates.Forms
             dotTimer = new System.Windows.Forms.Timer(components);
             saveResultsFileDialog = new System.Windows.Forms.SaveFileDialog();
             moveBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            grpFilter = new System.Windows.Forms.GroupBox();
+            btnClearFilter = new System.Windows.Forms.Button();
+            txtFilter = new System.Windows.Forms.TextBox();
             statusStrip.SuspendLayout();
             rightClickMenu.SuspendLayout();
+            grpFilter.SuspendLayout();
             SuspendLayout();
             // 
             // pathColumnHeader
@@ -128,10 +132,10 @@ namespace Baxendale.RemoveDuplicates.Forms
             lstViewResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { pathColumnHeader });
             lstViewResults.ContextMenuStrip = rightClickMenu;
             lstViewResults.FullRowSelect = true;
-            lstViewResults.Location = new System.Drawing.Point(14, 14);
+            lstViewResults.Location = new System.Drawing.Point(14, 68);
             lstViewResults.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             lstViewResults.Name = "lstViewResults";
-            lstViewResults.Size = new System.Drawing.Size(742, 489);
+            lstViewResults.Size = new System.Drawing.Size(742, 435);
             lstViewResults.TabIndex = 1;
             lstViewResults.UseCompatibleStateImageBehavior = false;
             lstViewResults.View = System.Windows.Forms.View.Details;
@@ -253,11 +257,42 @@ namespace Baxendale.RemoveDuplicates.Forms
             // 
             moveBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
             // 
+            // grpFilter
+            // 
+            grpFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            grpFilter.Controls.Add(btnClearFilter);
+            grpFilter.Controls.Add(txtFilter);
+            grpFilter.Location = new System.Drawing.Point(14, 12);
+            grpFilter.Name = "grpFilter";
+            grpFilter.Size = new System.Drawing.Size(742, 50);
+            grpFilter.TabIndex = 2;
+            grpFilter.TabStop = false;
+            grpFilter.Text = "Filter";
+            // 
+            // btnClearFilter
+            // 
+            btnClearFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnClearFilter.Location = new System.Drawing.Point(661, 20);
+            btnClearFilter.Name = "btnClearFilter";
+            btnClearFilter.Size = new System.Drawing.Size(75, 23);
+            btnClearFilter.TabIndex = 1;
+            btnClearFilter.Text = "Clear";
+            btnClearFilter.UseVisualStyleBackColor = true;
+            // 
+            // txtFilter
+            // 
+            txtFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtFilter.Location = new System.Drawing.Point(6, 21);
+            txtFilter.Name = "txtFilter";
+            txtFilter.Size = new System.Drawing.Size(649, 23);
+            txtFilter.TabIndex = 0;
+            // 
             // ResultForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(772, 533);
+            Controls.Add(grpFilter);
             Controls.Add(lstViewResults);
             Controls.Add(statusStrip);
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -268,6 +303,8 @@ namespace Baxendale.RemoveDuplicates.Forms
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
             rightClickMenu.ResumeLayout(false);
+            grpFilter.ResumeLayout(false);
+            grpFilter.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -298,5 +335,8 @@ namespace Baxendale.RemoveDuplicates.Forms
         private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog moveBrowserDialog;
         private System.Windows.Forms.ToolStripMenuItem viewChecksumToolStripMenuItem;
+        private System.Windows.Forms.GroupBox grpFilter;
+        private System.Windows.Forms.TextBox txtFilter;
+        private System.Windows.Forms.Button btnClearFilter;
     }
 }
