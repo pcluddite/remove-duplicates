@@ -46,6 +46,8 @@ namespace Baxendale.RemoveDuplicates.Forms
 
         private void btnCopy_Click(object sender, EventArgs e)
         {
+            txtChecksum.Focus();
+            txtChecksum.SelectAll();
             Clipboard.SetText(txtChecksum.Text);
         }
     }
