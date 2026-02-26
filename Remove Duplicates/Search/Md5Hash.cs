@@ -1,6 +1,6 @@
 ﻿//
 //    Remove Duplicates
-//    Copyright (C) 2021-2024 Timothy Baxendale
+//    Copyright (C) Timothy Baxendale
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -80,10 +80,8 @@ namespace Baxendale.RemoveDuplicates.Search
         public unsafe static Md5Hash ComputeHash(byte[] data)
         {
             ArgumentNullException.ThrowIfNull(data, nameof(data));
-            using (MD5 md5 = MD5.Create()) {
-                fixed (byte* lpHash = md5.ComputeHash(data))
-                    return new Md5Hash(lpHash);
-            }
+            fixed (byte* lpHash = MD5.HashData(data))
+                return new Md5Hash(lpHash);
         }
 
         public unsafe static Md5Hash ComputeHash(Stream byteStream)
@@ -95,7 +93,7 @@ namespace Baxendale.RemoveDuplicates.Search
             }
         }
 
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is Md5Hash hash && Equals(hash);
         }
@@ -160,8 +158,8 @@ namespace Baxendale.RemoveDuplicates.Search
 
         private static unsafe void GetBytes(byte* lpBuff, long part1, long part2)
         {
-            *((long*)lpBuff) = part1;
-            *((long*)(lpBuff + LONG_BYTES)) = part2;
+            *(long*)lpBuff = part1;
+            *(long*)(lpBuff + LONG_BYTES) = part2;
         }
 
         private static unsafe void SetBytes(byte* lpBytes, ref long part1, ref long part2)
