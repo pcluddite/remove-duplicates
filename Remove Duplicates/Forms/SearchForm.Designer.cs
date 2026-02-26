@@ -70,6 +70,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             lstPaths.Location = new System.Drawing.Point(4, 20);
             lstPaths.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             lstPaths.Name = "lstPaths";
+            lstPaths.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             lstPaths.Size = new System.Drawing.Size(413, 109);
             lstPaths.TabIndex = 0;
             lstPaths.SelectedIndexChanged += LstPaths_SelectedIndexChanged;
@@ -197,7 +198,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             saveQueryFileDialog.FileName = "*.xml";
             saveQueryFileDialog.Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*";
             // 
-            // MainForm
+            // SearchForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -210,7 +211,7 @@ namespace Baxendale.RemoveDuplicates.Forms
             Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             MaximizeBox = false;
             MinimumSize = new System.Drawing.Size(460, 320);
-            Name = "MainForm";
+            Name = "SearchForm";
             Text = "Duplicate File Remover Tool";
             grpPaths.ResumeLayout(false);
             grpPaths.PerformLayout();
